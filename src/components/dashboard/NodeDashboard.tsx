@@ -12,7 +12,6 @@ import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
 import { Play, Save, Upload } from "lucide-react";
 import { useFlow } from "@/components/providers/FlowProvider";
-import NodeContextMenu from "./NodeContextMenu";
 import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
 
@@ -96,9 +95,46 @@ const NodeDashboard = () => {
     input.click();
   }, []);
 
+  // 컨텍스트 메뉴 핸들러
+  const handleContextMenu = useCallback((event: React.MouseEvent) => {
+    // 브라우저 기본 컨텍스트 메뉴 방지
+    event.preventDefault();
+
+    if (!flowInstance.current) return;
+
+    // 노드 ID 찾기
+    const target = event.target as HTMLElement;
+    const nodeElement = target.closest(".react-flow__node");
+    const nodeId = nodeElement?.getAttribute("data-id");
+
+    // 마우스 좌표를 ReactFlow 좌표로 변환
+    const rect = (event.target as HTMLElement)
+      .closest(".react-flow")
+      ?.getBoundingClientRect();
+
+    if (rect) {
+      const position = flowInstance.current.project({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      });
+
+      // 커스텀 이벤트 발생시키기
+      const customEvent = new CustomEvent("showNodeMenu", {
+        detail: {
+          position,
+          x: event.clientX,
+          y: event.clientY,
+          nodeId,
+        },
+      });
+      document.dispatchEvent(customEvent);
+    }
+  }, []);
+
   return (
     <div className="w-full h-full">
       <ReactFlow
+        onContextMenu={handleContextMenu}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
@@ -110,12 +146,7 @@ const NodeDashboard = () => {
         snapToGrid
         attributionPosition="bottom-right"
       >
-        <NodeContextMenu
-          flowInstance={flowInstance.current as ReactFlowInstance}
-        >
-          <Background />
-        </NodeContextMenu>
-
+        <Background />
         <Controls />
 
         <Panel position="top-right" className="flex gap-2">

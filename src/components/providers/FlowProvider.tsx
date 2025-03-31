@@ -1,5 +1,3 @@
-"use client";
-
 import React, {
   createContext,
   useContext,
@@ -40,6 +38,11 @@ type FlowContextType = {
   runNode: (nodeId: string) => Promise<void>;
   updateNodeInputs: (nodeId: string, inputs: Record<string, any>) => void;
   isProcessing: boolean;
+  setNodes: (
+    nodes: Node<NodeData>[] | ((nds: Node<NodeData>[]) => Node<NodeData>[])
+  ) => void;
+  deleteNode: (nodeId: string) => void;
+  duplicateNode: (nodeId: string, position: XYPosition) => void;
 };
 
 const FlowContext = createContext<FlowContextType | null>(null);
@@ -157,6 +160,49 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       setNodes((nds) => [...nds, newNode]);
     },
     [setNodes]
+  );
+
+  // 노드 삭제 함수
+  const deleteNode = useCallback(
+    (nodeId: string) => {
+      // 노드와 연결된 모든 엣지도 삭제
+      setEdges((edges) =>
+        edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+      );
+
+      // 노드 삭제
+      setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
+    },
+    [setNodes, setEdges]
+  );
+
+  // 노드 복제 함수
+  const duplicateNode = useCallback(
+    (nodeId: string, position: XYPosition) => {
+      const sourceNode = nodes.find((node) => node.id === nodeId);
+      if (!sourceNode) return;
+
+      // 새로운 ID로 노드 복제
+      const newNodeId = generateId();
+      const offset = { x: 50, y: 50 }; // 원본 노드와 약간 떨어진 위치에 배치
+
+      const newNode: Node<NodeData> = {
+        ...sourceNode,
+        id: newNodeId,
+        position: position, // 또는 {x: sourceNode.position.x + offset.x, y: sourceNode.position.y + offset.y}
+        data: {
+          ...sourceNode.data,
+          result: undefined, // 결과는 초기화
+          isProcessing: false,
+          hasError: false,
+          errorMessage: undefined,
+        },
+        selected: false, // 선택 상태 초기화
+      };
+
+      setNodes((nds) => [...nds, newNode]);
+    },
+    [nodes, setNodes]
   );
 
   // 단일 노드 실행
@@ -282,6 +328,9 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     runNode,
     updateNodeInputs,
     isProcessing,
+    setNodes,
+    deleteNode,
+    duplicateNode,
   };
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;
