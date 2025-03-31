@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const MODEL_NAME = "gemini-2.0-pro";
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +16,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
     const prompt = `
       You are a Solana transaction visualization expert who creates mermaid.js sequence diagrams.

@@ -274,7 +274,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         // 의존성 있는 노드들 먼저 실행
         const dependencyEdges = edges.filter((edge) => edge.target === nodeId);
 
-        // 모든 의존성 노드를 먼저 실행
+        // 모든 의존성 노드를 병렬로 실행
         const dependencyPromises = dependencyEdges.map(async (edge) => {
           try {
             // 소스 노드가 있는지 확인
@@ -286,18 +286,24 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
             // 소스 노드 실행 및 결과 캐싱
             const dependencyResult = await runNode(edge.source, resultCache);
             resultCache[edge.source] = dependencyResult;
-            return { success: true, sourceId: edge.source };
+            return {
+              success: true,
+              sourceId: edge.source,
+              inputName: edge.targetHandle?.replace("input-", "") || "",
+              result: dependencyResult,
+            };
           } catch (error) {
             // 소스 노드 실행 중 오류 발생
             return {
               success: false,
               sourceId: edge.source,
+              inputName: edge.targetHandle?.replace("input-", "") || "",
               error: (error as Error).message,
             };
           }
         });
 
-        // 모든 의존성 실행 결과 확인
+        // 모든 의존성 실행을 병렬로 처리하고 결과 수집
         const dependencyResults = await Promise.all(dependencyPromises);
         const failedDependencies = dependencyResults.filter(
           (res) => !res.success
@@ -383,36 +389,63 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
 
     // 입력 파라미터 수집
     const inputs: Record<string, any> = { ...node.data.inputs };
+    const connectedInputs: Record<string, any> = {}; // 연결된 입력값을 추적
 
     // 연결된 노드에서 값 가져오기 (이미 실행된 노드의 결과 사용)
     const incomingEdges = edges.filter((edge) => edge.target === node.id);
-    for (const edge of incomingEdges) {
-      const sourceNodeId = edge.source;
-      const sourceNode = nodes.find((n) => n.id === sourceNodeId);
 
-      // 캐시에서 소스 노드의 결과 확인
-      const cachedResult = resultCache[sourceNodeId];
+    // 병렬 처리를 위해 모든 입력 소스 노드의 결과를 한 번에 수집
+    await Promise.all(
+      incomingEdges.map(async (edge) => {
+        const sourceNodeId = edge.source;
+        const sourceNode = nodes.find((n) => n.id === sourceNodeId);
 
-      // 결과가 캐시에 없고, 노드의 returnValue도 없는 경우에만 에러
-      if (
-        cachedResult === undefined &&
-        (!sourceNode || sourceNode.data.returnValue === undefined)
-      ) {
-        throw new Error(
-          `소스 노드가 아직 실행되지 않았습니다. 먼저 실행하세요.`
-        );
-      }
+        // 캐시에서 소스 노드의 결과 확인
+        const cachedResult = resultCache[sourceNodeId];
 
-      // 타겟 핸들에서 입력 이름 추출
-      const inputName = edge.targetHandle?.replace("input-", "") || "";
-      if (inputName) {
-        // 캐시에 결과가 있으면 캐시 값을 사용, 없으면 노드의 returnValue를 사용
-        inputs[inputName] =
-          cachedResult !== undefined
-            ? cachedResult
-            : sourceNode?.data.returnValue;
-      }
-    }
+        // 결과가 캐시에 없고, 노드의 returnValue도 없는 경우에만 에러
+        if (
+          cachedResult === undefined &&
+          (!sourceNode || sourceNode.data.returnValue === undefined)
+        ) {
+          throw new Error(
+            `소스 노드가 아직 실행되지 않았습니다. 먼저 실행하세요.`
+          );
+        }
+
+        // 타겟 핸들에서 입력 이름 추출
+        const inputName = edge.targetHandle?.replace("input-", "") || "";
+        if (inputName) {
+          // 캐시에 결과가 있으면 캐시 값을 사용, 없으면 노드의 returnValue를 사용
+          const value =
+            cachedResult !== undefined
+              ? cachedResult
+              : sourceNode?.data.returnValue;
+
+          inputs[inputName] = value;
+          connectedInputs[inputName] = value; // 연결된 입력값 추적
+        }
+      })
+    );
+
+    // 노드 상태에 연결된 입력값 업데이트
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.id === node.id) {
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              connectedInputs: {
+                ...n.data.connectedInputs,
+                ...connectedInputs,
+              },
+            },
+          };
+        }
+        return n;
+      })
+    );
 
     // 함수 실행
     const result = await nodeFunction.execute(inputs);
@@ -491,9 +524,67 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       // 위상 정렬로 실행 순서 결정
       const sortedNodes = topologicalSort(nodes, edges);
 
-      // 순서대로 노드 실행
-      for (const node of sortedNodes) {
-        await runNode(node.id, resultCache);
+      // 노드 레벨별로 그룹화하여 동일 레벨은 병렬 실행
+      const nodeLevels: Record<number, Node<NodeData>[]> = {};
+
+      // 각 노드의 최대 깊이 계산 (모든 의존성 노드의 최대 깊이 + 1)
+      const nodeDepths: Record<string, number> = {};
+
+      // 의존성 그래프 생성
+      const dependencyGraph: Record<string, string[]> = {};
+      nodes.forEach((node) => {
+        dependencyGraph[node.id] = [];
+      });
+
+      edges.forEach((edge) => {
+        if (dependencyGraph[edge.target]) {
+          dependencyGraph[edge.target].push(edge.source);
+        }
+      });
+
+      // 노드 깊이 계산 함수
+      const calculateNodeDepth = (nodeId: string): number => {
+        // 이미 계산된 깊이가 있으면 반환
+        if (nodeDepths[nodeId] !== undefined) {
+          return nodeDepths[nodeId];
+        }
+
+        // 의존성이 없으면 깊이는 0
+        const dependencies = dependencyGraph[nodeId] || [];
+        if (dependencies.length === 0) {
+          nodeDepths[nodeId] = 0;
+          return 0;
+        }
+
+        // 의존성의 최대 깊이 + 1이 현재 노드의 깊이
+        const maxDependencyDepth = Math.max(
+          ...dependencies.map((depId) => calculateNodeDepth(depId))
+        );
+
+        nodeDepths[nodeId] = maxDependencyDepth + 1;
+        return nodeDepths[nodeId];
+      };
+
+      // 모든 노드의 깊이 계산
+      sortedNodes.forEach((node) => {
+        const depth = calculateNodeDepth(node.id);
+        if (!nodeLevels[depth]) {
+          nodeLevels[depth] = [];
+        }
+        nodeLevels[depth].push(node);
+      });
+
+      // 각 레벨별로 노드 실행 (같은 레벨은 병렬 실행)
+      const levels = Object.keys(nodeLevels).sort(
+        (a, b) => Number(a) - Number(b)
+      );
+      for (const level of levels) {
+        const nodesInLevel = nodeLevels[Number(level)];
+
+        // 동일 레벨의 노드들은 병렬로 실행
+        await Promise.all(
+          nodesInLevel.map((node) => runNode(node.id, resultCache))
+        );
       }
     } catch (error) {
       console.error("Flow execution error:", error);
