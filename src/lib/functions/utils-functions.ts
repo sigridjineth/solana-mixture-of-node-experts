@@ -28,34 +28,10 @@ export const mermaidFunction: NodeFunction = {
         throw new Error("Mermaid 코드는 필수 입력값입니다");
       }
 
-      // API 호출
-      const response = await fetch("/api/mermaid-to-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          mermaid,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
-      }
-
+      // API 호출 없이 직접 결과 반환
       return {
-        imageUrl: data.imageUrl,
-        width: data.width,
-        height: data.height,
-        mermaid: mermaid, // 원본 Mermaid 코드도 함께 반환
+        mermaid: mermaid, // 렌더링을 위한 원본 Mermaid 코드
+        type: "mermaid", // 타입 정보 추가
       };
     } catch (error) {
       throw new Error(`Mermaid 이미지 변환 실패: ${(error as Error).message}`);

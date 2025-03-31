@@ -9,6 +9,10 @@ export type NodeData = {
   isProcessing?: boolean;
   hasError?: boolean;
   errorMessage?: string;
+  mermaid?: {
+    mermaid: string;
+    type?: string;
+  };
 };
 
 export type CustomNodeProps = NodeProps<NodeData>;

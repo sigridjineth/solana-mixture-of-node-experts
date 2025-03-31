@@ -16,11 +16,13 @@ import { Play, Save, Upload } from "lucide-react";
 import { useFlow } from "@/components/providers/FlowProvider";
 import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
+import { MermaidViewer } from "./nodes/MermaidViewer";
 
 // 노드 타입 정의
 const nodeTypes = {
   function: FunctionNode,
   output: OutputNode,
+  mermaid: MermaidViewer,
 };
 
 const NodeDashboard = () => {

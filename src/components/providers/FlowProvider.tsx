@@ -348,35 +348,79 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       throw new Error(`Function not found: ${node.data.functionId}`);
     }
 
-    // 입력 파라미터 수집 - connectedInputs가 우선순위를 가짐
-    const inputs: Record<string, any> = {
-      ...node.data.inputs, // 사용자가 직접 입력한 값
-      ...node.data.connectedInputs, // 다른 노드로부터 연결된 값
-    };
+    // 입력 파라미터 수집
+    const inputs: Record<string, any> = { ...node.data.inputs };
 
-    // 연결된 노드에서 값 가져오기 - 캐시 우선
+    // 연결된 노드에서 값 가져오기 (이미 실행된 노드의 결과 사용)
     const incomingEdges = edges.filter((edge) => edge.target === node.id);
     for (const edge of incomingEdges) {
-      // 캐시에서 의존성 노드 결과 확인
-      if (resultCache[edge.source] !== undefined) {
-        // 타겟 핸들에서 입력 이름 추출
-        const inputName = edge.targetHandle?.replace("input-", "") || "";
-        inputs[inputName] = resultCache[edge.source];
-      } else {
-        // 캐시에 없으면 노드에서 직접 값 확인
-        const sourceNode = nodes.find((n) => n.id === edge.source);
-        if (!sourceNode || sourceNode.data.returnValue === undefined) {
-          throw new Error(`Input node not processed yet: ${edge.source}`);
-        }
+      const sourceNodeId = edge.source;
+      const sourceNode = nodes.find((n) => n.id === sourceNodeId);
 
-        // 타겟 핸들에서 입력 이름 추출
-        const inputName = edge.targetHandle?.replace("input-", "") || "";
+      if (!sourceNode || sourceNode.data.returnValue === undefined) {
+        throw new Error(
+          `소스 노드가 아직 실행되지 않았습니다. 먼저 실행하세요.`
+        );
+      }
+
+      // 타겟 핸들에서 입력 이름 추출
+      const inputName = edge.targetHandle?.replace("input-", "") || "";
+      if (inputName) {
         inputs[inputName] = sourceNode.data.returnValue;
       }
     }
 
     // 함수 실행
-    return await nodeFunction.execute(inputs);
+    const result = await nodeFunction.execute(inputs);
+
+    // 특별한 타입 처리
+    if (
+      nodeFunction.id === "mermaid" &&
+      typeof result === "object" &&
+      result.type === "mermaid"
+    ) {
+      // 노드를 mermaid 타입으로 변경
+      setNodes((nds) =>
+        nds.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              type: "mermaid",
+              data: {
+                ...n.data,
+                isProcessing: false,
+                returnValue: result,
+                hasError: false,
+                errorMessage: "",
+                mermaid: result,
+              },
+            };
+          }
+          return n;
+        })
+      );
+    } else {
+      // 일반 함수 결과 처리
+      setNodes((nds) =>
+        nds.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              data: {
+                ...n.data,
+                isProcessing: false,
+                returnValue: result,
+                hasError: false,
+                errorMessage: "",
+              },
+            };
+          }
+          return n;
+        })
+      );
+    }
+
+    return result;
   };
 
   // 전체 플로우 실행
