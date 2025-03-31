@@ -1,11 +1,104 @@
 import { NodeFunction } from "@/types/function";
 
+// Solana 트랜잭션 데이터 가져오기 노드
+export const solanaTxFetchFunction: NodeFunction = {
+  id: "solana-tx-fetch",
+  name: "Solana Tx Fetch",
+  description: "트랜잭션 해시로 Solana 트랜잭션 데이터를 가져옵니다",
+  category: "Solana",
+  groups: ["solana_group"],
+  inputs: [
+    {
+      name: "txHash",
+      type: "string",
+      required: true,
+      description: "트랜잭션 해시 (서명)",
+    },
+    {
+      name: "rpcUrl",
+      type: "string",
+      required: false,
+      description: "Solana RPC URL (입력하지 않으면 내부 API 사용)",
+    },
+  ],
+  output: {
+    name: "transaction",
+    type: "object",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { txHash, rpcUrl } = inputs;
+
+      if (!txHash) {
+        throw new Error("트랜잭션 해시는 필수 입력값입니다");
+      }
+
+      // RPC 요청 데이터 준비
+      const requestData = {
+        jsonrpc: "2.0",
+        id: 1,
+        method: "getTransaction",
+        params: [
+          txHash,
+          {
+            encoding: "json",
+            maxSupportedTransactionVersion: 0,
+          },
+        ],
+      };
+
+      let response;
+
+      // 커스텀 RPC URL이 제공된 경우 직접 호출, 아니면 내부 API 사용
+      if (rpcUrl) {
+        response = await fetch(rpcUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        });
+      } else {
+        // 내부 API를 통해 요청 (CORS 및 403 오류 방지)
+        response = await fetch("/api/solana-rpc", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          `RPC 요청 실패: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(
+          `RPC 에러: ${data.error.message || JSON.stringify(data.error)}`
+        );
+      }
+
+      return data.result;
+    } catch (error) {
+      throw new Error(
+        `Solana 트랜잭션 가져오기 실패: ${(error as Error).message}`
+      );
+    }
+  },
+};
+
 // 텍스트 변환 함수
 export const fetchDataFunction: NodeFunction = {
   id: "fetch-data",
   name: "Fetch Data",
   description: "Fetches data from an API endpoint",
   category: "Data",
+  groups: ["default_group"],
   inputs: [
     {
       name: "url",
@@ -40,6 +133,7 @@ export const filterDataFunction: NodeFunction = {
   name: "Filter Data",
   description: "Filters an array based on a key and value",
   category: "Data",
+  groups: ["default_group"],
   inputs: [
     {
       name: "data",
@@ -84,6 +178,7 @@ export const sortDataFunction: NodeFunction = {
   name: "Sort Data",
   description: "Sorts an array based on a key",
   category: "Data",
+  groups: ["default_group"],
   inputs: [
     {
       name: "data",
@@ -131,6 +226,7 @@ export const mapDataFunction: NodeFunction = {
   name: "Map Data",
   description: "Maps array items by applying transformations",
   category: "Data",
+  groups: ["default_group"],
   inputs: [
     {
       name: "data",
@@ -223,6 +319,7 @@ export const calculateStatisticsFunction: NodeFunction = {
   name: "Calculate Statistics",
   description: "Calculates basic statistics for a numerical array",
   category: "Analytics",
+  groups: ["default_group"],
   inputs: [
     {
       name: "data",
@@ -283,6 +380,7 @@ export const delayFunction: NodeFunction = {
   name: "Delay",
   description: "Delays execution for the specified milliseconds",
   category: "Utility",
+  groups: ["default_group"],
   inputs: [
     {
       name: "data",
@@ -310,3 +408,90 @@ export const delayFunction: NodeFunction = {
     });
   },
 };
+
+// Discord 웹훅 함수
+export const discordWebhookFunction: NodeFunction = {
+  id: "discord-webhook",
+  name: "Discord Webhook",
+  description: "Discord 웹훅으로 메시지를 전송합니다",
+  category: "SNS",
+  groups: ["default_group", "solana_group"],
+  inputs: [
+    {
+      name: "webhookUrl",
+      type: "string",
+      required: true,
+      description: "Discord 웹훅 URL",
+      default: "",
+    },
+    {
+      name: "content",
+      type: "string",
+      required: true,
+      description: "전송할 메시지 내용",
+    },
+  ],
+  output: {
+    name: "response",
+    type: "object",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      // 실제 요청에 사용할 URL과 내용
+      let webhookUrl = inputs.webhookUrl || "";
+      let content = inputs.content || "";
+
+      console.log("inputs", inputs);
+
+      // URL 또는 내용이 없으면 오류 발생
+      if (!webhookUrl) {
+        throw new Error("웹훅 URL이 제공되지 않았습니다");
+      }
+
+      if (!content) {
+        throw new Error("전송할 메시지 내용이 비어있습니다");
+      }
+
+      // 실제 웹훅 전송 (지금은 테스트용으로 전송은 생략)
+      const response = await sendToDiscord(webhookUrl, content);
+
+      console.log("response", response);
+
+      // 테스트용 응답 - 실제 구현 시 위의 주석 해제하고 실제 응답 반환
+      return {
+        result: true,
+        content: content.substring(0, 50) + (content.length > 50 ? "..." : ""),
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      // 에러 발생시 throw하여 노드가 에러 상태로 표시되도록 함
+      throw new Error(`Discord 웹훅 처리 실패: ${(error as Error).message}`);
+    }
+  },
+};
+
+// Discord 웹훅 전송 함수 분리
+async function sendToDiscord(webhookUrl: string, messageContent: string) {
+  // 웹훅 요청 데이터 구성
+  const webhook: Record<string, any> = { content: messageContent };
+
+  // 웹훅 요청 보내기
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(webhook),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`웹훅 요청 실패 (${response.status}): ${errorText}`);
+  }
+
+  return {
+    success: true,
+    statusCode: response.status,
+    message: "Discord 메시지가 성공적으로 전송되었습니다",
+  };
+}

@@ -6,7 +6,10 @@ import {
   mapDataFunction,
   calculateStatisticsFunction,
   delayFunction,
+  solanaTxFetchFunction,
+  discordWebhookFunction,
 } from "./node-functions";
+import { analyzeSolanaTransactionFunction } from "./solana-functions";
 
 // 모든 함수들을 레지스트리에 등록
 const functionRegistry: FunctionRegistry = {
@@ -16,6 +19,9 @@ const functionRegistry: FunctionRegistry = {
   [mapDataFunction.id]: mapDataFunction,
   [calculateStatisticsFunction.id]: calculateStatisticsFunction,
   [delayFunction.id]: delayFunction,
+  [solanaTxFetchFunction.id]: solanaTxFetchFunction,
+  [discordWebhookFunction.id]: discordWebhookFunction,
+  [analyzeSolanaTransactionFunction.id]: analyzeSolanaTransactionFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
@@ -30,6 +36,30 @@ export const getFunctionsByCategory = (): Record<string, NodeFunction[]> => {
   const categories: Record<string, NodeFunction[]> = {};
 
   getAllFunctions().forEach((func) => {
+    if (!categories[func.category]) {
+      categories[func.category] = [];
+    }
+    categories[func.category].push(func);
+  });
+
+  return categories;
+};
+
+export const getFunctionsByGroup = (groupId: string): NodeFunction[] => {
+  return getAllFunctions().filter((func) => {
+    // 모든 노드가 groups 배열을 가지고 있다고 가정
+    const groups = func.groups || [];
+    return groups.includes(groupId);
+  });
+};
+
+export const getFunctionsByGroupAndCategory = (
+  groupId: string
+): Record<string, NodeFunction[]> => {
+  const functions = getFunctionsByGroup(groupId);
+  const categories: Record<string, NodeFunction[]> = {};
+
+  functions.forEach((func) => {
     if (!categories[func.category]) {
       categories[func.category] = [];
     }

@@ -6,10 +6,12 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn, formatNodeData } from "@/lib/utils";
 import { CustomNodeProps } from "@/types/node";
 
-const OutputNode = memo(({ data, selected }: CustomNodeProps) => {
+const OutputNode = memo(({ id, data, selected }: CustomNodeProps) => {
   return (
     <Card
-      className={cn("min-w-64 shadow-md", selected && "ring-2 ring-primary")}
+      className={cn("shadow-md relative", selected && "ring-2 ring-primary")}
+      style={{ width: "280px" }}
+      data-node-id={id}
     >
       <CardHeader className="p-3 pb-2">
         <CardTitle className="text-sm font-medium">{data.label}</CardTitle>
@@ -22,7 +24,13 @@ const OutputNode = memo(({ data, selected }: CustomNodeProps) => {
             type="target"
             position={Position.Left}
             id="input"
-            className="w-3 h-3 rounded-full bg-primary border-2 border-background"
+            className="rounded-full bg-primary border-2 border-background"
+            style={{
+              width: "10px",
+              height: "10px",
+              minWidth: "10px",
+              minHeight: "10px",
+            }}
           />
           <div className="ml-2 text-xs">Connect from a function node</div>
         </div>
@@ -31,7 +39,14 @@ const OutputNode = memo(({ data, selected }: CustomNodeProps) => {
         {data.result !== undefined && (
           <div className="mt-2">
             <div className="text-xs text-muted-foreground mb-1">Result</div>
-            <div className="bg-muted p-2 rounded-md text-xs font-mono overflow-auto max-h-64 whitespace-pre-wrap">
+            <div
+              className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
+              style={{
+                overflowY: "auto",
+                maxHeight: "240px",
+                overflowX: "hidden",
+              }}
+            >
               {formatNodeData(data.result)}
             </div>
           </div>

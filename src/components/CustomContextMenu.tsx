@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getFunctionsByCategory } from "@/lib/functions/registry";
+import {
+  getFunctionsByCategory,
+  getFunctionsByGroupAndCategory,
+} from "@/lib/functions/registry";
 import { useFlow } from "@/components/providers/FlowProvider";
 import { XYPosition } from "reactflow";
 import {
@@ -15,7 +18,18 @@ import {
   Map,
   BarChart,
   Clock,
+  FileSearch,
+  MessageSquare,
+  Coins,
+  Layers,
 } from "lucide-react";
+import { getDefaultGroup, getAllGroups } from "@/lib/functions/groups";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const CustomContextMenu = () => {
   const [visible, setVisible] = useState(false);
@@ -25,25 +39,60 @@ const CustomContextMenu = () => {
   });
   const [flowPosition, setFlowPosition] = useState<XYPosition | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const {
-    addFunctionNode,
-    addOutputNode,
-    nodes,
-    setNodes,
-    deleteNode,
-    duplicateNode,
-  } = useFlow();
-  const functionsByCategory = getFunctionsByCategory();
+  const { addFunctionNode, addOutputNode, nodes, deleteNode, duplicateNode } =
+    useFlow();
+  const [activeGroup, setActiveGroup] = useState<string>("");
+  const [functionsByCategory, setFunctionsByCategory] = useState<
+    Record<string, any>
+  >({});
+
+  // 초기화 시 기본 그룹 설정
+  useEffect(() => {
+    const defaultGroup = getDefaultGroup();
+    if (defaultGroup) {
+      setActiveGroup(defaultGroup.id);
+      setFunctionsByCategory(getFunctionsByGroupAndCategory(defaultGroup.id));
+    } else {
+      setFunctionsByCategory(getFunctionsByCategory());
+    }
+  }, []);
+
+  // 그룹 변경 처리
+  const handleGroupChange = (groupId: string) => {
+    setActiveGroup(groupId);
+    setFunctionsByCategory(getFunctionsByGroupAndCategory(groupId));
+  };
 
   // 함수별 아이콘 매핑
   const functionIcons: Record<string, React.ReactNode> = {
-    "fetch-data": <Globe className="h-4 w-4" />,
-    "filter-data": <Filter className="h-4 w-4" />,
-    "sort-data": <SortAsc className="h-4 w-4" />,
-    "map-data": <Map className="h-4 w-4" />,
-    "calculate-statistics": <BarChart className="h-4 w-4" />,
-    delay: <Clock className="h-4 w-4" />,
+    "solana-tx-fetch": <FileSearch className="h-4 w-4 mr-2" />,
+    "fetch-data": <Globe className="h-4 w-4 mr-2" />,
+    "filter-data": <Filter className="h-4 w-4 mr-2" />,
+    "sort-data": <SortAsc className="h-4 w-4 mr-2" />,
+    "map-data": <Map className="h-4 w-4 mr-2" />,
+    "calculate-statistics": <BarChart className="h-4 w-4 mr-2" />,
+    delay: <Clock className="h-4 w-4 mr-2" />,
+    "discord-webhook": <MessageSquare className="h-4 w-4 mr-2" />,
   };
+
+  // 카테고리 아이콘 매핑
+  const categoryIcons: Record<string, React.ReactNode> = {
+    Solana: <Coins className="h-4 w-4 mr-1" />,
+    SNS: <MessageSquare className="h-4 w-4 mr-1" />,
+    Data: <Database className="h-4 w-4 mr-1" />,
+    Analytics: <BarChart className="h-4 w-4 mr-1" />,
+    Utility: <Clock className="h-4 w-4 mr-1" />,
+  };
+
+  // 카테고리 정렬 순서 지정
+  const categoryOrder = ["Solana", "SNS", "Data", "Analytics", "Utility"];
+  const sortedCategories = Object.entries(functionsByCategory).sort(
+    ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
+  );
+
+  // 사용 가능한 그룹 목록
+  const allGroups = getAllGroups();
+  const activeGroupData = allGroups.find((group) => group.id === activeGroup);
 
   // 메뉴 표시 이벤트 리스너
   useEffect(() => {
@@ -80,7 +129,7 @@ const CustomContextMenu = () => {
       if (!flowPosition) return;
 
       const func = functionsByCategory[category]?.find(
-        (f) => f.id === functionId
+        (f: any) => f.id === functionId
       );
       if (func) {
         addFunctionNode(func, flowPosition);
@@ -167,6 +216,33 @@ const CustomContextMenu = () => {
   return (
     <Card style={menuStyle} className="p-2 shadow-lg">
       <div className="space-y-2">
+        <div className="flex justify-between items-center px-2 py-1 border-b">
+          <span className="text-xs font-semibold">그룹 선택</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 w-6 px-0 flex items-center justify-center"
+                title={activeGroupData?.name || "모든 도구"}
+              >
+                <Layers className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {allGroups.map((group) => (
+                <DropdownMenuItem
+                  key={group.id}
+                  onClick={() => handleGroupChange(group.id)}
+                  className={activeGroup === group.id ? "bg-muted" : ""}
+                >
+                  {group.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
         <Button
           variant="ghost"
           size="sm"
@@ -179,11 +255,14 @@ const CustomContextMenu = () => {
 
         <div className="h-px bg-border my-2" />
 
-        {Object.entries(functionsByCategory).map(([category, functions]) => (
+        {sortedCategories.map(([category, functions]) => (
           <div key={category} className="space-y-1">
-            <div className="text-xs font-semibold px-2 py-1">{category}</div>
+            <div className="text-xs font-semibold px-2 py-1 flex items-center">
+              {categoryIcons[category]}
+              {category}
+            </div>
 
-            {functions.map((func) => (
+            {functions.map((func: any) => (
               <Button
                 key={func.id}
                 variant="ghost"

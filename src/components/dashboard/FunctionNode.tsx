@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { Handle, Position } from "reactflow";
 import {
   Card,
@@ -20,7 +20,6 @@ import { getFunctionById } from "@/lib/functions/registry";
 
 const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   const { runNode, updateNodeInputs } = useFlow();
-
   const nodeFunction = data.functionId
     ? getFunctionById(data.functionId)
     : undefined;
@@ -51,10 +50,12 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   return (
     <Card
       className={cn(
-        "min-w-64 shadow-md",
+        "shadow-md relative",
         selected && "ring-2 ring-primary",
         data.hasError && "border-red-500"
       )}
+      style={{ width: "280px" }}
+      data-node-id={id}
     >
       <CardHeader className="p-3 pb-2 flex flex-row justify-between items-center">
         <div>
@@ -91,7 +92,13 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                 type="target"
                 position={Position.Left}
                 id={`input-${input.name}`}
-                className="w-3 h-3 rounded-full bg-primary border-2 border-background"
+                className="rounded-full bg-primary border-2 border-background"
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  minWidth: "10px",
+                  minHeight: "10px",
+                }}
               />
               <Input
                 size={1}
@@ -107,10 +114,26 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
         {/* 함수 결과 */}
         {data.result !== undefined && (
           <div className="mt-4">
-            <div className="text-xs text-muted-foreground mb-1">
-              Result ({nodeFunction.output.type})
+            <div className="text-xs text-muted-foreground mb-1 flex justify-between items-center">
+              <span>Result ({nodeFunction.output.type})</span>
+              {nodeFunction.output.type === "object" &&
+                Object.keys(data.result || {}).length > 10 && (
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] py-0 px-1.5 h-4"
+                  >
+                    스크롤바 사용
+                  </Badge>
+                )}
             </div>
-            <div className="bg-muted p-2 rounded-md text-xs font-mono overflow-auto max-h-32 whitespace-pre-wrap">
+            <div
+              className="bg-muted p-2 rounded-md text-xs font-mono whitespace-pre-wrap custom-scrollbar"
+              style={{
+                overflowY: "auto",
+                maxHeight: "240px",
+                overflowX: "hidden",
+              }}
+            >
               {formatNodeData(data.result)}
             </div>
           </div>
@@ -130,7 +153,13 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
           type="source"
           position={Position.Right}
           id="output"
-          className="w-3 h-3 rounded-full bg-primary border-2 border-background"
+          className="rounded-full bg-primary border-2 border-background"
+          style={{
+            width: "10px",
+            height: "10px",
+            minWidth: "10px",
+            minHeight: "10px",
+          }}
         />
       </CardFooter>
     </Card>

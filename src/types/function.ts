@@ -16,9 +16,17 @@ export type NodeFunction = {
   name: string;
   description: string;
   category: string;
+  groups?: string[];
   inputs: FunctionInput[];
   output: FunctionOutput;
   execute: (inputs: Record<string, any>) => Promise<any>;
 };
 
 export type FunctionRegistry = Record<string, NodeFunction>;
+
+export type NodeFunctionGroup = {
+  id: string;
+  name: string;
+  description: string;
+  isDefault?: boolean;
+};

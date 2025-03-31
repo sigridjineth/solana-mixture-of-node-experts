@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   Controls,
   Panel,
   ReactFlowProvider,
   ReactFlowInstance,
+  Edge,
+  OnConnectStart,
+  OnConnectEnd,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
@@ -23,6 +26,10 @@ const nodeTypes = {
 
 const NodeDashboard = () => {
   const flowInstance = useRef<ReactFlowInstance | null>(null);
+  const [connectionStartHandle, setConnectionStartHandle] = useState<{
+    nodeId: string;
+    handleId: string;
+  } | null>(null);
   const {
     nodes,
     edges,
@@ -31,6 +38,7 @@ const NodeDashboard = () => {
     onConnect,
     runFlow,
     isProcessing,
+    deleteEdge,
   } = useFlow();
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
@@ -131,6 +139,43 @@ const NodeDashboard = () => {
     }
   }, []);
 
+  // 연결 시작 핸들러
+  const handleConnectStart: OnConnectStart = useCallback((event, params) => {
+    setConnectionStartHandle({
+      nodeId: params.nodeId || "",
+      handleId: params.handleId || "",
+    });
+  }, []);
+
+  // 연결 종료 핸들러
+  const handleConnectEnd: OnConnectEnd = useCallback(
+    (event) => {
+      // 연결이 시작된 핸들이 있고, 마우스가 핸들 위에 있지 않다면 연결을 끊습니다
+      if (connectionStartHandle) {
+        const target = event.target as HTMLElement;
+        const handleElement = target.closest(".react-flow__handle");
+
+        if (!handleElement) {
+          // 연결된 엣지 찾기
+          const edgeToDelete = edges.find(
+            (edge) =>
+              (edge.source === connectionStartHandle.nodeId &&
+                edge.sourceHandle === connectionStartHandle.handleId) ||
+              (edge.target === connectionStartHandle.nodeId &&
+                edge.targetHandle === connectionStartHandle.handleId)
+          );
+
+          if (edgeToDelete) {
+            deleteEdge(edgeToDelete.id);
+          }
+        }
+      }
+
+      setConnectionStartHandle(null);
+    },
+    [connectionStartHandle, edges, deleteEdge]
+  );
+
   return (
     <div className="w-full h-full">
       <ReactFlow
@@ -142,6 +187,8 @@ const NodeDashboard = () => {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         onInit={onInit}
+        onConnectStart={handleConnectStart}
+        onConnectEnd={handleConnectEnd}
         fitView
         snapToGrid
         attributionPosition="bottom-right"

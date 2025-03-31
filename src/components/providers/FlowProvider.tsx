@@ -19,12 +19,8 @@ import {
 } from "reactflow";
 import { NodeData } from "@/types/node";
 import { NodeFunction } from "@/types/function";
-import {
-  generateId,
-  executeNode,
-  isConnectionValid,
-  topologicalSort,
-} from "@/lib/utils";
+import { generateId, isConnectionValid, topologicalSort } from "@/lib/utils";
+import { getFunctionById } from "@/lib/functions/registry";
 
 type FlowContextType = {
   nodes: Node<NodeData>[];
@@ -43,6 +39,7 @@ type FlowContextType = {
   ) => void;
   deleteNode: (nodeId: string) => void;
   duplicateNode: (nodeId: string, position: XYPosition) => void;
+  deleteEdge: (edgeId: string) => void;
 };
 
 const FlowContext = createContext<FlowContextType | null>(null);
@@ -205,10 +202,23 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     [nodes, setNodes]
   );
 
+  // 엣지 삭제 함수
+  const deleteEdge = useCallback(
+    (edgeId: string) => {
+      setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+    },
+    [setEdges]
+  );
+
   // 단일 노드 실행
   const runNode = useCallback(
-    async (nodeId: string) => {
+    async (nodeId: string, resultCache: Record<string, any> = {}) => {
       try {
+        // 이미 이 노드가 실행되어 결과가 캐시에 있다면 다시 실행하지 않음
+        if (resultCache[nodeId] !== undefined) {
+          return resultCache[nodeId];
+        }
+
         // 노드 처리 중 상태로 설정
         setNodes((nds) =>
           nds.map((node) => {
@@ -232,14 +242,23 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           throw new Error(`Node not found: ${nodeId}`);
         }
 
-        // 의존성 있는 노드들 먼저 실행
+        // 의존성 있는 노드들 먼저 실행하고 결과를 캐시에 저장
         const dependencyEdges = edges.filter((edge) => edge.target === nodeId);
         for (const edge of dependencyEdges) {
-          await runNode(edge.source);
+          const dependencyResult = await runNode(edge.source, resultCache);
+          resultCache[edge.source] = dependencyResult;
         }
 
-        // 현재 노드 실행
-        const result = await executeNode(nodeToRun, nodes, edges);
+        // 현재 노드 실행 - 캐시에 의존성 노드 결과 전달
+        const result = await executeNodeWithCache(
+          nodeToRun,
+          nodes,
+          edges,
+          resultCache
+        );
+
+        // 결과를 캐시에 저장
+        resultCache[nodeId] = result;
 
         // 결과 업데이트
         setNodes((nds) =>
@@ -284,6 +303,50 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     [nodes, edges, setNodes]
   );
 
+  // 노드 실행 함수 - 캐시를 활용
+  const executeNodeWithCache = async (
+    node: Node<NodeData>,
+    nodes: Node<NodeData>[],
+    edges: Edge[],
+    resultCache: Record<string, any>
+  ): Promise<any> => {
+    if (!node.data.functionId) {
+      return node.data.result;
+    }
+
+    const nodeFunction = getFunctionById(node.data.functionId);
+    if (!nodeFunction) {
+      throw new Error(`Function not found: ${node.data.functionId}`);
+    }
+
+    // 입력 파라미터 수집
+    const inputs: Record<string, any> = { ...node.data.inputs };
+
+    // 연결된 노드에서 값 가져오기 - 캐시 우선
+    const incomingEdges = edges.filter((edge) => edge.target === node.id);
+    for (const edge of incomingEdges) {
+      // 캐시에서 의존성 노드 결과 확인
+      if (resultCache[edge.source] !== undefined) {
+        // 타겟 핸들에서 입력 이름 추출
+        const inputName = edge.targetHandle?.replace("input-", "") || "";
+        inputs[inputName] = resultCache[edge.source];
+      } else {
+        // 캐시에 없으면 노드에서 직접 값 확인
+        const sourceNode = nodes.find((n) => n.id === edge.source);
+        if (!sourceNode || sourceNode.data.result === undefined) {
+          throw new Error(`Input node not processed yet: ${edge.source}`);
+        }
+
+        // 타겟 핸들에서 입력 이름 추출
+        const inputName = edge.targetHandle?.replace("input-", "") || "";
+        inputs[inputName] = sourceNode.data.result;
+      }
+    }
+
+    // 함수 실행
+    return await nodeFunction.execute(inputs);
+  };
+
   // 전체 플로우 실행
   const runFlow = useCallback(async () => {
     try {
@@ -302,12 +365,15 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         }))
       );
 
+      // 결과 캐시 초기화
+      const resultCache: Record<string, any> = {};
+
       // 위상 정렬로 실행 순서 결정
       const sortedNodes = topologicalSort(nodes, edges);
 
       // 순서대로 노드 실행
       for (const node of sortedNodes) {
-        await runNode(node.id);
+        await runNode(node.id, resultCache);
       }
     } catch (error) {
       console.error("Flow execution error:", error);
@@ -331,6 +397,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     setNodes,
     deleteNode,
     duplicateNode,
+    deleteEdge,
   };
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;
