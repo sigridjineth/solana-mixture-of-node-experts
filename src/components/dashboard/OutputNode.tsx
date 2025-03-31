@@ -32,11 +32,10 @@ const OutputNode = memo(({ id, data, selected }: CustomNodeProps) => {
               minHeight: "10px",
             }}
           />
-          <div className="ml-2 text-xs">Connect from a function node</div>
         </div>
 
         {/* 출력 결과 */}
-        {data.result !== undefined && (
+        {data.returnValue !== undefined && (
           <div className="mt-2">
             <div className="text-xs text-muted-foreground mb-1">Result</div>
             <div
@@ -47,7 +46,7 @@ const OutputNode = memo(({ id, data, selected }: CustomNodeProps) => {
                 overflowX: "hidden",
               }}
             >
-              {formatNodeData(data.result)}
+              {formatNodeData(data.returnValue)}
             </div>
           </div>
         )}

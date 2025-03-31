@@ -37,6 +37,7 @@ type FlowContextType = {
   setNodes: (
     nodes: Node<NodeData>[] | ((nds: Node<NodeData>[]) => Node<NodeData>[])
   ) => void;
+  setEdges: (edges: Edge[] | ((eds: Edge[]) => Edge[])) => void;
   deleteNode: (nodeId: string) => void;
   duplicateNode: (nodeId: string, position: XYPosition) => void;
   deleteEdge: (edgeId: string) => void;
@@ -112,9 +113,35 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           )
       );
 
+      // 소스 노드의 반환값을 타겟 노드의 connectedInputs에 설정
+      if (
+        sourceNode &&
+        targetNode &&
+        sourceNode.data.returnValue !== undefined
+      ) {
+        const inputName = connection.targetHandle?.replace("input-", "") || "";
+        setNodes((nds) =>
+          nds.map((node) => {
+            if (node.id === targetNode.id) {
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  connectedInputs: {
+                    ...node.data.connectedInputs,
+                    [inputName]: sourceNode.data.returnValue,
+                  },
+                },
+              };
+            }
+            return node;
+          })
+        );
+      }
+
       setEdges((eds) => addEdge(connection, newEdges));
     },
-    [nodes, edges, setEdges]
+    [nodes, edges, setEdges, setNodes]
   );
 
   // 함수 노드 추가
@@ -133,6 +160,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
             }
             return acc;
           }, {} as Record<string, any>),
+          connectedInputs: {}, // 연결된 입력값 초기화
         },
       };
 
@@ -151,6 +179,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         data: {
           label: "Output",
           inputs: {},
+          connectedInputs: {}, // 연결된 입력값 초기화
         },
       };
 
@@ -189,7 +218,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         position: position, // 또는 {x: sourceNode.position.x + offset.x, y: sourceNode.position.y + offset.y}
         data: {
           ...sourceNode.data,
-          result: undefined, // 결과는 초기화
+          returnValue: undefined, // 결과는 초기화
           isProcessing: false,
           hasError: false,
           errorMessage: undefined,
@@ -268,7 +297,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
                 ...node,
                 data: {
                   ...node.data,
-                  result,
+                  returnValue: result, // result를 returnValue로 저장
                   isProcessing: false,
                 },
               };
@@ -311,7 +340,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     resultCache: Record<string, any>
   ): Promise<any> => {
     if (!node.data.functionId) {
-      return node.data.result;
+      return node.data.returnValue;
     }
 
     const nodeFunction = getFunctionById(node.data.functionId);
@@ -319,8 +348,11 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       throw new Error(`Function not found: ${node.data.functionId}`);
     }
 
-    // 입력 파라미터 수집
-    const inputs: Record<string, any> = { ...node.data.inputs };
+    // 입력 파라미터 수집 - connectedInputs가 우선순위를 가짐
+    const inputs: Record<string, any> = {
+      ...node.data.inputs, // 사용자가 직접 입력한 값
+      ...node.data.connectedInputs, // 다른 노드로부터 연결된 값
+    };
 
     // 연결된 노드에서 값 가져오기 - 캐시 우선
     const incomingEdges = edges.filter((edge) => edge.target === node.id);
@@ -333,13 +365,13 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       } else {
         // 캐시에 없으면 노드에서 직접 값 확인
         const sourceNode = nodes.find((n) => n.id === edge.source);
-        if (!sourceNode || sourceNode.data.result === undefined) {
+        if (!sourceNode || sourceNode.data.returnValue === undefined) {
           throw new Error(`Input node not processed yet: ${edge.source}`);
         }
 
         // 타겟 핸들에서 입력 이름 추출
         const inputName = edge.targetHandle?.replace("input-", "") || "";
-        inputs[inputName] = sourceNode.data.result;
+        inputs[inputName] = sourceNode.data.returnValue;
       }
     }
 
@@ -395,6 +427,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     updateNodeInputs,
     isProcessing,
     setNodes,
+    setEdges,
     deleteNode,
     duplicateNode,
     deleteEdge,

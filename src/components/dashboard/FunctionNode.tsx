@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback } from "react";
 import { Handle, Position } from "reactflow";
 import {
   Card,
@@ -80,12 +80,11 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
       </CardHeader>
 
       <CardContent className="p-3 pt-0">
-        {/* 함수 입력들 */}
+        {/* 입력 필드들 */}
         {nodeFunction.inputs.map((input) => (
           <div key={input.name} className="mb-2">
             <div className="text-xs text-muted-foreground mb-1">
-              {input.name}{" "}
-              {input.required && <span className="text-red-500">*</span>}
+              {input.name}
             </div>
             <div className="flex items-center">
               <Handle
@@ -101,49 +100,67 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                 }}
               />
               <Input
-                size={1}
-                placeholder={`${input.type}`}
+                type="text"
                 value={data.inputs[input.name] || ""}
                 onChange={(e) => handleInputChange(input.name, e.target.value)}
                 className="h-7 text-xs ml-2"
+                placeholder={input.description}
+                disabled={!!data.connectedInputs[input.name]}
               />
             </div>
+            {/* 연결된 입력값 표시 */}
+            {data.connectedInputs[input.name] !== undefined && (
+              <div className="mt-1 text-xs text-muted-foreground">
+                Connected value:{" "}
+                {formatNodeData(data.connectedInputs[input.name])}
+              </div>
+            )}
           </div>
         ))}
 
-        {/* 함수 결과 */}
-        {data.result !== undefined && (
-          <div className="mt-4">
-            <div className="text-xs text-muted-foreground mb-1 flex justify-between items-center">
-              <span>Result ({nodeFunction.output.type})</span>
-              {nodeFunction.output.type === "object" &&
-                Object.keys(data.result || {}).length > 10 && (
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] py-0 px-1.5 h-4"
-                  >
-                    스크롤바 사용
-                  </Badge>
-                )}
+        {/* 출력 핸들 */}
+        <div className="mt-2">
+          <div className="text-xs text-muted-foreground mb-1">Output</div>
+          <div className="flex items-center">
+            <Handle
+              type="source"
+              position={Position.Right}
+              id="output"
+              className="rounded-full bg-primary border-2 border-background"
+              style={{
+                width: "10px",
+                height: "10px",
+                minWidth: "10px",
+                minHeight: "10px",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 반환값 표시 */}
+        {data.returnValue !== undefined && (
+          <div className="mt-2">
+            <div className="text-xs text-muted-foreground mb-1">
+              Return Value
             </div>
             <div
-              className="bg-muted p-2 rounded-md text-xs font-mono whitespace-pre-wrap custom-scrollbar"
+              className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
               style={{
                 overflowY: "auto",
                 maxHeight: "240px",
                 overflowX: "hidden",
               }}
             >
-              {formatNodeData(data.result)}
+              {formatNodeData(data.returnValue)}
             </div>
           </div>
         )}
 
         {/* 에러 메시지 */}
         {data.hasError && (
-          <div className="mt-2 p-2 bg-red-100 text-red-800 rounded-md text-xs flex items-start">
-            <AlertCircle className="h-4 w-4 mr-1 mt-0.5 flex-shrink-0" />
-            <span>{data.errorMessage}</span>
+          <div className="mt-2 flex items-center text-xs text-red-500">
+            <AlertCircle className="h-3 w-3 mr-1" />
+            {data.errorMessage}
           </div>
         )}
       </CardContent>

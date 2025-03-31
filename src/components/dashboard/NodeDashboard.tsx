@@ -7,7 +7,6 @@ import ReactFlow, {
   Panel,
   ReactFlowProvider,
   ReactFlowInstance,
-  Edge,
   OnConnectStart,
   OnConnectEnd,
 } from "reactflow";
@@ -39,6 +38,8 @@ const NodeDashboard = () => {
     runFlow,
     isProcessing,
     deleteEdge,
+    setNodes,
+    setEdges,
   } = useFlow();
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
