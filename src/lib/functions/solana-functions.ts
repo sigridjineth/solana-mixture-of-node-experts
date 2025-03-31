@@ -28,7 +28,7 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
         throw new Error("트랜잭션 데이터는 필수 입력값입니다");
       }
 
-      // API 호출
+      // API 호출 - 기본 프롬프트를 사용하여 LLM으로 분석 요청
       const response = await fetch("/api/tx-analyze", {
         method: "POST",
         headers: {
@@ -36,6 +36,7 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
         },
         body: JSON.stringify({
           transactionData: transaction,
+          // 기본 프롬프트 사용 (API에서 처리)
         }),
       });
 

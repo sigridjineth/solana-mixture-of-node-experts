@@ -110,9 +110,20 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
             </div>
             {/* 연결된 입력값 표시 */}
             {data.connectedInputs[input.name] !== undefined && (
-              <div className="mt-1 text-xs text-muted-foreground">
-                Connected value:{" "}
-                {formatNodeData(data.connectedInputs[input.name])}
+              <div className="mt-1">
+                <div className="text-xs text-muted-foreground mb-1">
+                  Connected value
+                </div>
+                <div
+                  className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
+                  style={{
+                    overflowY: "auto",
+                    maxHeight: "60px",
+                    overflowX: "hidden",
+                  }}
+                >
+                  {formatNodeData(data.connectedInputs[input.name])}
+                </div>
               </div>
             )}
           </div>
