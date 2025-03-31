@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Card,
   CardHeader,
@@ -13,7 +13,7 @@ import { Handle, Position } from "reactflow";
 import { CustomNodeProps } from "@/types/node";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Maximize2, AlertCircle, Loader2, Play } from "lucide-react";
+import { AlertCircle, Loader2, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import mermaid from "mermaid";
 
@@ -78,11 +78,46 @@ export const MermaidViewer: React.FC<CustomNodeProps> = ({
 
     const renderDialogMermaid = async () => {
       try {
+        // mermaid 초기화
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "default",
+          securityLevel: "loose",
+        });
+
         const { svg } = await mermaid.render(
           `mermaid-dialog-${id}`,
           mermaidCode
         );
-        setDialogSvgContent(svg);
+
+        // SVG 후처리: viewBox 및 크기 설정
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svg, "image/svg+xml");
+        const svgElement = svgDoc.querySelector("svg");
+
+        if (svgElement) {
+          // SVG 크기 속성 수정
+          svgElement.setAttribute("width", "100%");
+          svgElement.setAttribute("height", "100%");
+
+          // viewBox 추가 (없는 경우)
+          if (
+            !svgElement.hasAttribute("viewBox") &&
+            svgElement.hasAttribute("width") &&
+            svgElement.hasAttribute("height")
+          ) {
+            const width = parseFloat(svgElement.getAttribute("width") || "800");
+            const height = parseFloat(
+              svgElement.getAttribute("height") || "600"
+            );
+            svgElement.setAttribute("viewBox", `0 0 ${width} ${height}`);
+          }
+        }
+
+        // 수정된 SVG로 설정
+        const serializer = new XMLSerializer();
+        const modifiedSvg = serializer.serializeToString(svgDoc);
+        setDialogSvgContent(modifiedSvg);
       } catch (err) {
         console.error("다이얼로그 Mermaid 렌더링 오류:", err);
       }
@@ -204,11 +239,12 @@ export const MermaidViewer: React.FC<CustomNodeProps> = ({
       </Card>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-[90vw] max-h-[90vh] md:max-w-5xl p-4">
-          <div className="flex items-center justify-center w-full h-full max-h-[80vh]">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-[90vw] max-h-[90vh] md:max-w-5xl">
+          <DialogTitle className="sr-only">Mermaid 다이어그램</DialogTitle>
+          <div className="w-full h-full max-h-[80vh] flex items-center justify-center overflow-auto p-4">
             {dialogSvgContent ? (
               <div
-                className="w-full h-full flex items-center justify-center overflow-auto"
+                className="w-full h-full flex items-center justify-center"
                 dangerouslySetInnerHTML={{ __html: dialogSvgContent }}
               />
             ) : (

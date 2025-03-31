@@ -85,7 +85,7 @@ export async function executeNode(
   edges: Edge[]
 ): Promise<any> {
   if (!node.data.functionId) {
-    return node.data.result;
+    return node.data.returnValue;
   }
 
   const nodeFunction = getFunctionById(node.data.functionId);
@@ -100,13 +100,13 @@ export async function executeNode(
   const incomingEdges = edges.filter((edge) => edge.target === node.id);
   for (const edge of incomingEdges) {
     const sourceNode = nodes.find((n) => n.id === edge.source);
-    if (!sourceNode || sourceNode.data.result === undefined) {
+    if (!sourceNode || sourceNode.data.returnValue === undefined) {
       throw new Error(`Input node not processed yet: ${edge.source}`);
     }
 
     // 타겟 핸들에서 입력 이름 추출
     const inputName = edge.targetHandle?.replace("input-", "") || "";
-    inputs[inputName] = sourceNode.data.result;
+    inputs[inputName] = sourceNode.data.returnValue;
   }
 
   // 함수 실행

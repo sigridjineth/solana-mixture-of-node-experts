@@ -271,11 +271,44 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           throw new Error(`Node not found: ${nodeId}`);
         }
 
-        // 의존성 있는 노드들 먼저 실행하고 결과를 캐시에 저장
+        // 의존성 있는 노드들 먼저 실행
         const dependencyEdges = edges.filter((edge) => edge.target === nodeId);
-        for (const edge of dependencyEdges) {
-          const dependencyResult = await runNode(edge.source, resultCache);
-          resultCache[edge.source] = dependencyResult;
+
+        // 모든 의존성 노드를 먼저 실행
+        const dependencyPromises = dependencyEdges.map(async (edge) => {
+          try {
+            // 소스 노드가 있는지 확인
+            const sourceNode = nodes.find((node) => node.id === edge.source);
+            if (!sourceNode) {
+              throw new Error(`소스 노드를 찾을 수 없습니다: ${edge.source}`);
+            }
+
+            // 소스 노드 실행 및 결과 캐싱
+            const dependencyResult = await runNode(edge.source, resultCache);
+            resultCache[edge.source] = dependencyResult;
+            return { success: true, sourceId: edge.source };
+          } catch (error) {
+            // 소스 노드 실행 중 오류 발생
+            return {
+              success: false,
+              sourceId: edge.source,
+              error: (error as Error).message,
+            };
+          }
+        });
+
+        // 모든 의존성 실행 결과 확인
+        const dependencyResults = await Promise.all(dependencyPromises);
+        const failedDependencies = dependencyResults.filter(
+          (res) => !res.success
+        );
+
+        // 의존성 실행 실패 시 오류 처리
+        if (failedDependencies.length > 0) {
+          const errorMessages = failedDependencies
+            .map((dep) => `소스 노드 ${dep.sourceId} 실행 실패: ${dep.error}`)
+            .join(", ");
+          throw new Error(`의존성 노드 실행 실패: ${errorMessages}`);
         }
 
         // 현재 노드 실행 - 캐시에 의존성 노드 결과 전달
@@ -357,7 +390,14 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       const sourceNodeId = edge.source;
       const sourceNode = nodes.find((n) => n.id === sourceNodeId);
 
-      if (!sourceNode || sourceNode.data.returnValue === undefined) {
+      // 캐시에서 소스 노드의 결과 확인
+      const cachedResult = resultCache[sourceNodeId];
+
+      // 결과가 캐시에 없고, 노드의 returnValue도 없는 경우에만 에러
+      if (
+        cachedResult === undefined &&
+        (!sourceNode || sourceNode.data.returnValue === undefined)
+      ) {
         throw new Error(
           `소스 노드가 아직 실행되지 않았습니다. 먼저 실행하세요.`
         );
@@ -366,7 +406,11 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       // 타겟 핸들에서 입력 이름 추출
       const inputName = edge.targetHandle?.replace("input-", "") || "";
       if (inputName) {
-        inputs[inputName] = sourceNode.data.returnValue;
+        // 캐시에 결과가 있으면 캐시 값을 사용, 없으면 노드의 returnValue를 사용
+        inputs[inputName] =
+          cachedResult !== undefined
+            ? cachedResult
+            : sourceNode?.data.returnValue;
       }
     }
 
