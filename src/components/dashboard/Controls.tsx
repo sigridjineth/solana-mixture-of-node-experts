@@ -26,6 +26,8 @@ import {
   MessageSquare,
   Coins,
   Layers,
+  GitGraph,
+  CircuitBoard,
 } from "lucide-react";
 
 import {
@@ -109,10 +111,19 @@ const Controls = () => {
     delay: <Clock className="h-4 w-4" />,
     "discord-webhook": <MessageSquare className="h-4 w-4" />,
     "analyze-solana-transaction": <Coins className="h-4 w-4" />,
+    "solana-tx-to-mermaid": <GitGraph className="h-4 w-4" />,
+    mermaid: <CircuitBoard className="h-4 w-4" />,
   };
 
   // 카테고리 정렬 순서 지정
-  const categoryOrder = ["Solana", "SNS", "Data", "Analytics", "Utility"];
+  const categoryOrder = [
+    "Solana",
+    "SNS",
+    "Utils",
+    "Data",
+    "Analytics",
+    "Utility",
+  ];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );

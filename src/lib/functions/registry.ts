@@ -9,7 +9,11 @@ import {
   solanaTxFetchFunction,
   discordWebhookFunction,
 } from "./node-functions";
-import { analyzeSolanaTransactionFunction } from "./solana-functions";
+import {
+  analyzeSolanaTransactionFunction,
+  solanaTxToMermaidFunction,
+} from "./solana-functions";
+import { mermaidFunction } from "./utils-functions";
 
 // 모든 함수들을 레지스트리에 등록
 const functionRegistry: FunctionRegistry = {
@@ -22,6 +26,8 @@ const functionRegistry: FunctionRegistry = {
   [solanaTxFetchFunction.id]: solanaTxFetchFunction,
   [discordWebhookFunction.id]: discordWebhookFunction,
   [analyzeSolanaTransactionFunction.id]: analyzeSolanaTransactionFunction,
+  [solanaTxToMermaidFunction.id]: solanaTxToMermaidFunction,
+  [mermaidFunction.id]: mermaidFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {

@@ -6,7 +6,7 @@ export const solanaTxFetchFunction: NodeFunction = {
   name: "Solana Tx Fetch",
   description: "트랜잭션 해시로 Solana 트랜잭션 데이터를 가져옵니다",
   category: "Solana",
-  groups: ["solana_group"],
+  groups: ["solana"],
   inputs: [
     {
       name: "txHash",
@@ -24,6 +24,7 @@ export const solanaTxFetchFunction: NodeFunction = {
   output: {
     name: "transaction",
     type: "object",
+    description: "가져온 Solana 트랜잭션 데이터",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -98,7 +99,7 @@ export const fetchDataFunction: NodeFunction = {
   name: "Fetch Data",
   description: "Fetches data from an API endpoint",
   category: "Data",
-  groups: ["default_group"],
+  groups: ["default"],
   inputs: [
     {
       name: "url",
@@ -115,6 +116,7 @@ export const fetchDataFunction: NodeFunction = {
   output: {
     name: "response",
     type: "object",
+    description: "API 응답 데이터",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -133,7 +135,7 @@ export const filterDataFunction: NodeFunction = {
   name: "Filter Data",
   description: "Filters an array based on a key and value",
   category: "Data",
-  groups: ["default_group"],
+  groups: ["default"],
   inputs: [
     {
       name: "data",
@@ -154,6 +156,7 @@ export const filterDataFunction: NodeFunction = {
   output: {
     name: "filtered",
     type: "array",
+    description: "필터링된 데이터 배열",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -178,7 +181,7 @@ export const sortDataFunction: NodeFunction = {
   name: "Sort Data",
   description: "Sorts an array based on a key",
   category: "Data",
-  groups: ["default_group"],
+  groups: ["default"],
   inputs: [
     {
       name: "data",
@@ -200,6 +203,7 @@ export const sortDataFunction: NodeFunction = {
   output: {
     name: "sorted",
     type: "array",
+    description: "정렬된 데이터 배열",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -226,7 +230,7 @@ export const mapDataFunction: NodeFunction = {
   name: "Map Data",
   description: "Maps array items by applying transformations",
   category: "Data",
-  groups: ["default_group"],
+  groups: ["default"],
   inputs: [
     {
       name: "data",
@@ -258,6 +262,7 @@ export const mapDataFunction: NodeFunction = {
   output: {
     name: "mapped",
     type: "array",
+    description: "변환된 데이터 배열",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -319,7 +324,7 @@ export const calculateStatisticsFunction: NodeFunction = {
   name: "Calculate Statistics",
   description: "Calculates basic statistics for a numerical array",
   category: "Analytics",
-  groups: ["default_group"],
+  groups: ["default"],
   inputs: [
     {
       name: "data",
@@ -335,6 +340,7 @@ export const calculateStatisticsFunction: NodeFunction = {
   output: {
     name: "statistics",
     type: "object",
+    description: "계산된 통계 데이터",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -380,7 +386,7 @@ export const delayFunction: NodeFunction = {
   name: "Delay",
   description: "Delays execution for the specified milliseconds",
   category: "Utility",
-  groups: ["default_group"],
+  groups: ["default"],
   inputs: [
     {
       name: "data",
@@ -397,6 +403,7 @@ export const delayFunction: NodeFunction = {
   output: {
     name: "data",
     type: "object",
+    description: "지연 후 전달된 데이터",
   },
   execute: async (inputs: Record<string, any>) => {
     const { data, ms = 1000 } = inputs;
@@ -415,7 +422,7 @@ export const discordWebhookFunction: NodeFunction = {
   name: "Discord Webhook",
   description: "Discord 웹훅으로 메시지를 전송합니다",
   category: "SNS",
-  groups: ["default_group", "solana_group"],
+  groups: ["default", "solana"],
   inputs: [
     {
       name: "webhookUrl",
@@ -434,6 +441,7 @@ export const discordWebhookFunction: NodeFunction = {
   output: {
     name: "response",
     type: "object",
+    description: "Discord 웹훅 응답",
   },
   execute: async (inputs: Record<string, any>) => {
     try {

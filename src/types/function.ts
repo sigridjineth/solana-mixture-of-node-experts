@@ -1,6 +1,13 @@
+export type FunctionInputType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "object"
+  | "array";
+
 export type FunctionInput = {
   name: string;
-  type: "string" | "number" | "boolean" | "object" | "array";
+  type: FunctionInputType;
   required: boolean;
   default?: any;
   description?: string;
@@ -8,7 +15,8 @@ export type FunctionInput = {
 
 export type FunctionOutput = {
   name: string;
-  type: "string" | "number" | "boolean" | "object" | "array";
+  type: FunctionInputType;
+  description: string;
 };
 
 export type NodeFunction = {
