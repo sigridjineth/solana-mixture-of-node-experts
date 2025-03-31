@@ -126,6 +126,98 @@ export const sortDataFunction: NodeFunction = {
   },
 };
 
+export const mapDataFunction: NodeFunction = {
+  id: "map-data",
+  name: "Map Data",
+  description: "Maps array items by applying transformations",
+  category: "Data",
+  inputs: [
+    {
+      name: "data",
+      type: "array",
+      required: true,
+    },
+    {
+      name: "key",
+      type: "string",
+      required: false,
+      description: "Key to extract or modify (empty for whole item)",
+    },
+    {
+      name: "targetKey",
+      type: "string",
+      required: false,
+      description:
+        "Target key to store result (default: replaces original key)",
+    },
+    {
+      name: "transform",
+      type: "string",
+      required: false,
+      default: "",
+      description:
+        "JavaScript expression to transform value (e.g., value.toUpperCase(), value * 2)",
+    },
+  ],
+  output: {
+    name: "mapped",
+    type: "array",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { data, key, targetKey, transform } = inputs;
+      if (!Array.isArray(data)) {
+        throw new Error("Input data must be an array");
+      }
+
+      return data.map((item) => {
+        const newItem = { ...item };
+
+        // 키가 지정되지 않았으면 전체 아이템을 대상으로 함
+        if (!key) {
+          if (transform) {
+            try {
+              // eslint-disable-next-line no-new-func
+              const transformFn = new Function("item", `return ${transform}`);
+              return transformFn(item);
+            } catch (e) {
+              console.error("Transform error:", e);
+              return item;
+            }
+          }
+          return item;
+        }
+
+        // 특정 키의 값을 대상으로 함
+        const value = item[key];
+        let result = value;
+
+        // 변환 표현식이 있으면 적용
+        if (transform) {
+          try {
+            // eslint-disable-next-line no-new-func
+            const transformFn = new Function("value", `return ${transform}`);
+            result = transformFn(value);
+          } catch (e) {
+            console.error("Transform error:", e);
+          }
+        }
+
+        // 결과를 지정된 타겟 키 또는 원래 키에 저장
+        if (targetKey) {
+          newItem[targetKey] = result;
+        } else if (key) {
+          newItem[key] = result;
+        }
+
+        return newItem;
+      });
+    } catch (error) {
+      throw new Error(`Failed to map data: ${(error as Error).message}`);
+    }
+  },
+};
+
 export const calculateStatisticsFunction: NodeFunction = {
   id: "calculate-statistics",
   name: "Calculate Statistics",

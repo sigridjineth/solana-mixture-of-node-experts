@@ -4,7 +4,18 @@ import { Button } from "@/components/ui/button";
 import { getFunctionsByCategory } from "@/lib/functions/registry";
 import { useFlow } from "@/components/providers/FlowProvider";
 import { XYPosition } from "reactflow";
-import { Trash, Edit, CopyIcon } from "lucide-react";
+import {
+  Trash,
+  CopyIcon,
+  BoxSelect,
+  Database,
+  Globe,
+  Filter,
+  SortAsc,
+  Map,
+  BarChart,
+  Clock,
+} from "lucide-react";
 
 const CustomContextMenu = () => {
   const [visible, setVisible] = useState(false);
@@ -23,6 +34,16 @@ const CustomContextMenu = () => {
     duplicateNode,
   } = useFlow();
   const functionsByCategory = getFunctionsByCategory();
+
+  // 함수별 아이콘 매핑
+  const functionIcons: Record<string, React.ReactNode> = {
+    "fetch-data": <Globe className="h-4 w-4" />,
+    "filter-data": <Filter className="h-4 w-4" />,
+    "sort-data": <SortAsc className="h-4 w-4" />,
+    "map-data": <Map className="h-4 w-4" />,
+    "calculate-statistics": <BarChart className="h-4 w-4" />,
+    delay: <Clock className="h-4 w-4" />,
+  };
 
   // 메뉴 표시 이벤트 리스너
   useEffect(() => {
@@ -152,6 +173,7 @@ const CustomContextMenu = () => {
           className="w-full justify-start text-sm"
           onClick={handleAddOutput}
         >
+          <BoxSelect className="h-4 w-4 mr-2" />
           Add Output Node
         </Button>
 
@@ -170,7 +192,10 @@ const CustomContextMenu = () => {
                 onClick={() => handleAddFunction(category, func.id)}
                 title={func.description}
               >
-                {func.name}
+                {functionIcons[func.id] || (
+                  <Database className="h-4 w-4 mr-2" />
+                )}
+                <span className="ml-2">{func.name}</span>
               </Button>
             ))}
           </div>

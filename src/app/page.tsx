@@ -38,7 +38,7 @@ export default function Home() {
       </header>
       <div className="flex flex-1 min-h-0 bg-background">
         <FlowProvider>
-          <div className="flex-none w-80 p-4 border-r">
+          <div className="flex-none w-56 p-4 border-r">
             <Controls />
           </div>
           <div className="flex-1 relative">

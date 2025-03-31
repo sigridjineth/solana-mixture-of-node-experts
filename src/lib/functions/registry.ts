@@ -3,6 +3,7 @@ import {
   fetchDataFunction,
   filterDataFunction,
   sortDataFunction,
+  mapDataFunction,
   calculateStatisticsFunction,
   delayFunction,
 } from "./node-functions";
@@ -12,6 +13,7 @@ const functionRegistry: FunctionRegistry = {
   [fetchDataFunction.id]: fetchDataFunction,
   [filterDataFunction.id]: filterDataFunction,
   [sortDataFunction.id]: sortDataFunction,
+  [mapDataFunction.id]: mapDataFunction,
   [calculateStatisticsFunction.id]: calculateStatisticsFunction,
   [delayFunction.id]: delayFunction,
 };

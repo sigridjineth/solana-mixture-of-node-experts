@@ -3,6 +3,7 @@ export type FunctionInput = {
   type: "string" | "number" | "boolean" | "object" | "array";
   required: boolean;
   default?: any;
+  description?: string;
 };
 
 export type FunctionOutput = {
