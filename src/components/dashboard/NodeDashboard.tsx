@@ -12,7 +12,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { Play, Save, Upload } from "lucide-react";
+import { Play, Save, Upload, RefreshCw } from "lucide-react";
 import { useFlow } from "@/components/providers/FlowProvider";
 import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
@@ -42,6 +42,7 @@ const NodeDashboard = () => {
     deleteEdge,
     setNodes,
     setEdges,
+    resetWorkflow,
   } = useFlow();
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
@@ -105,6 +106,13 @@ const NodeDashboard = () => {
 
     input.click();
   }, []);
+
+  // 워크플로우 초기화
+  const handleResetWorkflow = useCallback(() => {
+    if (window.confirm("현재 워크플로우를 초기화하시겠습니까?")) {
+      resetWorkflow();
+    }
+  }, [resetWorkflow]);
 
   // 컨텍스트 메뉴 핸들러
   const handleContextMenu = useCallback((event: React.MouseEvent) => {
@@ -215,6 +223,18 @@ const NodeDashboard = () => {
                 Run Flow
               </>
             )}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
+            onClick={handleResetWorkflow}
+            disabled={isProcessing || nodes.length === 0}
+            title="워크플로우 초기화"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Reset
           </Button>
 
           <Button

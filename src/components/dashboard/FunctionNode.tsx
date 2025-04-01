@@ -35,6 +35,27 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
     runNode(id).catch(console.error);
   }, [id, runNode]);
 
+  // SolTx Intelligence 노드에서 result가 연결되었을 때 다른 입력들도 비활성화
+  const isInputDisabled = useCallback(
+    (inputName: string) => {
+      // 기본적으로 해당 입력에 연결된 값이 있으면 비활성화
+      if (!!data.connectedInputs[inputName]) {
+        return true;
+      }
+
+      // SolTx Intelligence 노드이고 result가 연결되었으면 모든 입력 비활성화
+      if (
+        nodeFunction?.id === "solana-history-insights" &&
+        data.connectedInputs["result"]
+      ) {
+        return true;
+      }
+
+      return false;
+    },
+    [data.connectedInputs, nodeFunction?.id]
+  );
+
   if (!nodeFunction) {
     return (
       <Card
@@ -81,53 +102,69 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
 
       <CardContent className="p-3 pt-0">
         {/* 입력 필드들 */}
-        {nodeFunction.inputs.map((input) => (
-          <div key={input.name} className="mb-2">
-            <div className="text-xs text-muted-foreground mb-1">
-              {input.name}
-            </div>
-            <div className="flex items-center">
-              <Handle
-                type="target"
-                position={Position.Left}
-                id={`input-${input.name}`}
-                className="rounded-full bg-primary border-2 border-background"
-                style={{
-                  width: "10px",
-                  height: "10px",
-                  minWidth: "10px",
-                  minHeight: "10px",
-                }}
-              />
-              <Input
-                type="text"
-                value={data.inputs[input.name] || ""}
-                onChange={(e) => handleInputChange(input.name, e.target.value)}
-                className="h-7 text-xs ml-2"
-                placeholder={input.description}
-                disabled={!!data.connectedInputs[input.name]}
-              />
-            </div>
-            {/* 연결된 입력값 표시 */}
-            {data.connectedInputs[input.name] !== undefined && (
-              <div className="mt-1">
-                <div className="text-xs text-muted-foreground mb-1">
-                  Connected value
-                </div>
-                <div
-                  className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
-                  style={{
-                    overflowY: "auto",
-                    maxHeight: "60px",
-                    overflowX: "hidden",
-                  }}
-                >
-                  {formatNodeData(data.connectedInputs[input.name])}
-                </div>
+        {nodeFunction.inputs
+          .filter((input) => !input.hiddenUI)
+          .map((input) => (
+            <div key={input.name} className="mb-2">
+              <div className="text-xs text-muted-foreground mb-1">
+                {input.name}
               </div>
-            )}
+              <div className="flex items-center">
+                <Handle
+                  type="target"
+                  position={Position.Left}
+                  id={`input-${input.name}`}
+                  className="rounded-full bg-primary border-2 border-background"
+                  style={{
+                    width: "10px",
+                    height: "10px",
+                    minWidth: "10px",
+                    minHeight: "10px",
+                  }}
+                />
+                <Input
+                  type="text"
+                  value={data.inputs[input.name] || ""}
+                  onChange={(e) =>
+                    handleInputChange(input.name, e.target.value)
+                  }
+                  className="h-7 text-xs ml-2"
+                  placeholder={input.description}
+                  disabled={isInputDisabled(input.name)}
+                />
+              </div>
+            </div>
+          ))}
+
+        {/* 연결된 입력값들 - 모든 입력 필드 아래에 표시 */}
+        {Object.keys(data.connectedInputs).length > 0 && (
+          <div className="mt-3 mb-2">
+            <div className="text-xs font-semibold mb-2">Connected Values</div>
+            {nodeFunction.inputs
+              .filter(
+                (input) =>
+                  !input.hiddenUI &&
+                  data.connectedInputs[input.name] !== undefined
+              )
+              .map((input) => (
+                <div key={`connected-${input.name}`} className="mb-2">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    {input.name}
+                  </div>
+                  <div
+                    className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
+                    style={{
+                      overflowY: "auto",
+                      maxHeight: "60px",
+                      overflowX: "hidden",
+                    }}
+                  >
+                    {formatNodeData(data.connectedInputs[input.name])}
+                  </div>
+                </div>
+              ))}
           </div>
-        ))}
+        )}
 
         {/* 출력 핸들 */}
         <div className="mt-2">

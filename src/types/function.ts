@@ -11,6 +11,7 @@ export type FunctionInput = {
   required: boolean;
   default?: any;
   description?: string;
+  hiddenUI?: boolean;
 };
 
 export type FunctionOutput = {

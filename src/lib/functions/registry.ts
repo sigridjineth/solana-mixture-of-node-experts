@@ -11,6 +11,8 @@ import {
 import {
   analyzeSolanaTransactionFunction,
   solanaTxToMermaidFunction,
+  solanaAccountHistoryFunction,
+  solanaHistoryInsightsFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -25,7 +27,9 @@ const functionRegistry: FunctionRegistry = {
   [discordWebhookFunction.id]: discordWebhookFunction,
   [analyzeSolanaTransactionFunction.id]: analyzeSolanaTransactionFunction,
   [solanaTxToMermaidFunction.id]: solanaTxToMermaidFunction,
+  [solanaAccountHistoryFunction.id]: solanaAccountHistoryFunction,
   [mermaidFunction.id]: mermaidFunction,
+  [solanaHistoryInsightsFunction.id]: solanaHistoryInsightsFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {

@@ -3,8 +3,8 @@ import { NodeFunction } from "@/types/function";
 // Solana 트랜잭션 데이터 가져오기 노드
 export const solanaTxFetchFunction: NodeFunction = {
   id: "solana-tx-fetch",
-  name: "Solana Tx Fetch",
-  description: "트랜잭션 해시로 Solana 트랜잭션 데이터를 가져옵니다",
+  name: "Get SolTx",
+  description: "트랜잭션 해시(서명)로 Solana 트랜잭션 데이터를 가져옵니다",
   category: "Solana",
   groups: ["solana"],
   inputs: [

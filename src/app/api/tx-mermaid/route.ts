@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const MODEL_NAME = "gemini-2.0-pro";
+const MODEL_NAME = "gemini-2.0-flash";
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 export async function POST(request: Request) {

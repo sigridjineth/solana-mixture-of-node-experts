@@ -24,6 +24,9 @@ import { generateId, isConnectionValid, topologicalSort } from "@/lib/utils";
 import { getFunctionById } from "@/lib/functions/registry";
 import { getDefaultGroup } from "@/lib/functions/groups";
 
+// 로컬 스토리지 키 설정
+const STORAGE_KEY = "node-dashboard-workflow";
+
 type FlowContextType = {
   nodes: Node<NodeData>[];
   edges: Edge[];
@@ -46,6 +49,7 @@ type FlowContextType = {
   activeGroup: string;
   setActiveGroup: (groupId: string) => void;
   resetNode: (nodeId: string) => void;
+  resetWorkflow: () => void;
 };
 
 const FlowContext = createContext<FlowContextType | null>(null);
@@ -75,6 +79,39 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       setActiveGroup(defaultGroup.id);
     }
   }, []);
+
+  // 로컬 스토리지에서 워크플로우 불러오기
+  useEffect(() => {
+    const savedWorkflow = localStorage.getItem(STORAGE_KEY);
+    if (savedWorkflow) {
+      try {
+        const { nodes: savedNodes, edges: savedEdges } =
+          JSON.parse(savedWorkflow);
+        if (savedNodes && Array.isArray(savedNodes)) {
+          setNodes(savedNodes);
+        }
+        if (savedEdges && Array.isArray(savedEdges)) {
+          setEdges(savedEdges);
+        }
+      } catch (error) {
+        console.error("워크플로우 불러오기 실패:", error);
+      }
+    }
+  }, [setNodes, setEdges]);
+
+  // 워크플로우 변경시 로컬 스토리지에 저장
+  useEffect(() => {
+    if (nodes.length > 0 || edges.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges }));
+    }
+  }, [nodes, edges]);
+
+  // 워크플로우 초기화
+  const resetWorkflow = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+    localStorage.removeItem(STORAGE_KEY);
+  }, [setNodes, setEdges]);
 
   // 노드 입력 업데이트
   const updateNodeInputs = useCallback(
@@ -107,6 +144,10 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       const sourceNode = nodes.find((node) => node.id === connection.source);
       const targetNode = nodes.find((node) => node.id === connection.target);
 
+      if (!sourceNode || !targetNode) {
+        return;
+      }
+
       if (
         !isConnectionValid(
           sourceNode,
@@ -127,24 +168,30 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           )
       );
 
-      // 소스 노드의 반환값을 타겟 노드의 connectedInputs에 설정
-      if (
-        sourceNode &&
-        targetNode &&
-        sourceNode.data.returnValue !== undefined
-      ) {
-        const inputName = connection.targetHandle?.replace("input-", "") || "";
+      // 입력 이름 추출
+      const inputName = connection.targetHandle?.replace("input-", "") || "";
+
+      // 제거될 엣지의 타겟 노드에서 해당 입력 연결 초기화 후 새로운 연결 설정
+      if (targetNode) {
         setNodes((nds) =>
           nds.map((node) => {
             if (node.id === targetNode.id) {
+              // 기존 connectedInputs 복사
+              const updatedConnectedInputs = { ...node.data.connectedInputs };
+
+              // 해당 입력 초기화
+              delete updatedConnectedInputs[inputName];
+
+              // 소스 노드의 반환값이 있으면 새 값 설정
+              if (sourceNode && sourceNode.data.returnValue !== undefined) {
+                updatedConnectedInputs[inputName] = sourceNode.data.returnValue;
+              }
+
               return {
                 ...node,
                 data: {
                   ...node.data,
-                  connectedInputs: {
-                    ...node.data.connectedInputs,
-                    [inputName]: sourceNode.data.returnValue,
-                  },
+                  connectedInputs: updatedConnectedInputs,
                 },
               };
             }
@@ -248,9 +295,46 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
   // 엣지 삭제 함수
   const deleteEdge = useCallback(
     (edgeId: string) => {
+      // 삭제할 엣지 정보 저장
+      const edgeToDelete = edges.find((edge) => edge.id === edgeId);
+
+      // 엣지 삭제
       setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+
+      // 타겟 노드의 연결된 입력 초기화
+      if (edgeToDelete) {
+        const targetNodeId = edgeToDelete.target;
+        const targetHandle = edgeToDelete.targetHandle;
+
+        if (targetHandle) {
+          // input- 접두사 제거
+          const inputName = targetHandle.replace("input-", "");
+
+          setNodes((nds) =>
+            nds.map((node) => {
+              if (node.id === targetNodeId) {
+                // connectedInputs에서 해당 입력 제거
+                const updatedConnectedInputs = { ...node.data.connectedInputs };
+                delete updatedConnectedInputs[inputName];
+
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    connectedInputs: updatedConnectedInputs,
+                    returnValue: undefined, // returnValue도 초기화
+                    hasError: false, // 에러 상태도 초기화
+                    errorMessage: undefined, // 에러 메시지도 초기화
+                  },
+                };
+              }
+              return node;
+            })
+          );
+        }
+      }
     },
-    [setEdges]
+    [setEdges, edges, setNodes]
   );
 
   // 노드 초기화 함수
@@ -293,6 +377,53 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       );
     },
     [setNodes]
+  );
+
+  // 노드 실행 결과를 연결된 모든 타겟 노드의 connectedInputs에 전파하는 함수
+  const propagateResultToConnectedNodes = useCallback(
+    (sourceNodeId: string, result: any) => {
+      // 현재 노드가 소스인 모든 엣지 찾기
+      const outgoingEdges = edges.filter(
+        (edge) => edge.source === sourceNodeId
+      );
+
+      if (outgoingEdges.length === 0) {
+        return; // 연결된 타겟 노드가 없음
+      }
+
+      // 각 타겟 노드의 connectedInputs 업데이트
+      setNodes((nds) =>
+        nds.map((node) => {
+          // 현재 노드가 타겟으로 있는 엣지 찾기
+          const targetsThisNode = outgoingEdges.filter(
+            (edge) => edge.target === node.id
+          );
+
+          if (targetsThisNode.length > 0) {
+            // 엣지를 통해 전달할 입력 목록 수집
+            const updatedConnectedInputs = { ...node.data.connectedInputs };
+
+            targetsThisNode.forEach((edge) => {
+              const inputName = edge.targetHandle?.replace("input-", "") || "";
+              if (inputName) {
+                updatedConnectedInputs[inputName] = result;
+              }
+            });
+
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                connectedInputs: updatedConnectedInputs,
+              },
+            };
+          }
+
+          return node;
+        })
+      );
+    },
+    [edges, setNodes]
   );
 
   // 단일 노드 실행
@@ -401,6 +532,9 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           })
         );
 
+        // 결과가 변경됐으므로 연결된 모든 타겟 노드의 connectedInputs 업데이트
+        propagateResultToConnectedNodes(nodeId, result);
+
         return result;
       } catch (error) {
         // 에러 상태 업데이트
@@ -424,7 +558,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         throw error;
       }
     },
-    [nodes, edges, setNodes]
+    [nodes, edges, setNodes, propagateResultToConnectedNodes]
   );
 
   // 노드 실행 함수 - 캐시를 활용
@@ -532,6 +666,9 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           return n;
         })
       );
+
+      // 결과가 변경됐으므로 연결된 모든 타겟 노드의 connectedInputs 업데이트
+      propagateResultToConnectedNodes(node.id, result);
     } else {
       // 일반 함수 결과 처리
       setNodes((nds) =>
@@ -551,6 +688,9 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           return n;
         })
       );
+
+      // 결과가 변경됐으므로 연결된 모든 타겟 노드의 connectedInputs 업데이트
+      propagateResultToConnectedNodes(node.id, result);
     }
 
     return result;
@@ -669,6 +809,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     activeGroup,
     setActiveGroup,
     resetNode,
+    resetWorkflow,
   };
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

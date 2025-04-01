@@ -8,18 +8,16 @@ import {
   getFunctionsByCategory,
   getFunctionsByGroupAndCategory,
 } from "@/lib/functions/registry";
-import { getAllGroups, getDefaultGroup } from "@/lib/functions/groups";
+import { getAllGroups } from "@/lib/functions/groups";
 import {
   Loader2,
   Play,
   Database,
-  MoveHorizontal,
   Calculator,
   Globe,
   Filter,
   SortAsc,
   Map,
-  BarChart,
   Clock,
   BoxSelect,
   FileSearch,
@@ -29,6 +27,9 @@ import {
   GitGraph,
   CircuitBoard,
   Wrench,
+  History,
+  BrainCircuit,
+  Microscope,
 } from "lucide-react";
 
 import {
@@ -114,8 +115,10 @@ const Controls = () => {
     "map-data": <Map className="h-4 w-4" />,
     delay: <Clock className="h-4 w-4" />,
     "discord-webhook": <MessageSquare className="h-4 w-4" />,
-    "analyze-solana-transaction": <Calculator className="h-4 w-4" />,
+    "analyze-solana-transaction": <Microscope className="h-4 w-4" />,
+    "solana-account-history": <History className="h-4 w-4" />,
     "solana-tx-to-mermaid": <GitGraph className="h-4 w-4" />,
+    "solana-history-insights": <BrainCircuit className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
   };
 

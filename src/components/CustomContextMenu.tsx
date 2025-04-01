@@ -16,23 +16,17 @@ import {
   Filter,
   SortAsc,
   Map,
-  BarChart,
   Clock,
   FileSearch,
   MessageSquare,
   Coins,
-  Layers,
   RefreshCw,
   Wrench,
   Calculator,
+  History,
+  Microscope,
 } from "lucide-react";
-import { getDefaultGroup, getAllGroups } from "@/lib/functions/groups";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { getAllGroups } from "@/lib/functions/groups";
 
 const CustomContextMenu = () => {
   const [visible, setVisible] = useState(false);
@@ -49,7 +43,6 @@ const CustomContextMenu = () => {
     deleteNode,
     duplicateNode,
     activeGroup,
-    setActiveGroup,
     resetNode,
   } = useFlow();
   const [functionsByCategory, setFunctionsByCategory] = useState<
@@ -66,13 +59,6 @@ const CustomContextMenu = () => {
     }
   }, [activeGroup]);
 
-  // 그룹 변경 처리
-  const handleGroupChange = (groupId: string) => {
-    setActiveGroup(groupId);
-    // 그룹 변경 시 함수 카테고리는 위의 useEffect에서 자동으로 업데이트됨
-    // 컨텍스트 메뉴를 닫지 않고 표시된 상태에서 그룹 변경 내용을 즉시 반영
-  };
-
   // 함수별 아이콘 매핑
   const functionIcons: Record<string, React.ReactNode> = {
     "solana-tx-fetch": <FileSearch className="h-4 w-4 mr-2" />,
@@ -82,7 +68,9 @@ const CustomContextMenu = () => {
     "map-data": <Map className="h-4 w-4 mr-2" />,
     delay: <Clock className="h-4 w-4 mr-2" />,
     "discord-webhook": <MessageSquare className="h-4 w-4 mr-2" />,
-    "analyze-solana-transaction": <Calculator className="h-4 w-4 mr-2" />,
+    "analyze-solana-transaction": <Microscope className="h-4 w-4 mr-2" />,
+    "solana-account-history": <History className="h-4 w-4 mr-2" />,
+    "solana-history-insights": <Calculator className="h-4 w-4 mr-2" />,
   };
 
   // 카테고리 아이콘 매핑
