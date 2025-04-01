@@ -9,6 +9,7 @@ import ReactFlow, {
   ReactFlowInstance,
   OnConnectStart,
   OnConnectEnd,
+  Connection,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
@@ -17,12 +18,18 @@ import { useFlow } from "@/components/providers/FlowProvider";
 import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
 import { MermaidViewer } from "./nodes/MermaidViewer";
+import CustomEdge from "../flow/CustomEdge";
 
 // 노드 타입 정의
 const nodeTypes = {
   function: FunctionNode,
   output: OutputNode,
   mermaid: MermaidViewer,
+};
+
+// 엣지 타입 정의
+const edgeTypes = {
+  custom: CustomEdge,
 };
 
 const NodeDashboard = () => {
@@ -158,33 +165,23 @@ const NodeDashboard = () => {
     });
   }, []);
 
-  // 연결 종료 핸들러
-  const handleConnectEnd: OnConnectEnd = useCallback(
-    (event) => {
-      // 연결이 시작된 핸들이 있고, 마우스가 핸들 위에 있지 않다면 연결을 끊습니다
-      if (connectionStartHandle) {
-        const target = event.target as HTMLElement;
-        const handleElement = target.closest(".react-flow__handle");
+  // 연결 종료 핸들러 - 드래그 방식 연결 해제 비활성화
+  const handleConnectEnd: OnConnectEnd = useCallback(() => {
+    setConnectionStartHandle(null);
+  }, []);
 
-        if (!handleElement) {
-          // 연결된 엣지 찾기
-          const edgeToDelete = edges.find(
-            (edge) =>
-              (edge.source === connectionStartHandle.nodeId &&
-                edge.sourceHandle === connectionStartHandle.handleId) ||
-              (edge.target === connectionStartHandle.nodeId &&
-                edge.targetHandle === connectionStartHandle.handleId)
-          );
+  // 커스텀 onConnect 핸들러 - 모든 엣지를 custom 타입으로 설정
+  const handleConnect = useCallback(
+    (connection: Connection) => {
+      // custom 타입의 엣지로 생성
+      const customConnection = {
+        ...connection,
+        type: "custom",
+      };
 
-          if (edgeToDelete) {
-            deleteEdge(edgeToDelete.id);
-          }
-        }
-      }
-
-      setConnectionStartHandle(null);
+      onConnect(customConnection);
     },
-    [connectionStartHandle, edges, deleteEdge]
+    [onConnect]
   );
 
   return (
@@ -195,8 +192,10 @@ const NodeDashboard = () => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        onConnect={handleConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        defaultEdgeOptions={{ type: "custom" }}
         onInit={onInit}
         onConnectStart={handleConnectStart}
         onConnectEnd={handleConnectEnd}

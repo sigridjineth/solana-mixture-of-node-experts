@@ -91,7 +91,12 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
           setNodes(savedNodes);
         }
         if (savedEdges && Array.isArray(savedEdges)) {
-          setEdges(savedEdges);
+          // 기존 엣지에 custom 타입 추가
+          const typedEdges = savedEdges.map((edge) => ({
+            ...edge,
+            type: "custom",
+          }));
+          setEdges(typedEdges);
         }
       } catch (error) {
         console.error("워크플로우 불러오기 실패:", error);
@@ -159,7 +164,8 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         return;
       }
 
-      // 기존 연결 확인 및 제거 (타겟 핸들을 중복 연결하지 않도록)
+      // 동일한 타겟 핸들에 대한 기존 연결만 제거 (한 입력에는 하나의 연결만 허용)
+      // 소스 핸들(출력)은 여러 연결을 가질 수 있음
       const newEdges = edges.filter(
         (edge) =>
           !(
@@ -171,7 +177,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       // 입력 이름 추출
       const inputName = connection.targetHandle?.replace("input-", "") || "";
 
-      // 제거될 엣지의 타겟 노드에서 해당 입력 연결 초기화 후 새로운 연결 설정
+      // 타겟 노드에서 해당 입력 연결 설정
       if (targetNode) {
         setNodes((nds) =>
           nds.map((node) => {
@@ -179,7 +185,7 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
               // 기존 connectedInputs 복사
               const updatedConnectedInputs = { ...node.data.connectedInputs };
 
-              // 해당 입력 초기화
+              // 해당 입력 초기화 (기존 연결 제거)
               delete updatedConnectedInputs[inputName];
 
               // 소스 노드의 반환값이 있으면 새 값 설정
@@ -200,7 +206,14 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
         );
       }
 
-      setEdges((eds) => addEdge(connection, newEdges));
+      // 커스텀 타입 엣지 확인
+      const customConnection = {
+        ...connection,
+        type: "custom", // 항상 'custom' 타입으로 설정
+      };
+
+      // 새 연결 추가
+      setEdges((eds) => addEdge(customConnection, newEdges));
     },
     [nodes, edges, setEdges, setNodes]
   );
