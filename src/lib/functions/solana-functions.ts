@@ -5,7 +5,7 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
   id: "analyze-solana-transaction",
   name: "SolTx Expert",
   description: "Solana 트랜잭션을 전문적으로 분석하고 핵심 정보를 제공합니다",
-  category: "Analytics",
+  category: "Tx Tools",
   groups: ["solana"],
   inputs: [
     {
@@ -140,7 +140,7 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
   name: "SolTx Intelligence",
   description:
     "계정 또는 프로그램의 트랜잭션 히스토리를 분석하여 패턴과 인사이트를 도출합니다",
-  category: "Analytics",
+  category: "Tx Tools",
   groups: ["solana"],
   inputs: [
     {

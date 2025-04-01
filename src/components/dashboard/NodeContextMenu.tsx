@@ -15,17 +15,9 @@ import {
   getFunctionsByCategory,
   getFunctionsByGroupAndCategory,
 } from "@/lib/functions/registry";
-import { getDefaultGroup, getAllGroups } from "@/lib/functions/groups";
+import { getAllGroups } from "@/lib/functions/groups";
 import { useFlow } from "@/components/providers/FlowProvider";
 import { ReactFlowInstance } from "reactflow";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Layers } from "lucide-react";
 
 type ContextMenuProps = {
   children: React.ReactNode;
@@ -86,7 +78,7 @@ const NodeContextMenu = ({ children, flowInstance }: ContextMenuProps) => {
   }, [addOutputNode, position]);
 
   // 추가: 카테고리 정렬 순서
-  const categoryOrder = ["Solana", "Data", "Analytics", "Utils"];
+  const categoryOrder = ["Solana", "Data", "Tx Tools", "Utils"];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );

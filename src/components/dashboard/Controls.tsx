@@ -13,7 +13,6 @@ import {
   Loader2,
   Play,
   Database,
-  Calculator,
   Globe,
   Filter,
   SortAsc,
@@ -21,16 +20,17 @@ import {
   Clock,
   BoxSelect,
   FileSearch,
-  MessageSquare,
   Coins,
   Layers,
   GitGraph,
   CircuitBoard,
-  Wrench,
   History,
   BrainCircuit,
-  Microscope,
+  Settings,
+  ScanSearch,
+  Brain,
 } from "lucide-react";
+import { FaDiscord } from "react-icons/fa";
 
 import {
   Tooltip,
@@ -102,8 +102,8 @@ const Controls = () => {
   const categoryIcons: Record<string, React.ReactNode> = {
     Solana: <Coins className="h-4 w-4" />,
     Data: <Database className="h-4 w-4" />,
-    Analytics: <Calculator className="h-4 w-4" />,
-    Utils: <Wrench className="h-4 w-4" />,
+    "Tx Tools": <Brain className="h-4 w-4" />,
+    Utils: <Settings className="h-4 w-4" />,
   };
 
   // 함수별 아이콘 매핑
@@ -114,8 +114,8 @@ const Controls = () => {
     "sort-data": <SortAsc className="h-4 w-4" />,
     "map-data": <Map className="h-4 w-4" />,
     delay: <Clock className="h-4 w-4" />,
-    "discord-webhook": <MessageSquare className="h-4 w-4" />,
-    "analyze-solana-transaction": <Microscope className="h-4 w-4" />,
+    "discord-webhook": <FaDiscord className="h-4 w-4" />,
+    "analyze-solana-transaction": <ScanSearch className="h-4 w-4" />,
     "solana-account-history": <History className="h-4 w-4" />,
     "solana-tx-to-mermaid": <GitGraph className="h-4 w-4" />,
     "solana-history-insights": <BrainCircuit className="h-4 w-4" />,
@@ -123,7 +123,7 @@ const Controls = () => {
   };
 
   // 카테고리 정렬 순서 지정
-  const categoryOrder = ["Solana", "Data", "Analytics", "Utils"];
+  const categoryOrder = ["Solana", "Data", "Tx Tools", "Utils"];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );

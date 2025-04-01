@@ -18,15 +18,15 @@ import {
   Map,
   Clock,
   FileSearch,
-  MessageSquare,
   Coins,
   RefreshCw,
-  Wrench,
-  Calculator,
   History,
-  Microscope,
+  CircleDollarSign,
+  Settings,
+  ScanSearch,
+  Brain,
 } from "lucide-react";
-import { getAllGroups } from "@/lib/functions/groups";
+import { FaDiscord } from "react-icons/fa";
 
 const CustomContextMenu = () => {
   const [visible, setVisible] = useState(false);
@@ -67,29 +67,25 @@ const CustomContextMenu = () => {
     "sort-data": <SortAsc className="h-4 w-4 mr-2" />,
     "map-data": <Map className="h-4 w-4 mr-2" />,
     delay: <Clock className="h-4 w-4 mr-2" />,
-    "discord-webhook": <MessageSquare className="h-4 w-4 mr-2" />,
-    "analyze-solana-transaction": <Microscope className="h-4 w-4 mr-2" />,
+    "discord-webhook": <FaDiscord className="h-4 w-4 mr-2" />,
+    "analyze-solana-transaction": <ScanSearch className="h-4 w-4 mr-2" />,
     "solana-account-history": <History className="h-4 w-4 mr-2" />,
-    "solana-history-insights": <Calculator className="h-4 w-4 mr-2" />,
+    "solana-history-insights": <CircleDollarSign className="h-4 w-4 mr-2" />,
   };
 
   // 카테고리 아이콘 매핑
   const categoryIcons: Record<string, React.ReactNode> = {
     Solana: <Coins className="h-4 w-4 mr-1" />,
     Data: <Database className="h-4 w-4 mr-1" />,
-    Analytics: <Calculator className="h-4 w-4 mr-1" />,
-    Utils: <Wrench className="h-4 w-4 mr-1" />,
+    "Tx Tools": <Brain className="h-4 w-4 mr-1" />,
+    Utils: <Settings className="h-4 w-4 mr-1" />,
   };
 
   // 카테고리 정렬 순서 지정
-  const categoryOrder = ["Solana", "Data", "Analytics", "Utils"];
+  const categoryOrder = ["Solana", "Data", "Tx Tools", "Utils"];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );
-
-  // 사용 가능한 그룹 목록
-  const allGroups = getAllGroups();
-  const activeGroupData = allGroups.find((group) => group.id === activeGroup);
 
   // 메뉴 표시 이벤트 리스너
   useEffect(() => {
