@@ -5,6 +5,14 @@ import { FlowProvider } from "@/components/providers/FlowProvider";
 import NodeDashboard from "@/components/dashboard/NodeDashboard";
 import Controls from "@/components/dashboard/Controls";
 import CustomContextMenu from "@/components/CustomContextMenu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function Home() {
   return (
@@ -27,12 +35,42 @@ export default function Home() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="px-2 py-1 text-xs rounded-md bg-white/40 hover:bg-white/60 transition-colors shadow-sm">
+            <button
+              className="px-2 py-1 text-xs rounded-md bg-white/40 transition-colors shadow-sm opacity-50 cursor-not-allowed"
+              disabled
+            >
               Connect Wallet
             </button>
-            <div className="h-6 w-6 rounded-full bg-white/40 flex items-center justify-center hover:bg-white/60 cursor-pointer transition-colors shadow-sm">
-              <span className="text-xs">?</span>
-            </div>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="h-6 w-6 rounded-full bg-white/40 flex items-center justify-center hover:bg-white/60 cursor-pointer transition-colors shadow-sm">
+                  <span className="text-xs">?</span>
+                </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Solana Node Dashboard</DialogTitle>
+                  <DialogDescription className="py-4">
+                    <p className="mb-4">
+                      A visual node-based dashboard for building, analyzing, and
+                      visualizing Solana blockchain transactions. This dashboard
+                      allows you to create workflows by connecting various nodes
+                      to fetch, analyze, and visualize transaction data from the
+                      Solana blockchain.
+                    </p>
+                    <p className="mb-4">
+                      With this tool, you can easily analyze transactions,
+                      generate visualizations, track account history, and gain
+                      insights into on-chain activities without writing code.
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-8">
+                      Created by <span className="font-semibold">zombcat</span>
+                    </p>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>
