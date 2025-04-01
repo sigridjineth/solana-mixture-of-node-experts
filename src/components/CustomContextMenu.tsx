@@ -21,10 +21,12 @@ import {
   Coins,
   RefreshCw,
   History,
-  CircleDollarSign,
   Settings,
   ScanSearch,
   Brain,
+  BrainCircuit,
+  CircuitBoard,
+  GitGraph,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 
@@ -61,16 +63,18 @@ const CustomContextMenu = () => {
 
   // 함수별 아이콘 매핑
   const functionIcons: Record<string, React.ReactNode> = {
-    "solana-tx-fetch": <FileSearch className="h-4 w-4 mr-2" />,
-    "fetch-data": <Globe className="h-4 w-4 mr-2" />,
-    "filter-data": <Filter className="h-4 w-4 mr-2" />,
-    "sort-data": <SortAsc className="h-4 w-4 mr-2" />,
-    "map-data": <Map className="h-4 w-4 mr-2" />,
-    delay: <Clock className="h-4 w-4 mr-2" />,
-    "discord-webhook": <FaDiscord className="h-4 w-4 mr-2" />,
-    "analyze-solana-transaction": <ScanSearch className="h-4 w-4 mr-2" />,
-    "solana-account-history": <History className="h-4 w-4 mr-2" />,
-    "solana-history-insights": <CircleDollarSign className="h-4 w-4 mr-2" />,
+    "solana-tx-fetch": <FileSearch className="h-4 w-4" />,
+    "fetch-data": <Globe className="h-4 w-4" />,
+    "filter-data": <Filter className="h-4 w-4" />,
+    "sort-data": <SortAsc className="h-4 w-4" />,
+    "map-data": <Map className="h-4 w-4" />,
+    delay: <Clock className="h-4 w-4" />,
+    "discord-webhook": <FaDiscord className="h-4 w-4" />,
+    "analyze-solana-transaction": <ScanSearch className="h-4 w-4" />,
+    "solana-account-history": <History className="h-4 w-4" />,
+    "solana-tx-to-mermaid": <GitGraph className="h-4 w-4" />,
+    "solana-history-insights": <BrainCircuit className="h-4 w-4" />,
+    mermaid: <CircuitBoard className="h-4 w-4" />,
   };
 
   // 카테고리 아이콘 매핑
