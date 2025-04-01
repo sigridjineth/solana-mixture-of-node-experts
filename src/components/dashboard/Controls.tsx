@@ -28,6 +28,7 @@ import {
   Layers,
   GitGraph,
   CircuitBoard,
+  Wrench,
 } from "lucide-react";
 
 import {
@@ -45,27 +46,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Controls = () => {
-  const { addFunctionNode, addOutputNode, runFlow, isProcessing } = useFlow();
-  const [activeGroup, setActiveGroup] = useState<string>("");
+  const {
+    addFunctionNode,
+    addOutputNode,
+    runFlow,
+    isProcessing,
+    activeGroup,
+    setActiveGroup,
+  } = useFlow();
   const [functionsByCategory, setFunctionsByCategory] = useState<
     Record<string, any>
   >({});
 
   // 초기화 시 기본 그룹 설정
   useEffect(() => {
-    const defaultGroup = getDefaultGroup();
-    if (defaultGroup) {
-      setActiveGroup(defaultGroup.id);
-      setFunctionsByCategory(getFunctionsByGroupAndCategory(defaultGroup.id));
+    // 초기화는 FlowProvider에서 처리하므로 여기서는 함수 카테고리만 설정
+    if (activeGroup) {
+      setFunctionsByCategory(getFunctionsByGroupAndCategory(activeGroup));
     } else {
       setFunctionsByCategory(getFunctionsByCategory());
     }
-  }, []);
+  }, [activeGroup]);
 
   // 그룹 변경 처리
   const handleGroupChange = (groupId: string) => {
     setActiveGroup(groupId);
-    setFunctionsByCategory(getFunctionsByGroupAndCategory(groupId));
+    // 그룹 변경 시 함수 카테고리는 위의 useEffect에서 자동으로 업데이트됨
   };
 
   const handleAddNode = (category: string, functionId: string) => {
@@ -96,8 +102,7 @@ const Controls = () => {
     Solana: <Coins className="h-4 w-4" />,
     Data: <Database className="h-4 w-4" />,
     Analytics: <Calculator className="h-4 w-4" />,
-    Utility: <MoveHorizontal className="h-4 w-4" />,
-    SNS: <MessageSquare className="h-4 w-4" />,
+    Utils: <Wrench className="h-4 w-4" />,
   };
 
   // 함수별 아이콘 매핑
@@ -107,23 +112,15 @@ const Controls = () => {
     "filter-data": <Filter className="h-4 w-4" />,
     "sort-data": <SortAsc className="h-4 w-4" />,
     "map-data": <Map className="h-4 w-4" />,
-    "calculate-statistics": <BarChart className="h-4 w-4" />,
     delay: <Clock className="h-4 w-4" />,
     "discord-webhook": <MessageSquare className="h-4 w-4" />,
-    "analyze-solana-transaction": <Coins className="h-4 w-4" />,
+    "analyze-solana-transaction": <Calculator className="h-4 w-4" />,
     "solana-tx-to-mermaid": <GitGraph className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
   };
 
   // 카테고리 정렬 순서 지정
-  const categoryOrder = [
-    "Solana",
-    "SNS",
-    "Utils",
-    "Data",
-    "Analytics",
-    "Utility",
-  ];
+  const categoryOrder = ["Solana", "Data", "Analytics", "Utils"];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );

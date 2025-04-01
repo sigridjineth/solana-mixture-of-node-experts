@@ -5,7 +5,7 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
   id: "analyze-solana-transaction",
   name: "Analyze Solana Tx",
   description: "Solana 트랜잭션의 기본 정보를 분석합니다",
-  category: "Solana",
+  category: "Analytics",
   groups: ["solana"],
   inputs: [
     {

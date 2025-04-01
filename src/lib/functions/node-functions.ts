@@ -319,73 +319,11 @@ export const mapDataFunction: NodeFunction = {
   },
 };
 
-export const calculateStatisticsFunction: NodeFunction = {
-  id: "calculate-statistics",
-  name: "Calculate Statistics",
-  description: "Calculates basic statistics for a numerical array",
-  category: "Analytics",
-  groups: ["default"],
-  inputs: [
-    {
-      name: "data",
-      type: "array",
-      required: true,
-    },
-    {
-      name: "key",
-      type: "string",
-      required: false,
-    },
-  ],
-  output: {
-    name: "statistics",
-    type: "object",
-    description: "계산된 통계 데이터",
-  },
-  execute: async (inputs: Record<string, any>) => {
-    try {
-      const { data, key } = inputs;
-      if (!Array.isArray(data)) {
-        throw new Error("Input data must be an array");
-      }
-
-      let values: number[];
-
-      if (key) {
-        values = data.map((item) => Number(item[key])).filter((n) => !isNaN(n));
-      } else {
-        values = data.filter((n) => !isNaN(Number(n))).map((n) => Number(n));
-      }
-
-      if (values.length === 0) {
-        throw new Error("No numeric values found in the data");
-      }
-
-      const sum = values.reduce((acc, val) => acc + val, 0);
-      const avg = sum / values.length;
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-
-      return {
-        count: values.length,
-        sum,
-        average: avg,
-        min,
-        max,
-      };
-    } catch (error) {
-      throw new Error(
-        `Failed to calculate statistics: ${(error as Error).message}`
-      );
-    }
-  },
-};
-
 export const delayFunction: NodeFunction = {
   id: "delay",
   name: "Delay",
   description: "Delays execution for the specified milliseconds",
-  category: "Utility",
+  category: "Utils",
   groups: ["default"],
   inputs: [
     {
@@ -421,7 +359,7 @@ export const discordWebhookFunction: NodeFunction = {
   id: "discord-webhook",
   name: "Discord Webhook",
   description: "Discord 웹훅으로 메시지를 전송합니다",
-  category: "SNS",
+  category: "Utils",
   groups: ["default", "solana"],
   inputs: [
     {

@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   ReactNode,
+  useEffect,
 } from "react";
 import {
   Node,
@@ -21,6 +22,7 @@ import { NodeData } from "@/types/node";
 import { NodeFunction } from "@/types/function";
 import { generateId, isConnectionValid, topologicalSort } from "@/lib/utils";
 import { getFunctionById } from "@/lib/functions/registry";
+import { getDefaultGroup } from "@/lib/functions/groups";
 
 type FlowContextType = {
   nodes: Node<NodeData>[];
@@ -41,6 +43,9 @@ type FlowContextType = {
   deleteNode: (nodeId: string) => void;
   duplicateNode: (nodeId: string, position: XYPosition) => void;
   deleteEdge: (edgeId: string) => void;
+  activeGroup: string;
+  setActiveGroup: (groupId: string) => void;
+  resetNode: (nodeId: string) => void;
 };
 
 const FlowContext = createContext<FlowContextType | null>(null);
@@ -61,6 +66,15 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
   const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<string>("");
+
+  // 초기 기본 그룹 설정
+  useEffect(() => {
+    const defaultGroup = getDefaultGroup();
+    if (defaultGroup) {
+      setActiveGroup(defaultGroup.id);
+    }
+  }, []);
 
   // 노드 입력 업데이트
   const updateNodeInputs = useCallback(
@@ -237,6 +251,48 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
       setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
     },
     [setEdges]
+  );
+
+  // 노드 초기화 함수
+  const resetNode = useCallback(
+    (nodeId: string) => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === nodeId) {
+            // 기존 노드 데이터 가져오기
+            const functionId = node.data.functionId;
+            let initialInputs = {};
+
+            // 함수 노드인 경우 함수의 기본 입력값으로 초기화
+            if (functionId) {
+              const func = getFunctionById(functionId);
+              if (func) {
+                initialInputs = func.inputs.reduce((acc, input) => {
+                  if (input.default !== undefined) {
+                    acc[input.name] = input.default;
+                  }
+                  return acc;
+                }, {} as Record<string, any>);
+              }
+            }
+
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                inputs: initialInputs,
+                connectedInputs: {},
+                returnValue: undefined,
+                error: undefined,
+                loading: false,
+              },
+            };
+          }
+          return node;
+        })
+      );
+    },
+    [setNodes]
   );
 
   // 단일 노드 실행
@@ -610,6 +666,9 @@ export const FlowProvider = ({ children }: FlowProviderProps) => {
     deleteNode,
     duplicateNode,
     deleteEdge,
+    activeGroup,
+    setActiveGroup,
+    resetNode,
   };
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

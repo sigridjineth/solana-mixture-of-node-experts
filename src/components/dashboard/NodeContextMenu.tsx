@@ -33,28 +33,27 @@ type ContextMenuProps = {
 };
 
 const NodeContextMenu = ({ children, flowInstance }: ContextMenuProps) => {
-  const { addFunctionNode, addOutputNode } = useFlow();
+  const { addFunctionNode, addOutputNode, activeGroup, setActiveGroup } =
+    useFlow();
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [activeGroup, setActiveGroup] = useState<string>("");
   const [functionsByCategory, setFunctionsByCategory] = useState<
     Record<string, any>
   >({});
 
   // 초기화 시 기본 그룹 설정
   useEffect(() => {
-    const defaultGroup = getDefaultGroup();
-    if (defaultGroup) {
-      setActiveGroup(defaultGroup.id);
-      setFunctionsByCategory(getFunctionsByGroupAndCategory(defaultGroup.id));
+    // 초기화는 FlowProvider에서 처리하므로 여기서는 함수 카테고리만 설정
+    if (activeGroup) {
+      setFunctionsByCategory(getFunctionsByGroupAndCategory(activeGroup));
     } else {
       setFunctionsByCategory(getFunctionsByCategory());
     }
-  }, []);
+  }, [activeGroup]);
 
   // 그룹 변경 처리
   const handleGroupChange = (groupId: string) => {
     setActiveGroup(groupId);
-    setFunctionsByCategory(getFunctionsByGroupAndCategory(groupId));
+    // 그룹 변경 시 함수 카테고리는 위의 useEffect에서 자동으로 업데이트됨
   };
 
   const handleContextMenu = useCallback(
@@ -71,6 +70,7 @@ const NodeContextMenu = ({ children, flowInstance }: ContextMenuProps) => {
 
   const handleAddFunction = useCallback(
     (functionId: string, category: string) => {
+      // 현재 활성화된 그룹의 함수 목록에서 찾기
       const func = functionsByCategory[category]?.find(
         (f: any) => f.id === functionId
       );
@@ -86,7 +86,7 @@ const NodeContextMenu = ({ children, flowInstance }: ContextMenuProps) => {
   }, [addOutputNode, position]);
 
   // 추가: 카테고리 정렬 순서
-  const categoryOrder = ["Solana", "SNS", "Data", "Analytics", "Utility"];
+  const categoryOrder = ["Solana", "Data", "Analytics", "Utils"];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );
@@ -103,49 +103,23 @@ const NodeContextMenu = ({ children, flowInstance }: ContextMenuProps) => {
       >
         {children}
       </ContextMenuTrigger>
-      <ContextMenuContent className="w-48">
+      <ContextMenuContent className="w-40 max-w-[160px]">
         <ContextMenuItem onClick={() => handleAddOutput()}>
           Add Output Node
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <div className="px-2 py-1 flex items-center justify-between">
-          <span className="text-xs">그룹 선택</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-6 w-6 px-0 flex items-center justify-center"
-                title={activeGroupData?.name || "모든 도구"}
-              >
-                <Layers className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {allGroups.map((group) => (
-                <DropdownMenuItem
-                  key={group.id}
-                  onClick={() => handleGroupChange(group.id)}
-                  className={activeGroup === group.id ? "bg-muted" : ""}
-                >
-                  {group.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <ContextMenuSeparator />
         {sortedCategories.map(([category, functions]) => (
           <ContextMenuSub key={category}>
             <ContextMenuSubTrigger>{category}</ContextMenuSubTrigger>
-            <ContextMenuSubContent className="w-48">
+            <ContextMenuSubContent className="w-40 max-w-[160px]">
               {functions.map((func: any) => (
                 <ContextMenuItem
                   key={func.id}
                   onClick={() => handleAddFunction(func.id, category)}
+                  className="flex items-center"
                 >
-                  {func.name}
-                  <span className="ml-auto text-xs text-muted-foreground">
+                  <span className="truncate max-w-[100px]">{func.name}</span>
+                  <span className="ml-auto text-xs text-muted-foreground shrink-0">
                     {func.inputs.length > 0 ? `${func.inputs.length} in` : ""}
                   </span>
                 </ContextMenuItem>
