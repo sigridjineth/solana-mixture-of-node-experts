@@ -102,39 +102,65 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
 
       <CardContent className="p-3 pt-0">
         {/* 입력 필드들 */}
-        {nodeFunction.inputs
-          .filter((input) => !input.hiddenUI)
-          .map((input) => (
-            <div key={input.name} className="mb-2">
-              <div className="text-xs text-muted-foreground mb-1">
-                {input.name}
+        <div className="mb-4">
+          <div className="text-xs font-semibold mb-2">Inputs</div>
+          {nodeFunction.inputs
+            .filter((input) => !input.hiddenUI)
+            .map((input) => (
+              <div key={input.name} className="mb-3 relative">
+                <div className="text-xs text-muted-foreground mb-1 flex items-center relative">
+                  <Handle
+                    type="target"
+                    position={Position.Left}
+                    id={`input-${input.name}`}
+                    className="rounded-full bg-primary border-2 border-background handle-visible"
+                    style={{
+                      width: "12px",
+                      height: "12px",
+                      minWidth: "12px",
+                      minHeight: "12px",
+                      left: "-6px",
+                      zIndex: 10,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      position: "absolute",
+                    }}
+                  />
+                  <span className="bg-primary/10 rounded-sm px-1 py-0.5 ml-3 mr-1">
+                    {input.name}
+                  </span>
+                  {input.required && <span className="text-red-500">*</span>}
+                </div>
+                <div className="flex items-center">
+                  <Input
+                    type="text"
+                    value={data.inputs[input.name] || ""}
+                    onChange={(e) =>
+                      handleInputChange(input.name, e.target.value)
+                    }
+                    className="h-7 text-xs ml-1"
+                    placeholder={input.description}
+                    disabled={isInputDisabled(input.name)}
+                  />
+                </div>
+                {/* 각 입력이 연결되었는지 상태 표시 */}
+                {data.connectedInputs[input.name] !== undefined && (
+                  <div
+                    className="absolute rounded-full border-2 border-background"
+                    style={{
+                      zIndex: 20,
+                      left: "-7px",
+                      top: "3px",
+                      width: "15px",
+                      height: "15px",
+                      backgroundColor: "#10b981",
+                      boxShadow: "0 0 2px rgba(0,0,0,0.3)",
+                    }}
+                  />
+                )}
               </div>
-              <div className="flex items-center">
-                <Handle
-                  type="target"
-                  position={Position.Left}
-                  id={`input-${input.name}`}
-                  className="rounded-full bg-primary border-2 border-background"
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    minWidth: "10px",
-                    minHeight: "10px",
-                  }}
-                />
-                <Input
-                  type="text"
-                  value={data.inputs[input.name] || ""}
-                  onChange={(e) =>
-                    handleInputChange(input.name, e.target.value)
-                  }
-                  className="h-7 text-xs ml-2"
-                  placeholder={input.description}
-                  disabled={isInputDisabled(input.name)}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+        </div>
 
         {/* 연결된 입력값들 - 모든 입력 필드 아래에 표시 */}
         {Object.keys(data.connectedInputs).length > 0 && (
@@ -148,8 +174,10 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
               )
               .map((input) => (
                 <div key={`connected-${input.name}`} className="mb-2">
-                  <div className="text-xs text-muted-foreground mb-1">
-                    {input.name}
+                  <div className="text-xs text-muted-foreground mb-1 flex items-center">
+                    <span className="bg-primary/10 rounded-sm px-1 py-0.5 ml-3 mr-1">
+                      {input.name}
+                    </span>
                   </div>
                   <div
                     className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
@@ -166,31 +194,39 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
           </div>
         )}
 
-        {/* 출력 핸들 */}
-        <div className="mt-2">
-          <div className="text-xs text-muted-foreground mb-1">Output</div>
-          <div className="flex items-center">
-            <Handle
-              type="source"
-              position={Position.Right}
-              id="output"
-              className="rounded-full bg-primary border-2 border-background"
-              style={{
-                width: "10px",
-                height: "10px",
-                minWidth: "10px",
-                minHeight: "10px",
-              }}
-            />
+        {/* 출력 핸들 - 단일 출력 핸들만 유지 */}
+        <div className="mt-4">
+          <div className="text-xs font-semibold mb-2">Output</div>
+          <div className="flex items-center justify-end relative h-8">
+            <div className="text-xs text-muted-foreground relative flex items-center">
+              <span className="bg-primary/10 rounded-sm px-1 py-0.5 mr-6">
+                {nodeFunction.output.name}
+              </span>
+              <Handle
+                type="source"
+                position={Position.Right}
+                id="output"
+                className="rounded-full bg-primary border-2 border-background handle-visible"
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  minWidth: "12px",
+                  minHeight: "12px",
+                  right: "-6px",
+                  zIndex: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  position: "absolute",
+                }}
+              />
+            </div>
           </div>
         </div>
 
         {/* 반환값 표시 */}
         {data.returnValue !== undefined && (
-          <div className="mt-2">
-            <div className="text-xs text-muted-foreground mb-1">
-              Return Value
-            </div>
+          <div className="mt-3">
+            <div className="text-xs font-semibold mb-1">Return Value</div>
             <div
               className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
               style={{
@@ -213,19 +249,14 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
         )}
       </CardContent>
 
-      <CardFooter className="p-1 flex justify-end">
-        <Handle
-          type="source"
-          position={Position.Right}
-          id="output"
-          className="rounded-full bg-primary border-2 border-background"
-          style={{
-            width: "10px",
-            height: "10px",
-            minWidth: "10px",
-            minHeight: "10px",
-          }}
-        />
+      {/* CardFooter에서 중복된 출력 핸들 제거 */}
+      <CardFooter className="p-2 flex justify-end">
+        {data.isProcessing && (
+          <div className="text-xs text-muted-foreground flex items-center">
+            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+            처리 중...
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

@@ -175,16 +175,47 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
       let finalTransactions;
       let finalAddress;
 
+      // 자세한 디버깅 로그 추가
+      console.log("SolTx Intelligence 노드 입력:", {
+        result: result
+          ? {
+              type: typeof result,
+              hasTransactions: result.transactions
+                ? `${result.transactions.length}개`
+                : "없음",
+              hasAddress: result.address ? `${result.address}` : "없음",
+              structure: JSON.stringify(result).substring(0, 100) + "...",
+            }
+          : undefined,
+        address,
+        transactions: transactions ? `${transactions.length}개` : undefined,
+      });
+
       // result가 제공된 경우 (SolTx History 노드에서 연결된 경우)
       if (result) {
-        if (!result.transactions || !Array.isArray(result.transactions)) {
-          throw new Error("result에 트랜잭션 데이터 배열이 없습니다");
+        // 더 자세한 유효성 검증
+        if (!result.transactions) {
+          console.error("result 객체 문제:", result);
+          throw new Error(
+            "result에 트랜잭션 데이터 배열이 없습니다. 연결된 노드의 출력 형식을 확인하세요."
+          );
+        }
+
+        if (!Array.isArray(result.transactions)) {
+          console.error("transactions 형식 문제:", result.transactions);
+          throw new Error(
+            "transactions는 배열 형식이어야 합니다. 연결된 노드의 출력 형식을 확인하세요."
+          );
         }
 
         if (!result.address) {
-          throw new Error("result에 분석 대상 주소가 없습니다");
+          console.error("address 누락:", result);
+          throw new Error(
+            "result에 분석 대상 주소가 없습니다. 연결된 노드의 출력 형식을 확인하세요."
+          );
         }
 
+        console.log("유효한 result 객체 확인. 분석 계속 진행");
         finalTransactions = result.transactions;
         finalAddress = result.address;
       }
@@ -203,6 +234,14 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
           "트랜잭션 데이터와 주소는 필수 입력값입니다 (result 또는 address와 transactions를 제공해야 합니다)"
         );
       }
+
+      // API 호출 전 최종 입력값 로깅
+      console.log("API 호출 입력값:", {
+        transactions: finalTransactions
+          ? `${finalTransactions.length}개 트랜잭션`
+          : "없음",
+        address: finalAddress,
+      });
 
       // API 호출 - LLM으로 트랜잭션 히스토리 분석 요청
       const response = await fetch("/api/history-analyze", {
