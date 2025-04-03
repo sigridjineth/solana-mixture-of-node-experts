@@ -77,7 +77,7 @@ Your analysis should include:
 6. Security insights (if any)
 7. Comprehensive analysis and prediction of future activity
 
-Write your response in Korean, in a natural conversational style.
+Write your response in English, in a natural conversational style.
 Use plain language that non-technical users can understand.
 Format your response as a single text paragraph.
 

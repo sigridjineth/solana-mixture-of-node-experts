@@ -351,11 +351,10 @@ export const solanaTxClassifyExpertFunction: NodeFunction = {
       description: "분석할 Solana 트랜잭션 데이터",
     },
     {
-      name: "llmModel",
+      name: "aiModel",
       type: "string",
       required: false,
       description: "사용할 AI 모델 이름",
-      default: "gemini-2.0-flash",
     },
   ],
   output: {
@@ -525,7 +524,7 @@ export const modelProviderSelectorFunction: NodeFunction = {
   id: "model-provider-selector",
   name: "AI Model Selector",
   description:
-    "AI 모델 프로바이더와 모델을 선택하여 사용할 모델 식별자를 반환합니다",
+    "AI 모델 프로바이더와 모델을 선택하여 사용할 모델 이름을 반환합니다",
   category: "Solana",
   groups: ["solana", "utils"],
   inputs: [
@@ -541,7 +540,6 @@ export const modelProviderSelectorFunction: NodeFunction = {
       type: "string",
       required: true,
       description: "선택한 프로바이더에서 사용할 모델 이름",
-      default: "gemini-2.0-flash", // 기본 Gemini 모델
     },
     {
       name: "apiKey",
@@ -551,9 +549,9 @@ export const modelProviderSelectorFunction: NodeFunction = {
     },
   ],
   output: {
-    name: "modelConfig",
-    type: "object" as FunctionInputType,
-    description: "선택된 모델 설정 (모델 ID, 프로바이더, API 키 등)",
+    name: "model",
+    type: "string" as FunctionInputType,
+    description: "선택된 모델 이름",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -604,14 +602,8 @@ export const modelProviderSelectorFunction: NodeFunction = {
 
       console.log(`선택된 프로바이더: ${provider}, 모델: ${model}`);
 
-      // 모델 설정 반환
-      return {
-        provider: provider.toLowerCase(),
-        model: model,
-        apiKey: apiKey,
-        fullModelId: `${provider.toLowerCase()}/${model}`,
-        timestamp: new Date().toISOString(),
-      };
+      // 모델 이름만 반환
+      return model;
     } catch (error) {
       throw new Error(`모델 선택 실패: ${(error as Error).message}`);
     }

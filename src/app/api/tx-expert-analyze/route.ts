@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
       ${expertPrompt}
       
       Please analyze the following Solana transaction from your expert perspective.
-      Provide a comprehensive yet concise analysis in Korean (2-3 paragraphs).
+      Provide a comprehensive yet concise analysis in English (2-3 paragraphs).
       Use technical terms where appropriate but ensure the analysis is accessible to intermediate users.
       Include specific details from the transaction that support your analysis.
       

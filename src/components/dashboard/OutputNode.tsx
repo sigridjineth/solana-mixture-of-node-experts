@@ -7,6 +7,12 @@ import { cn, formatNodeData } from "@/lib/utils";
 import { CustomNodeProps } from "@/types/node";
 
 const OutputNode = memo(({ id, data, selected }: CustomNodeProps) => {
+  // 결과값 표시를 위해 returnValue나 연결된 input 값을 사용
+  const displayValue =
+    data.returnValue !== undefined
+      ? data.returnValue
+      : data.connectedInputs?.["input"];
+
   return (
     <Card
       className={cn("shadow-md relative", selected && "ring-2 ring-primary")}
@@ -34,8 +40,8 @@ const OutputNode = memo(({ id, data, selected }: CustomNodeProps) => {
           />
         </div>
 
-        {/* 출력 결과 */}
-        {data.returnValue !== undefined && (
+        {/* 출력 결과 - returnValue 또는 connectedInputs["input"] 값을 표시 */}
+        {displayValue !== undefined && (
           <div className="mt-2">
             <div className="text-xs text-muted-foreground mb-1">Result</div>
             <div
@@ -46,7 +52,7 @@ const OutputNode = memo(({ id, data, selected }: CustomNodeProps) => {
                 overflowX: "hidden",
               }}
             >
-              {formatNodeData(data.returnValue)}
+              {formatNodeData(displayValue)}
             </div>
           </div>
         )}

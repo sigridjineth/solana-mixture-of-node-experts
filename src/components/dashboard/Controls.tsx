@@ -29,6 +29,9 @@ import {
   Settings,
   ScanSearch,
   Brain,
+  Cpu,
+  Sparkles,
+  Bot,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 
@@ -119,6 +122,9 @@ const Controls = () => {
     "solana-account-history": <History className="h-4 w-4" />,
     "solana-tx-to-mermaid": <GitGraph className="h-4 w-4" />,
     "solana-history-insights": <BrainCircuit className="h-4 w-4" />,
+    "model-provider-selector": <Cpu className="h-4 w-4" />,
+    "solana-tx-classify-expert": <Sparkles className="h-4 w-4" />,
+    "solana-tx-expert-analyze": <Bot className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
   };
 

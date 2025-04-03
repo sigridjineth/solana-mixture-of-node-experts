@@ -80,12 +80,12 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
         if (provider === "huggingface") {
           return [
             {
-              label: "Mixture of Multi-chain Expert 1",
-              value: "gemini-2.0-flash",
+              label: "Mixture of Multi-chain Expert 1 Pro",
+              value: "mome-1.0-pro-exp",
             },
             {
-              label: "Mixture of Multi-chain Expert 2",
-              value: "gemini-2.0-flash",
+              label: "Mixture of Multi-chain Expert 1",
+              value: "mome-1.0",
             },
           ];
         } else if (provider === "openrouter") {

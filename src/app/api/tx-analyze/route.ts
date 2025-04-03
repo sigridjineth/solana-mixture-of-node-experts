@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       2. Which programs or protocols are involved? (e.g., Jupiter, Marinade, Magic Eden, etc.)
       3. What is the main purpose or effect of this transaction?
       
-      Write the summary in Korean, in a natural conversational style.
+      Write the summary in English, in a natural conversational style.
       Use plain language that non-technical users can understand.
       If the transaction failed, explain the likely reason for failure.
       
