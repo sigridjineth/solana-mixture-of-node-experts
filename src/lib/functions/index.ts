@@ -3,6 +3,9 @@ import {
   solanaAccountHistoryFunction,
   solanaTxToMermaidFunction,
   solanaHistoryInsightsFunction,
+  solanaTxClassifyExpertFunction,
+  solanaTxExpertAnalyzeFunction,
+  modelProviderSelectorFunction,
 } from "./solana-functions";
 
 export const nodeFunctions = [
@@ -10,4 +13,7 @@ export const nodeFunctions = [
   solanaAccountHistoryFunction,
   solanaTxToMermaidFunction,
   solanaHistoryInsightsFunction,
+  solanaTxClassifyExpertFunction,
+  solanaTxExpertAnalyzeFunction,
+  modelProviderSelectorFunction,
 ];

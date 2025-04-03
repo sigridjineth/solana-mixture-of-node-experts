@@ -13,6 +13,9 @@ import {
   solanaTxToMermaidFunction,
   solanaAccountHistoryFunction,
   solanaHistoryInsightsFunction,
+  solanaTxClassifyExpertFunction,
+  solanaTxExpertAnalyzeFunction,
+  modelProviderSelectorFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -30,6 +33,9 @@ const functionRegistry: FunctionRegistry = {
   [solanaAccountHistoryFunction.id]: solanaAccountHistoryFunction,
   [mermaidFunction.id]: mermaidFunction,
   [solanaHistoryInsightsFunction.id]: solanaHistoryInsightsFunction,
+  [solanaTxClassifyExpertFunction.id]: solanaTxClassifyExpertFunction,
+  [solanaTxExpertAnalyzeFunction.id]: solanaTxExpertAnalyzeFunction,
+  [modelProviderSelectorFunction.id]: modelProviderSelectorFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
@@ -75,6 +81,18 @@ export const getFunctionsByGroupAndCategory = (
   });
 
   return categories;
+};
+
+export const getFunctionsByInputType = (inputType: string): NodeFunction[] => {
+  return getAllFunctions().filter((func) =>
+    func.inputs.some((input) => input.type === inputType)
+  );
+};
+
+export const getFunctionsByOutputType = (
+  outputType: string
+): NodeFunction[] => {
+  return getAllFunctions().filter((func) => func.output.type === outputType);
 };
 
 export default functionRegistry;

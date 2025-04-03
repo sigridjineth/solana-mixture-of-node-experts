@@ -335,3 +335,285 @@ export const solanaTxToMermaidFunction: NodeFunction = {
     }
   },
 };
+
+// Solana 트랜잭션 전문가 모델 분류 함수
+export const solanaTxClassifyExpertFunction: NodeFunction = {
+  id: "solana-tx-classify-expert",
+  name: "SolTx Classifier",
+  description: "Solana 트랜잭션을 분석하여 적합한 전문가 모델로 분류합니다",
+  category: "Solana",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "transaction",
+      type: "object",
+      required: true,
+      description: "분석할 Solana 트랜잭션 데이터",
+    },
+    {
+      name: "llmModel",
+      type: "string",
+      required: false,
+      description: "사용할 AI 모델 이름",
+      default: "gemini-2.0-flash",
+    },
+  ],
+  output: {
+    name: "expertModel",
+    type: "string" as FunctionInputType,
+    description: "분류된 전문가 모델 식별자",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { transaction, llmModel } = inputs;
+
+      if (!transaction) {
+        throw new Error("트랜잭션 데이터는 필수 입력값입니다");
+      }
+
+      // 사용할 LLM 모델 - 입력이 없으면 기본값 사용
+      const selectedModel = llmModel || "gemini-2.0-flash";
+      console.log(`LLM 모델 ${selectedModel}로 분류 요청 중...`);
+
+      // 지원되는 전문가 모델 목록
+      const expertModels = {
+        DEX_EXPERT: "dex-expert",
+        NFT_EXPERT: "nft-expert",
+        STAKING_EXPERT: "staking-expert",
+        DEFI_EXPERT: "defi-expert",
+        GENERIC_EXPERT: "generic-expert",
+      };
+
+      // API 호출 - LLM으로 트랜잭션 분석 및 전문가 모델 분류 요청
+      const response = await fetch("/api/tx-classify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transactionData: transaction,
+          llmModel: selectedModel,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `API 요청 실패: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(`API 에러: ${data.error}`);
+      }
+
+      console.log(`트랜잭션 분류 결과: ${data.expertModel}`);
+
+      return data.expertModel;
+    } catch (error) {
+      throw new Error(`트랜잭션 분류 실패: ${(error as Error).message}`);
+    }
+  },
+};
+
+// Solana 트랜잭션 전문가 분석 함수
+export const solanaTxExpertAnalyzeFunction: NodeFunction = {
+  id: "solana-tx-expert-analyze",
+  name: "SolTx Expert Analyzer",
+  description: "특정 전문가 모델을 사용하여 Solana 트랜잭션을 심층 분석합니다",
+  category: "Solana",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "transaction",
+      type: "object",
+      required: true,
+      description: "분석할 Solana 트랜잭션 데이터",
+    },
+    {
+      name: "expertModel",
+      type: "string",
+      required: true,
+      description: "사용할 전문가 모델 식별자 (SolTx Classifier의 출력과 호환)",
+    },
+    {
+      name: "aiModel",
+      type: "string",
+      required: false,
+      description: "사용할 AI 모델 이름",
+      default: "gemini-2.0-flash",
+    },
+  ],
+  output: {
+    name: "expertAnalysis",
+    type: "string" as FunctionInputType,
+    description: "선택된 전문가 모델에 의한 트랜잭션 분석 결과",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { transaction, expertModel, llmModel } = inputs;
+
+      if (!transaction) {
+        throw new Error("트랜잭션 데이터는 필수 입력값입니다");
+      }
+
+      if (!expertModel) {
+        throw new Error("전문가 모델 식별자는 필수 입력값입니다");
+      }
+
+      // 사용할 LLM 모델 - 입력이 없으면 기본값 사용
+      const selectedModel = llmModel || "gemini-2.0-flash";
+      console.log(`LLM 모델 ${selectedModel}로 분석 요청 중...`);
+
+      // 지원되는 전문가 모델 목록 (solanaTxClassifyExpertFunction과 동일)
+      const supportedModels = [
+        "dex-expert",
+        "nft-expert",
+        "staking-expert",
+        "defi-expert",
+        "generic-expert",
+      ];
+
+      // 유효한 모델인지 확인
+      if (!supportedModels.includes(expertModel)) {
+        throw new Error(
+          `지원되지 않는 전문가 모델: ${expertModel}. 지원되는 모델: ${supportedModels.join(
+            ", "
+          )}`
+        );
+      }
+
+      console.log(
+        `전문가 모델 ${expertModel}을(를) 사용하여 트랜잭션 분석 중...`
+      );
+
+      // API 호출 - 선택된 전문가 모델을 사용하여 트랜잭션 분석 요청
+      const response = await fetch("/api/tx-expert-analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transactionData: transaction,
+          expertModel: expertModel,
+          llmModel: selectedModel,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `API 요청 실패: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(`API 에러: ${data.error}`);
+      }
+
+      return data.expertAnalysis || "분석 결과가 없습니다.";
+    } catch (error) {
+      throw new Error(`전문가 분석 실패: ${(error as Error).message}`);
+    }
+  },
+};
+
+// LLM 모델 선택 노드
+export const modelProviderSelectorFunction: NodeFunction = {
+  id: "model-provider-selector",
+  name: "AI Model Selector",
+  description:
+    "AI 모델 프로바이더와 모델을 선택하여 사용할 모델 식별자를 반환합니다",
+  category: "Solana",
+  groups: ["solana", "utils"],
+  inputs: [
+    {
+      name: "provider",
+      type: "string",
+      required: true,
+      description: "LLM 모델 프로바이더 (huggingface 또는 openrouter)",
+      default: "huggingface",
+    },
+    {
+      name: "model",
+      type: "string",
+      required: true,
+      description: "선택한 프로바이더에서 사용할 모델 이름",
+      default: "gemini-2.0-flash", // 기본 Gemini 모델
+    },
+    {
+      name: "apiKey",
+      type: "string",
+      required: true,
+      description: "프로바이더에서 사용할 API 키 (안전하게 저장됩니다)",
+    },
+  ],
+  output: {
+    name: "modelConfig",
+    type: "object" as FunctionInputType,
+    description: "선택된 모델 설정 (모델 ID, 프로바이더, API 키 등)",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { provider, model, apiKey } = inputs;
+
+      if (!provider) {
+        throw new Error("모델 프로바이더는 필수 입력값입니다");
+      }
+
+      if (!model) {
+        throw new Error("모델 이름은 필수 입력값입니다");
+      }
+
+      if (!apiKey) {
+        throw new Error("API 키는 필수 입력값입니다");
+      }
+
+      // 지원되는 모델 목록
+      const supportedModels = {
+        huggingface: ["mome-1.0", "mome-1.0-pro-exp"],
+        openrouter: [
+          "openai/gpt-4o",
+          "openai/gpt-4-turbo",
+          "openai/gpt-3.5-turbo",
+          "anthropic/claude-3-opus",
+          "anthropic/claude-3-sonnet",
+          "google/gemini-2.0-flash",
+          "google/gemini-1.5-pro",
+        ],
+      };
+
+      // 지원되는 프로바이더인지 확인
+      if (!supportedModels[provider.toLowerCase()]) {
+        throw new Error(
+          `지원되지 않는 프로바이더: ${provider}. 지원되는 프로바이더: huggingface, openrouter`
+        );
+      }
+
+      // 선택한 프로바이더에서 지원하는 모델인지 확인
+      const providerModels = supportedModels[provider.toLowerCase()];
+      if (!providerModels.includes(model)) {
+        throw new Error(
+          `${provider} 프로바이더에서 지원하지 않는 모델: ${model}. 지원되는 모델: ${providerModels.join(
+            ", "
+          )}`
+        );
+      }
+
+      console.log(`선택된 프로바이더: ${provider}, 모델: ${model}`);
+
+      // 모델 설정 반환
+      return {
+        provider: provider.toLowerCase(),
+        model: model,
+        apiKey: apiKey,
+        fullModelId: `${provider.toLowerCase()}/${model}`,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      throw new Error(`모델 선택 실패: ${(error as Error).message}`);
+    }
+  },
+};

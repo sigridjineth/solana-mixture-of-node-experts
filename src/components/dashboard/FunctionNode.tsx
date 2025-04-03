@@ -56,6 +56,83 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
     [data.connectedInputs, nodeFunction?.id]
   );
 
+  // 선택형 입력을 위한 옵션 목록
+  const getInputOptions = useCallback(
+    (inputName: string) => {
+      // Model Selector 노드의 provider 옵션
+      if (
+        nodeFunction?.id === "model-provider-selector" &&
+        inputName === "provider"
+      ) {
+        return [
+          { value: "huggingface", label: "Hugging Face" },
+          { value: "openrouter", label: "OpenRouter" },
+        ];
+      }
+
+      // Model Selector 노드의 model 옵션 (provider에 따라 다름)
+      if (
+        nodeFunction?.id === "model-provider-selector" &&
+        inputName === "model"
+      ) {
+        const provider = data.inputs["provider"] || "huggingface";
+
+        if (provider === "huggingface") {
+          return [
+            {
+              label: "Mixture of Multi-chain Expert 1",
+              value: "gemini-2.0-flash",
+            },
+            {
+              label: "Mixture of Multi-chain Expert 2",
+              value: "gemini-2.0-flash",
+            },
+          ];
+        } else if (provider === "openrouter") {
+          return [
+            { label: "GPT-4o-mini", value: "openai/gpt-4o-mini" },
+            { label: "GPT-o1-mini", value: "openai/o1-mini" },
+            {
+              label: "Claude 3.5 Sonnet",
+              value: "anthropic/claude-3.5-sonnet",
+            },
+            {
+              label: "Claude 3.7 Sonnet",
+              value: "anthropic/claude-3.7-sonnet",
+            },
+            { label: "Gemini 2.0 Flash", value: "google/gemini-2.0-flash" },
+            { label: "Gemini 1.5 Pro", value: "google/gemini-1.5-pro" },
+          ];
+        }
+      }
+
+      return [];
+    },
+    [nodeFunction?.id, data.inputs]
+  );
+
+  // 입력이 선택형 입력인지 확인
+  const isSelectInput = useCallback(
+    (inputName: string) => {
+      if (nodeFunction?.id === "model-provider-selector") {
+        return inputName === "provider" || inputName === "model";
+      }
+      return false;
+    },
+    [nodeFunction?.id]
+  );
+
+  // 입력이 API 키 입력인지 확인 (비밀번호 타입으로 표시)
+  const isApiKeyInput = useCallback(
+    (inputName: string) => {
+      if (nodeFunction?.id === "model-provider-selector") {
+        return inputName === "apiKey";
+      }
+      return false;
+    },
+    [nodeFunction?.id]
+  );
+
   if (!nodeFunction) {
     return (
       <Card
@@ -101,7 +178,6 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
       </CardHeader>
 
       <CardContent className="p-3 pt-0">
-        {/* 입력 필드들 */}
         <div className="mb-4">
           <div className="text-xs font-semibold mb-2">Inputs</div>
           {nodeFunction.inputs
@@ -132,27 +208,58 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                   {input.required && <span className="text-red-500">*</span>}
                 </div>
                 <div className="flex items-center">
-                  <Input
-                    type="text"
-                    value={data.inputs[input.name] || ""}
-                    onChange={(e) =>
-                      handleInputChange(input.name, e.target.value)
-                    }
-                    className="h-7 text-xs ml-1"
-                    placeholder={input.description}
-                    disabled={isInputDisabled(input.name)}
-                  />
+                  {isSelectInput(input.name) ? (
+                    // 드롭다운 선택 필드
+                    <select
+                      value={data.inputs[input.name] || input.default || ""}
+                      onChange={(e) =>
+                        handleInputChange(input.name, e.target.value)
+                      }
+                      className="h-7 text-xs ml-1 w-full rounded-md border border-input bg-background px-3 py-1"
+                      disabled={isInputDisabled(input.name)}
+                    >
+                      {getInputOptions(input.name).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : isApiKeyInput(input.name) ? (
+                    // API 키 입력 필드 (비밀번호 타입)
+                    <Input
+                      type="password"
+                      value={data.inputs[input.name] || ""}
+                      onChange={(e) =>
+                        handleInputChange(input.name, e.target.value)
+                      }
+                      className="h-7 text-xs ml-1"
+                      placeholder={input.description}
+                      disabled={isInputDisabled(input.name)}
+                    />
+                  ) : (
+                    // 일반 텍스트 입력 필드
+                    <Input
+                      type="text"
+                      value={data.inputs[input.name] || ""}
+                      onChange={(e) =>
+                        handleInputChange(input.name, e.target.value)
+                      }
+                      className="h-7 text-xs ml-1"
+                      placeholder={input.description}
+                      disabled={isInputDisabled(input.name)}
+                    />
+                  )}
                 </div>
                 {/* 각 입력이 연결되었는지 상태 표시 */}
                 {data.connectedInputs[input.name] !== undefined && (
                   <div
-                    className="absolute rounded-full border-2 border-background"
+                    className="absolute rounded-full border-1 border-background"
                     style={{
                       zIndex: 20,
-                      left: "-7px",
-                      top: "3px",
-                      width: "15px",
-                      height: "15px",
+                      left: "-5px",
+                      top: "5px",
+                      width: "10px",
+                      height: "10px",
                       backgroundColor: "#10b981",
                       boxShadow: "0 0 2px rgba(0,0,0,0.3)",
                     }}
