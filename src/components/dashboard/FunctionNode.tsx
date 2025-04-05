@@ -123,7 +123,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
       }
 
       // Models 카테고리의 모든 노드의 API 키
-      if (nodeFunction?.category === "Models" && inputName === "apiKey") {
+      if (nodeFunction?.category === "Expert Models" && inputName === "apiKey") {
         return true;
       }
 

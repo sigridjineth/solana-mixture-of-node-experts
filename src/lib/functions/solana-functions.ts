@@ -519,7 +519,7 @@ export const modelProviderSelectorFunction: NodeFunction = {
     },
     {
       name: "apiKey",
-      type: "string",
+      type: "password",
       required: true,
       description: "API key for the provider (stored securely)",
     },
@@ -800,7 +800,14 @@ export const solanaOrcaFunction: NodeFunction = {
   category: "Expert Models",
   groups: ["solana"],
   icon: "/solana-orca.webp",
-  inputs: [],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "API key for Orca (stored securely)",
+    },
+  ],
   output: {
     name: "result",
     type: "object",
@@ -822,7 +829,14 @@ export const solanaJupyterFunction: NodeFunction = {
   category: "Expert Models",
   groups: ["solana"],
   icon: "/solana-jupyter.webp",
-  inputs: [],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "API key for Jupyter (stored securely)",
+    },
+  ],
   output: {
     name: "result",
     type: "object",
@@ -844,7 +858,14 @@ export const solanaRaydiumFunction: NodeFunction = {
   category: "Expert Models",
   groups: ["solana"],
   icon: "/solana-raydium.webp",
-  inputs: [],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "API key for Raydium (stored securely)",
+    },
+  ],
   output: {
     name: "result",
     type: "object",
@@ -866,7 +887,14 @@ export const solanaHuggingFaceFunction: NodeFunction = {
   category: "Expert Models",
   groups: ["solana"],
   icon: "/huggingface-color.svg",
-  inputs: [],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "API key for HuggingFace (stored securely)",
+    },
+  ],
   output: {
     name: "result",
     type: "object",

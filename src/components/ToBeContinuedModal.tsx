@@ -32,7 +32,7 @@ export function ToBeContinuedModal({
         <div className="flex items-center justify-center space-x-4 py-4">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              We're working on implementing this feature. Please check back later.
+              {"We're working on implementing this feature. Please check back later."}
             </p>
           </div>
         </div>
