@@ -5,6 +5,7 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
 import { Wallet, Link } from "lucide-react";
 import { Handle, Position } from "reactflow";
+import { Card } from "@/components/ui/card";
 
 import { useAppKit } from "@reown/appkit/react";
 
@@ -114,7 +115,7 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+    <Card className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <Wallet className="h-5 w-5" />
@@ -172,7 +173,7 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
           position: "absolute",
         }}
       />
-    </div>
+    </Card>
   );
 };
 

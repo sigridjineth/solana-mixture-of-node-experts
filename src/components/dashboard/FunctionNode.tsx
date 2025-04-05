@@ -126,7 +126,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
           "relative rounded-lg border bg-card text-card-foreground shadow-sm",
           selected && "ring-2 ring-primary"
         )}
-        style={{ width: "250px" }}
+        style={{ width: "280px" }}
       >
         <ConnectWalletNode data={data} />
       </div>
@@ -140,7 +140,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
           "relative rounded-lg border bg-card text-card-foreground shadow-sm",
           selected && "ring-2 ring-primary"
         )}
-        style={{ width: "250px" }}
+        style={{ width: "280px" }}
       >
         <SendTransactionNode data={data} />
       </div>

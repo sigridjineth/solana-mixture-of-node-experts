@@ -645,7 +645,7 @@ export const solanaSendTransactionFunction: NodeFunction = {
   id: "solana-send-transaction",
   name: "Send Transaction",
   description: "Send a Solana transaction",
-  category: "Solana",
+  category: "Tx Tools",
   groups: ["solana"],
   inputs: [
     {

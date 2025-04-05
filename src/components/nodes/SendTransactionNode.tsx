@@ -59,16 +59,13 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
         setSenderAddress(connectedWalletInfo.address);
         setIsConnected(true);
       }
-    } else if (address && walletProvider?.publicKey) {
-      // Fallback to the current wallet if no connected sender
-      setSenderAddress(address);
-      setIsConnected(true);
     } else {
+      // Don't use the current wallet if no connected sender from ConnectWalletNode
       setIsConnected(false);
       setSenderAddress(null);
       setWalletInfo(null);
     }
-  }, [address, walletProvider?.publicKey, data.connectedInputs?.sender]);
+  }, [data.connectedInputs?.sender]);
 
   const handleConnect = async () => {
     try {
@@ -84,7 +81,7 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
 
   const handleSendTransaction = async () => {
     if (!isConnected) {
-      setError("Please connect your wallet first");
+      setError("Please connect a wallet node to the sender input first");
       return;
     }
 
@@ -200,14 +197,13 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
       className={`shadow-md relative ${selected ? "ring-2 ring-primary" : ""} ${
         data.hasError ? "border-red-500" : ""
       }`}
-      style={{ width: "280px" }}
       data-node-id={id}
     >
       <CardHeader className="p-3 pb-2 flex flex-row justify-between items-center">
         <div>
           <CardTitle className="text-sm font-medium">{data.label || "Send Transaction"}</CardTitle>
           <Badge variant="outline" className="mt-1 text-xs">
-            Solana
+            Tx Tools
           </Badge>
         </div>
         <Button
@@ -249,15 +245,14 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
               <span className="text-red-500">*</span>
             </div>
             <div className="text-sm bg-gray-50 p-2 rounded">
-              {senderAddress
-                ? `${senderAddress.slice(0, 4)}...${senderAddress.slice(-4)}`
-                : "Not connected"}
+              {senderAddress ? (
+                `${senderAddress.slice(0, 6)}...${senderAddress.slice(-6)}`
+              ) : (
+                <div className="text-xs text-amber-600">
+                  Connect a wallet node to the sender input to proceed
+                </div>
+              )}
             </div>
-            {!isConnected && (
-              <Button variant="outline" size="sm" className="mt-2 w-full" onClick={handleConnect}>
-                Connect Wallet
-              </Button>
-            )}
           </div>
 
           {/* Recipient Input */}
