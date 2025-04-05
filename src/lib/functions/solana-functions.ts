@@ -666,12 +666,6 @@ export const solanaSendTransactionFunction: NodeFunction = {
       required: true,
       description: "Amount of SOL to send",
     },
-    {
-      name: "walletInfo",
-      type: "object",
-      required: false,
-      description: "Wallet information from Connect Wallet node's walletInfo output",
-    },
   ],
   output: {
     name: "transactionInfo",
