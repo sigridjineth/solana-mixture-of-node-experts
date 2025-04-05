@@ -10,10 +10,11 @@ import ReactFlow, {
   OnConnectStart,
   OnConnectEnd,
   Connection,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { Play, Save, Upload, RefreshCw, Server, Copy, Check } from "lucide-react";
+import { Play, Save, Upload, RefreshCw, Server, Copy, Check, FileText } from "lucide-react";
 import { useFlow } from "@/components/providers/FlowProvider";
 import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
@@ -26,6 +27,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import exampleWorkflow from "@/data/example-workflow.json";
 
 // 노드 타입 정의
 const nodeTypes = {
@@ -216,6 +224,18 @@ const NodeDashboard = () => {
       });
   }, []);
 
+  // 예제 워크플로우 로드 함수
+  const handleLoadExample = useCallback(() => {
+    if (flowInstance.current && exampleWorkflow.nodes && exampleWorkflow.edges) {
+      flowInstance.current.setNodes(exampleWorkflow.nodes);
+      flowInstance.current.setEdges(exampleWorkflow.edges);
+
+      if (exampleWorkflow.viewport) {
+        flowInstance.current.setViewport(exampleWorkflow.viewport);
+      }
+    }
+  }, []);
+
   return (
     <div className="w-full h-full">
       <ReactFlow
@@ -289,15 +309,24 @@ const NodeDashboard = () => {
             Get MCP Server
           </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-            onClick={handleLoadFlow}
-          >
-            <Upload className="h-4 w-4" />
-            Load
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Upload className="h-4 w-4" />
+                Load
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleLoadExample}>
+                <FileText className="h-4 w-4 mr-2" />
+                Load Example
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLoadFlow}>
+                <Upload className="h-4 w-4 mr-2" />
+                Load from Laptop
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </Panel>
 
         <Dialog open={isMcpDialogOpen} onOpenChange={setIsMcpDialogOpen}>

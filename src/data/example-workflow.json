@@ -1,0 +1,542 @@
+{
+  "nodes": [
+    {
+      "id": "qkb713m",
+      "type": "function",
+      "position": { "x": -1365, "y": 240 },
+      "data": {
+        "label": "Get SolTx",
+        "functionId": "solana-tx-fetch",
+        "inputs": {
+          "txHash": "2JBPCZmJ4qfaYe2YJFhkunhFgfXF98Y6iNQbpCgkmDsks65noHvQxothkbEjNgLb45hfjdjEjoD1JJDgjd9gbgpm"
+        },
+        "connectedInputs": {},
+        "isProcessing": false,
+        "hasError": false,
+        "errorMessage": "",
+        "returnValue": {
+          "blockTime": 1743639802,
+          "meta": {
+            "computeUnitsConsumed": 45708,
+            "err": null,
+            "fee": 15075,
+            "innerInstructions": [],
+            "loadedAddresses": { "readonly": [], "writable": [] },
+            "logMessages": [
+              "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih invoke [1]",
+              "Program log: Instruction: CancelOrder",
+              "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih consumed 45558 of 203000 compute units",
+              "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih success",
+              "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+              "Program ComputeBudget111111111111111111111111111111 success"
+            ],
+            "postBalances": [
+              25629523926, 18650560743, 12834240, 367153478620, 22070160, 8776560, 2039280, 0,
+              23002800, 2039280, 5957760, 8498160, 1, 1141440, 934087680
+            ],
+            "postTokenBalances": [
+              {
+                "accountIndex": 6,
+                "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                "owner": "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "uiTokenAmount": {
+                  "amount": "1136662000",
+                  "decimals": 6,
+                  "uiAmount": 1136.662,
+                  "uiAmountString": "1136.662"
+                }
+              },
+              {
+                "accountIndex": 9,
+                "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                "owner": "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "uiTokenAmount": {
+                  "amount": "354982752843",
+                  "decimals": 6,
+                  "uiAmount": 354982.752843,
+                  "uiAmountString": "354982.752843"
+                }
+              }
+            ],
+            "preBalances": [
+              25629539001, 18650560743, 12834240, 367151216620, 22070160, 8776560, 2039280, 2262000,
+              23002800, 2039280, 5957760, 8498160, 1, 1141440, 934087680
+            ],
+            "preTokenBalances": [
+              {
+                "accountIndex": 6,
+                "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                "owner": "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "uiTokenAmount": {
+                  "amount": "1136662000",
+                  "decimals": 6,
+                  "uiAmount": 1136.662,
+                  "uiAmountString": "1136.662"
+                }
+              },
+              {
+                "accountIndex": 9,
+                "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                "owner": "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "uiTokenAmount": {
+                  "amount": "354982752843",
+                  "decimals": 6,
+                  "uiAmount": 354982.752843,
+                  "uiAmountString": "354982.752843"
+                }
+              }
+            ],
+            "rewards": [],
+            "status": { "Ok": null }
+          },
+          "slot": 330914885,
+          "transaction": {
+            "message": {
+              "accountKeys": [
+                "E1t48vEXoUbqFoHaCDmZg7cGkTbPsG2u6GKfJcke5aAW",
+                "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                "4tw3PS8QehQxNWUDZ6BDU9aQ7twhJ4kxXYqRj2qXEaPT",
+                "8WVhh4wZvS5kra1tjtEjCjqZ5djL5ZYZ4YL4uRjr5zCE",
+                "9SsvT5ZidFJ4BEhj3y57opY5CVfnAip8GmtiSPzo4iT9",
+                "CgUMeLZnmamTGCwVhy2d113yVg8gMt5GhNrzmWwnDg9S",
+                "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                "FbUuaPzzZgsnada6jDHStEjtQNhUhUH73F3QrmRfyFdY",
+                "G1a5XG6AuUezuoVgyZh4mwasmFcpb5uWrpqdF2fDaCAv",
+                "HQLan7gRhKPQizwaSocLLF5cX5pH6ZPjSxL9ncfr9TUp",
+                "HR4RW5eHAmADoB5EZVimLyRucUK6FC4H3dwr5rNpoUsB",
+                "683XVT1SY2wzRztkJ1kdPEGb1LyDVSVtNbqGQw7HtYkT",
+                "ComputeBudget111111111111111111111111111111",
+                "monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih",
+                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+              ],
+              "header": {
+                "numReadonlySignedAccounts": 0,
+                "numReadonlyUnsignedAccounts": 4,
+                "numRequiredSignatures": 2
+              },
+              "instructions": [
+                {
+                  "accounts": [7, 1, 9, 3, 10, 8, 4, 11, 2, 6, 5, 14],
+                  "data": "GyYUo9YWRS3",
+                  "programIdIndex": 13,
+                  "stackHeight": null
+                },
+                {
+                  "accounts": [],
+                  "data": "3hd3odyyp3J7",
+                  "programIdIndex": 12,
+                  "stackHeight": null
+                }
+              ],
+              "recentBlockhash": "FGau3VYnh1R8noRHEvtUFWP1HaEqn2dEeMVmnB6if1mr"
+            },
+            "signatures": [
+              "2JBPCZmJ4qfaYe2YJFhkunhFgfXF98Y6iNQbpCgkmDsks65noHvQxothkbEjNgLb45hfjdjEjoD1JJDgjd9gbgpm",
+              "61zaHCjXKSz8swUxQwhVu1ziXCBcdDoGpsE1JzoAU9HMefpLMXhuwSkG3o2B48kYjG4qb6veWVAtwgjg2BNSMJ94"
+            ]
+          },
+          "version": "legacy"
+        }
+      },
+      "width": 280,
+      "height": 596,
+      "selected": false,
+      "positionAbsolute": { "x": -1365, "y": 240 },
+      "dragging": false
+    },
+    {
+      "id": "bep8cgg",
+      "type": "function",
+      "position": { "x": -210, "y": 1485 },
+      "data": {
+        "label": "SolTx Classifier",
+        "functionId": "solana-tx-classify-expert",
+        "inputs": { "aiModel": "" },
+        "connectedInputs": {
+          "aiModel": "mome-1.0-pro-exp",
+          "transaction": {
+            "blockTime": 1743639802,
+            "meta": {
+              "computeUnitsConsumed": 45708,
+              "err": null,
+              "fee": 15075,
+              "innerInstructions": [],
+              "loadedAddresses": { "readonly": [], "writable": [] },
+              "logMessages": [
+                "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih invoke [1]",
+                "Program log: Instruction: CancelOrder",
+                "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih consumed 45558 of 203000 compute units",
+                "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih success",
+                "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+                "Program ComputeBudget111111111111111111111111111111 success"
+              ],
+              "postBalances": [
+                25629523926, 18650560743, 12834240, 367153478620, 22070160, 8776560, 2039280, 0,
+                23002800, 2039280, 5957760, 8498160, 1, 1141440, 934087680
+              ],
+              "postTokenBalances": [
+                {
+                  "accountIndex": 6,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "1136662000",
+                    "decimals": 6,
+                    "uiAmount": 1136.662,
+                    "uiAmountString": "1136.662"
+                  }
+                },
+                {
+                  "accountIndex": 9,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "354982752843",
+                    "decimals": 6,
+                    "uiAmount": 354982.752843,
+                    "uiAmountString": "354982.752843"
+                  }
+                }
+              ],
+              "preBalances": [
+                25629539001, 18650560743, 12834240, 367151216620, 22070160, 8776560, 2039280,
+                2262000, 23002800, 2039280, 5957760, 8498160, 1, 1141440, 934087680
+              ],
+              "preTokenBalances": [
+                {
+                  "accountIndex": 6,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "1136662000",
+                    "decimals": 6,
+                    "uiAmount": 1136.662,
+                    "uiAmountString": "1136.662"
+                  }
+                },
+                {
+                  "accountIndex": 9,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "354982752843",
+                    "decimals": 6,
+                    "uiAmount": 354982.752843,
+                    "uiAmountString": "354982.752843"
+                  }
+                }
+              ],
+              "rewards": [],
+              "status": { "Ok": null }
+            },
+            "slot": 330914885,
+            "transaction": {
+              "message": {
+                "accountKeys": [
+                  "E1t48vEXoUbqFoHaCDmZg7cGkTbPsG2u6GKfJcke5aAW",
+                  "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                  "4tw3PS8QehQxNWUDZ6BDU9aQ7twhJ4kxXYqRj2qXEaPT",
+                  "8WVhh4wZvS5kra1tjtEjCjqZ5djL5ZYZ4YL4uRjr5zCE",
+                  "9SsvT5ZidFJ4BEhj3y57opY5CVfnAip8GmtiSPzo4iT9",
+                  "CgUMeLZnmamTGCwVhy2d113yVg8gMt5GhNrzmWwnDg9S",
+                  "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                  "FbUuaPzzZgsnada6jDHStEjtQNhUhUH73F3QrmRfyFdY",
+                  "G1a5XG6AuUezuoVgyZh4mwasmFcpb5uWrpqdF2fDaCAv",
+                  "HQLan7gRhKPQizwaSocLLF5cX5pH6ZPjSxL9ncfr9TUp",
+                  "HR4RW5eHAmADoB5EZVimLyRucUK6FC4H3dwr5rNpoUsB",
+                  "683XVT1SY2wzRztkJ1kdPEGb1LyDVSVtNbqGQw7HtYkT",
+                  "ComputeBudget111111111111111111111111111111",
+                  "monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih",
+                  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                ],
+                "header": {
+                  "numReadonlySignedAccounts": 0,
+                  "numReadonlyUnsignedAccounts": 4,
+                  "numRequiredSignatures": 2
+                },
+                "instructions": [
+                  {
+                    "accounts": [7, 1, 9, 3, 10, 8, 4, 11, 2, 6, 5, 14],
+                    "data": "GyYUo9YWRS3",
+                    "programIdIndex": 13,
+                    "stackHeight": null
+                  },
+                  {
+                    "accounts": [],
+                    "data": "3hd3odyyp3J7",
+                    "programIdIndex": 12,
+                    "stackHeight": null
+                  }
+                ],
+                "recentBlockhash": "FGau3VYnh1R8noRHEvtUFWP1HaEqn2dEeMVmnB6if1mr"
+              },
+              "signatures": [
+                "2JBPCZmJ4qfaYe2YJFhkunhFgfXF98Y6iNQbpCgkmDsks65noHvQxothkbEjNgLb45hfjdjEjoD1JJDgjd9gbgpm",
+                "61zaHCjXKSz8swUxQwhVu1ziXCBcdDoGpsE1JzoAU9HMefpLMXhuwSkG3o2B48kYjG4qb6veWVAtwgjg2BNSMJ94"
+              ]
+            },
+            "version": "legacy"
+          }
+        },
+        "loading": false,
+        "returnValue": "defi-expert",
+        "hasError": false,
+        "errorMessage": "",
+        "isProcessing": false
+      },
+      "width": 280,
+      "height": 576,
+      "selected": false,
+      "positionAbsolute": { "x": -210, "y": 1485 },
+      "dragging": false
+    },
+    {
+      "id": "obrvgzy",
+      "type": "function",
+      "position": { "x": 735, "y": 390 },
+      "data": {
+        "label": "SolTx Expert Analyzer",
+        "functionId": "solana-tx-expert-analyze",
+        "inputs": { "aiModel": "" },
+        "connectedInputs": {
+          "transaction": {
+            "blockTime": 1743639802,
+            "meta": {
+              "computeUnitsConsumed": 45708,
+              "err": null,
+              "fee": 15075,
+              "innerInstructions": [],
+              "loadedAddresses": { "readonly": [], "writable": [] },
+              "logMessages": [
+                "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih invoke [1]",
+                "Program log: Instruction: CancelOrder",
+                "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih consumed 45558 of 203000 compute units",
+                "Program monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih success",
+                "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+                "Program ComputeBudget111111111111111111111111111111 success"
+              ],
+              "postBalances": [
+                25629523926, 18650560743, 12834240, 367153478620, 22070160, 8776560, 2039280, 0,
+                23002800, 2039280, 5957760, 8498160, 1, 1141440, 934087680
+              ],
+              "postTokenBalances": [
+                {
+                  "accountIndex": 6,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "1136662000",
+                    "decimals": 6,
+                    "uiAmount": 1136.662,
+                    "uiAmountString": "1136.662"
+                  }
+                },
+                {
+                  "accountIndex": 9,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "354982752843",
+                    "decimals": 6,
+                    "uiAmount": 354982.752843,
+                    "uiAmountString": "354982.752843"
+                  }
+                }
+              ],
+              "preBalances": [
+                25629539001, 18650560743, 12834240, 367151216620, 22070160, 8776560, 2039280,
+                2262000, 23002800, 2039280, 5957760, 8498160, 1, 1141440, 934087680
+              ],
+              "preTokenBalances": [
+                {
+                  "accountIndex": 6,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "1136662000",
+                    "decimals": 6,
+                    "uiAmount": 1136.662,
+                    "uiAmountString": "1136.662"
+                  }
+                },
+                {
+                  "accountIndex": 9,
+                  "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                  "owner": "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                  "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                  "uiTokenAmount": {
+                    "amount": "354982752843",
+                    "decimals": 6,
+                    "uiAmount": 354982.752843,
+                    "uiAmountString": "354982.752843"
+                  }
+                }
+              ],
+              "rewards": [],
+              "status": { "Ok": null }
+            },
+            "slot": 330914885,
+            "transaction": {
+              "message": {
+                "accountKeys": [
+                  "E1t48vEXoUbqFoHaCDmZg7cGkTbPsG2u6GKfJcke5aAW",
+                  "8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc",
+                  "4tw3PS8QehQxNWUDZ6BDU9aQ7twhJ4kxXYqRj2qXEaPT",
+                  "8WVhh4wZvS5kra1tjtEjCjqZ5djL5ZYZ4YL4uRjr5zCE",
+                  "9SsvT5ZidFJ4BEhj3y57opY5CVfnAip8GmtiSPzo4iT9",
+                  "CgUMeLZnmamTGCwVhy2d113yVg8gMt5GhNrzmWwnDg9S",
+                  "DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU",
+                  "FbUuaPzzZgsnada6jDHStEjtQNhUhUH73F3QrmRfyFdY",
+                  "G1a5XG6AuUezuoVgyZh4mwasmFcpb5uWrpqdF2fDaCAv",
+                  "HQLan7gRhKPQizwaSocLLF5cX5pH6ZPjSxL9ncfr9TUp",
+                  "HR4RW5eHAmADoB5EZVimLyRucUK6FC4H3dwr5rNpoUsB",
+                  "683XVT1SY2wzRztkJ1kdPEGb1LyDVSVtNbqGQw7HtYkT",
+                  "ComputeBudget111111111111111111111111111111",
+                  "monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih",
+                  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                ],
+                "header": {
+                  "numReadonlySignedAccounts": 0,
+                  "numReadonlyUnsignedAccounts": 4,
+                  "numRequiredSignatures": 2
+                },
+                "instructions": [
+                  {
+                    "accounts": [7, 1, 9, 3, 10, 8, 4, 11, 2, 6, 5, 14],
+                    "data": "GyYUo9YWRS3",
+                    "programIdIndex": 13,
+                    "stackHeight": null
+                  },
+                  {
+                    "accounts": [],
+                    "data": "3hd3odyyp3J7",
+                    "programIdIndex": 12,
+                    "stackHeight": null
+                  }
+                ],
+                "recentBlockhash": "FGau3VYnh1R8noRHEvtUFWP1HaEqn2dEeMVmnB6if1mr"
+              },
+              "signatures": [
+                "2JBPCZmJ4qfaYe2YJFhkunhFgfXF98Y6iNQbpCgkmDsks65noHvQxothkbEjNgLb45hfjdjEjoD1JJDgjd9gbgpm",
+                "61zaHCjXKSz8swUxQwhVu1ziXCBcdDoGpsE1JzoAU9HMefpLMXhuwSkG3o2B48kYjG4qb6veWVAtwgjg2BNSMJ94"
+              ]
+            },
+            "version": "legacy"
+          },
+          "expertModel": "defi-expert",
+          "aiModel": "mome-1.0-pro-exp"
+        },
+        "isProcessing": false,
+        "hasError": false,
+        "errorMessage": "",
+        "returnValue": "This Solana transaction appears to be related to order cancellation on the Monaco protocol, a decentralized prediction market platform. The core instruction invokes the `monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih` program, specifically calling the \"CancelOrder\" instruction as indicated in the log messages. The transaction consumed a relatively small amount of compute units (45708), suggesting a straightforward cancellation process. The fee paid was 15075 lamports.\n\nThe pre and post token balances show no change for the token accounts involved, indicating that no tokens were transferred as part of the cancellation. This is expected behavior for a simple order cancellation. The accounts involved likely represent the market, the user's account, and potentially accounts related to the order book and matching engine within the Monaco protocol. Without further context on the specific data structure of Monaco's orders, it's difficult to determine the exact role of each account. However, the transaction successfully cancelled an order within the Monaco prediction market, releasing any locked funds or positions associated with that order.\n"
+      },
+      "width": 280,
+      "height": 920,
+      "selected": false,
+      "positionAbsolute": { "x": 735, "y": 390 },
+      "dragging": false
+    },
+    {
+      "id": "la1cbby",
+      "type": "function",
+      "position": { "x": -435, "y": 585 },
+      "data": {
+        "label": "AI Model Selector",
+        "functionId": "model-provider-selector",
+        "inputs": { "provider": "huggingface", "apiKey": "12341234", "model": "mome-1.0-pro-exp" },
+        "connectedInputs": {},
+        "isProcessing": false,
+        "hasError": false,
+        "errorMessage": "",
+        "returnValue": "mome-1.0-pro-exp"
+      },
+      "width": 280,
+      "height": 445,
+      "selected": false,
+      "positionAbsolute": { "x": -435, "y": 585 },
+      "dragging": false
+    },
+    {
+      "id": "cvjpnch",
+      "type": "output",
+      "position": { "x": 1380, "y": 465 },
+      "data": {
+        "label": "Output",
+        "inputs": {},
+        "connectedInputs": {
+          "input": "This Solana transaction appears to be related to order cancellation on the Monaco protocol, a decentralized prediction market platform. The core instruction invokes the `monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih` program, specifically calling the \"CancelOrder\" instruction as indicated in the log messages. The transaction consumed a relatively small amount of compute units (45708), suggesting a straightforward cancellation process. The fee paid was 15075 lamports.\n\nThe pre and post token balances show no change for the token accounts involved, indicating that no tokens were transferred as part of the cancellation. This is expected behavior for a simple order cancellation. The accounts involved likely represent the market, the user's account, and potentially accounts related to the order book and matching engine within the Monaco protocol. Without further context on the specific data structure of Monaco's orders, it's difficult to determine the exact role of each account. However, the transaction successfully cancelled an order within the Monaco prediction market, releasing any locked funds or positions associated with that order.\n"
+        },
+        "isProcessing": false,
+        "hasError": false
+      },
+      "width": 150,
+      "height": 372,
+      "selected": false,
+      "positionAbsolute": { "x": 1380, "y": 465 },
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "type": "custom",
+      "source": "la1cbby",
+      "sourceHandle": "output",
+      "target": "bep8cgg",
+      "targetHandle": "input-aiModel",
+      "id": "reactflow__edge-la1cbbyoutput-bep8cgginput-aiModel"
+    },
+    {
+      "type": "custom",
+      "source": "qkb713m",
+      "sourceHandle": "output",
+      "target": "bep8cgg",
+      "targetHandle": "input-transaction",
+      "id": "reactflow__edge-qkb713moutput-bep8cgginput-transaction"
+    },
+    {
+      "type": "custom",
+      "source": "qkb713m",
+      "sourceHandle": "output",
+      "target": "obrvgzy",
+      "targetHandle": "input-transaction",
+      "id": "reactflow__edge-qkb713moutput-obrvgzyinput-transaction"
+    },
+    {
+      "type": "custom",
+      "source": "bep8cgg",
+      "sourceHandle": "output",
+      "target": "obrvgzy",
+      "targetHandle": "input-expertModel",
+      "id": "reactflow__edge-bep8cggoutput-obrvgzyinput-expertModel"
+    },
+    {
+      "type": "custom",
+      "source": "obrvgzy",
+      "sourceHandle": "output",
+      "target": "cvjpnch",
+      "targetHandle": "input",
+      "id": "reactflow__edge-obrvgzyoutput-cvjpnchinput"
+    },
+    {
+      "type": "custom",
+      "source": "la1cbby",
+      "sourceHandle": "output",
+      "target": "obrvgzy",
+      "targetHandle": "input-aiModel",
+      "id": "reactflow__edge-la1cbbyoutput-obrvgzyinput-aiModel"
+    }
+  ],
+  "viewport": { "x": 240.27852820549788, "y": -6.357511564734466, "zoom": 0.5041614069159184 }
+}
