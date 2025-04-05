@@ -3,7 +3,7 @@
     {
       "id": "qkb713m",
       "type": "function",
-      "position": { "x": -1365, "y": 240 },
+      "position": { "x": -330, "y": 255 },
       "data": {
         "label": "Get SolTx",
         "functionId": "solana-tx-fetch",
@@ -143,15 +143,15 @@
         }
       },
       "width": 280,
-      "height": 596,
+      "height": 580,
       "selected": false,
-      "positionAbsolute": { "x": -1365, "y": 240 },
+      "positionAbsolute": { "x": -330, "y": 255 },
       "dragging": false
     },
     {
       "id": "bep8cgg",
       "type": "function",
-      "position": { "x": -210, "y": 1485 },
+      "position": { "x": -15, "y": 555 },
       "data": {
         "label": "SolTx Classifier",
         "functionId": "solana-tx-classify-expert",
@@ -293,15 +293,15 @@
         "isProcessing": false
       },
       "width": 280,
-      "height": 576,
+      "height": 560,
       "selected": false,
-      "positionAbsolute": { "x": -210, "y": 1485 },
+      "positionAbsolute": { "x": -15, "y": 555 },
       "dragging": false
     },
     {
       "id": "obrvgzy",
       "type": "function",
-      "position": { "x": 735, "y": 390 },
+      "position": { "x": 360, "y": 195 },
       "data": {
         "label": "SolTx Expert Analyzer",
         "functionId": "solana-tx-expert-analyze",
@@ -438,20 +438,18 @@
           "aiModel": "mome-1.0-pro-exp"
         },
         "isProcessing": false,
-        "hasError": false,
-        "errorMessage": "",
-        "returnValue": "This Solana transaction appears to be related to order cancellation on the Monaco protocol, a decentralized prediction market platform. The core instruction invokes the `monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih` program, specifically calling the \"CancelOrder\" instruction as indicated in the log messages. The transaction consumed a relatively small amount of compute units (45708), suggesting a straightforward cancellation process. The fee paid was 15075 lamports.\n\nThe pre and post token balances show no change for the token accounts involved, indicating that no tokens were transferred as part of the cancellation. This is expected behavior for a simple order cancellation. The accounts involved likely represent the market, the user's account, and potentially accounts related to the order book and matching engine within the Monaco protocol. Without further context on the specific data structure of Monaco's orders, it's difficult to determine the exact role of each account. However, the transaction successfully cancelled an order within the Monaco prediction market, releasing any locked funds or positions associated with that order.\n"
+        "hasError": false
       },
       "width": 280,
-      "height": 920,
+      "height": 624,
       "selected": false,
-      "positionAbsolute": { "x": 735, "y": 390 },
+      "positionAbsolute": { "x": 360, "y": 195 },
       "dragging": false
     },
     {
       "id": "la1cbby",
       "type": "function",
-      "position": { "x": -435, "y": 585 },
+      "position": { "x": -15, "y": 75 },
       "data": {
         "label": "AI Model Selector",
         "functionId": "model-provider-selector",
@@ -463,28 +461,28 @@
         "returnValue": "mome-1.0-pro-exp"
       },
       "width": 280,
-      "height": 445,
+      "height": 436,
       "selected": false,
-      "positionAbsolute": { "x": -435, "y": 585 },
+      "positionAbsolute": { "x": -15, "y": 75 },
       "dragging": false
     },
     {
       "id": "cvjpnch",
       "type": "output",
-      "position": { "x": 1380, "y": 465 },
+      "position": { "x": 735, "y": 315 },
       "data": {
         "label": "Output",
         "inputs": {},
         "connectedInputs": {
-          "input": "This Solana transaction appears to be related to order cancellation on the Monaco protocol, a decentralized prediction market platform. The core instruction invokes the `monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih` program, specifically calling the \"CancelOrder\" instruction as indicated in the log messages. The transaction consumed a relatively small amount of compute units (45708), suggesting a straightforward cancellation process. The fee paid was 15075 lamports.\n\nThe pre and post token balances show no change for the token accounts involved, indicating that no tokens were transferred as part of the cancellation. This is expected behavior for a simple order cancellation. The accounts involved likely represent the market, the user's account, and potentially accounts related to the order book and matching engine within the Monaco protocol. Without further context on the specific data structure of Monaco's orders, it's difficult to determine the exact role of each account. However, the transaction successfully cancelled an order within the Monaco prediction market, releasing any locked funds or positions associated with that order.\n"
+          "input": "This Solana transaction involves an interaction with the Monaco protocol, specifically a \"CancelOrder\" instruction. The log messages clearly indicate the successful execution of this instruction by the `monacoUXKtUi6vKsQwaLyxmXKSievfNWEcYXTgkbCih` program. The transaction consumed a relatively small amount of compute units (45708), suggesting a straightforward operation. The fee paid was 15075 lamports.\n\nAnalyzing the pre and post token balances, we can see a change in the balance of the token with mint address `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` (likely USDC) for the account `DnyfpzgeSVDTNojnJs6FTv81CLyzQEEk4qny8QKQVPJU`. While the balance remains the same, this account is involved in the transaction, suggesting it might be the order owner or a related account. The other token account `8zNMRXJPoSBJ98iwZTFYQJr2i7bkAVognZV89vXaZSwc` also holds USDC, and its balance remains unchanged. This suggests the cancellation didn't involve a transfer of funds, but rather a modification of an existing order within the Monaco protocol.\n\nFrom a DeFi perspective, this transaction highlights the importance of order management within decentralized exchanges and prediction markets. The ability to cancel orders is crucial for users to manage their risk and adjust their positions based on market conditions. The Monaco protocol, in this case, provides this functionality. Without more context on the specific order being cancelled (price, size, market), it's difficult to assess the full impact of this transaction. However, the successful execution of the \"CancelOrder\" instruction indicates the protocol is functioning as intended.\n"
         },
         "isProcessing": false,
         "hasError": false
       },
       "width": 150,
       "height": 372,
-      "selected": false,
-      "positionAbsolute": { "x": 1380, "y": 465 },
+      "selected": true,
+      "positionAbsolute": { "x": 735, "y": 315 },
       "dragging": false
     }
   ],
@@ -538,5 +536,5 @@
       "id": "reactflow__edge-la1cbbyoutput-obrvgzyinput-aiModel"
     }
   ],
-  "viewport": { "x": 240.27852820549788, "y": -6.357511564734466, "zoom": 0.5041614069159184 }
+  "viewport": { "x": 402.45985376364666, "y": -9.845175953943738, "zoom": 0.5498163695861767 }
 }
