@@ -2,13 +2,7 @@
 
 import React, { memo, useCallback } from "react";
 import { Handle, Position } from "reactflow";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -17,12 +11,11 @@ import { cn, formatNodeData } from "@/lib/utils";
 import { CustomNodeProps } from "@/types/node";
 import { useFlow } from "@/components/providers/FlowProvider";
 import { getFunctionById } from "@/lib/functions/registry";
+import ConnectWalletNode from "../nodes/ConnectWalletNode";
 
 const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   const { runNode, updateNodeInputs } = useFlow();
-  const nodeFunction = data.functionId
-    ? getFunctionById(data.functionId)
-    : undefined;
+  const nodeFunction = data.functionId ? getFunctionById(data.functionId) : undefined;
 
   const handleInputChange = useCallback(
     (name: string, value: string) => {
@@ -44,10 +37,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
       }
 
       // SolTx Intelligence 노드이고 result가 연결되었으면 모든 입력 비활성화
-      if (
-        nodeFunction?.id === "solana-history-insights" &&
-        data.connectedInputs["result"]
-      ) {
+      if (nodeFunction?.id === "solana-history-insights" && data.connectedInputs["result"]) {
         return true;
       }
 
@@ -60,10 +50,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   const getInputOptions = useCallback(
     (inputName: string) => {
       // Model Selector 노드의 provider 옵션
-      if (
-        nodeFunction?.id === "model-provider-selector" &&
-        inputName === "provider"
-      ) {
+      if (nodeFunction?.id === "model-provider-selector" && inputName === "provider") {
         return [
           { value: "huggingface", label: "Hugging Face" },
           { value: "openrouter", label: "OpenRouter" },
@@ -71,10 +58,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
       }
 
       // Model Selector 노드의 model 옵션 (provider에 따라 다름)
-      if (
-        nodeFunction?.id === "model-provider-selector" &&
-        inputName === "model"
-      ) {
+      if (nodeFunction?.id === "model-provider-selector" && inputName === "model") {
         const provider = data.inputs["provider"] || "huggingface";
 
         if (provider === "huggingface") {
@@ -133,11 +117,24 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
     [nodeFunction?.id]
   );
 
+  // Custom node rendering for specific function types
+  if (nodeFunction?.id === "solana-wallet-connect") {
+    return (
+      <div
+        className={cn(
+          "relative rounded-lg border bg-card text-card-foreground shadow-sm",
+          selected && "ring-2 ring-primary"
+        )}
+        style={{ width: "250px" }}
+      >
+        <ConnectWalletNode data={data} />
+      </div>
+    );
+  }
+
   if (!nodeFunction) {
     return (
-      <Card
-        className={cn("min-w-64 shadow-md", selected && "ring-2 ring-primary")}
-      >
+      <Card className={cn("min-w-64 shadow-md", selected && "ring-2 ring-primary")}>
         <CardHeader className="p-3">
           <CardTitle className="text-sm">Function not found</CardTitle>
         </CardHeader>
@@ -212,9 +209,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                     // 드롭다운 선택 필드
                     <select
                       value={data.inputs[input.name] || input.default || ""}
-                      onChange={(e) =>
-                        handleInputChange(input.name, e.target.value)
-                      }
+                      onChange={(e) => handleInputChange(input.name, e.target.value)}
                       className="h-7 text-xs ml-1 w-full rounded-md border border-input bg-background px-3 py-1"
                       disabled={isInputDisabled(input.name)}
                     >
@@ -229,9 +224,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                     <Input
                       type="password"
                       value={data.inputs[input.name] || ""}
-                      onChange={(e) =>
-                        handleInputChange(input.name, e.target.value)
-                      }
+                      onChange={(e) => handleInputChange(input.name, e.target.value)}
                       className="h-7 text-xs ml-1"
                       placeholder={input.description}
                       disabled={isInputDisabled(input.name)}
@@ -241,9 +234,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                     <Input
                       type="text"
                       value={data.inputs[input.name] || ""}
-                      onChange={(e) =>
-                        handleInputChange(input.name, e.target.value)
-                      }
+                      onChange={(e) => handleInputChange(input.name, e.target.value)}
                       className="h-7 text-xs ml-1"
                       placeholder={input.description}
                       disabled={isInputDisabled(input.name)}
@@ -274,11 +265,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
           <div className="mt-3 mb-2">
             <div className="text-xs font-semibold mb-2">Connected Values</div>
             {nodeFunction.inputs
-              .filter(
-                (input) =>
-                  !input.hiddenUI &&
-                  data.connectedInputs[input.name] !== undefined
-              )
+              .filter((input) => !input.hiddenUI && data.connectedInputs[input.name] !== undefined)
               .map((input) => (
                 <div key={`connected-${input.name}`} className="mb-2">
                   <div className="text-xs text-muted-foreground mb-1 flex items-center">

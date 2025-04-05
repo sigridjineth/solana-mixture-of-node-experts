@@ -41,9 +41,7 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -63,8 +61,7 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
 export const solanaAccountHistoryFunction: NodeFunction = {
   id: "solana-account-history",
   name: "SolTx History",
-  description:
-    "계정 또는 프로그램의 최근 트랜잭션 내역과 상세 데이터를 가져옵니다",
+  description: "계정 또는 프로그램의 최근 트랜잭션 내역과 상세 데이터를 가져옵니다",
   category: "Solana",
   groups: ["solana"],
   inputs: [
@@ -108,9 +105,7 @@ export const solanaAccountHistoryFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -127,9 +122,7 @@ export const solanaAccountHistoryFunction: NodeFunction = {
 
       return returnValue;
     } catch (error) {
-      throw new Error(
-        `트랜잭션 히스토리 조회 실패: ${(error as Error).message}`
-      );
+      throw new Error(`트랜잭션 히스토리 조회 실패: ${(error as Error).message}`);
     }
   },
 };
@@ -138,8 +131,7 @@ export const solanaAccountHistoryFunction: NodeFunction = {
 export const solanaHistoryInsightsFunction: NodeFunction = {
   id: "solana-history-insights",
   name: "SolTx Intelligence",
-  description:
-    "계정 또는 프로그램의 트랜잭션 히스토리를 분석하여 패턴과 인사이트를 도출합니다",
+  description: "계정 또는 프로그램의 트랜잭션 히스토리를 분석하여 패턴과 인사이트를 도출합니다",
   category: "Tx Tools",
   groups: ["solana"],
   inputs: [
@@ -153,8 +145,7 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
       name: "address",
       type: "string",
       required: false,
-      description:
-        "분석할 계정 주소 또는 프로그램 ID (result가 없을 경우 필수)",
+      description: "분석할 계정 주소 또는 프로그램 ID (result가 없을 경우 필수)",
     },
     {
       name: "transactions",
@@ -180,9 +171,7 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
         result: result
           ? {
               type: typeof result,
-              hasTransactions: result.transactions
-                ? `${result.transactions.length}개`
-                : "없음",
+              hasTransactions: result.transactions ? `${result.transactions.length}개` : "없음",
               hasAddress: result.address ? `${result.address}` : "없음",
               structure: JSON.stringify(result).substring(0, 100) + "...",
             }
@@ -237,9 +226,7 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
 
       // API 호출 전 최종 입력값 로깅
       console.log("API 호출 입력값:", {
-        transactions: finalTransactions
-          ? `${finalTransactions.length}개 트랜잭션`
-          : "없음",
+        transactions: finalTransactions ? `${finalTransactions.length}개 트랜잭션` : "없음",
         address: finalAddress,
       });
 
@@ -256,9 +243,7 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -269,9 +254,7 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
 
       return data.insights;
     } catch (error) {
-      throw new Error(
-        `트랜잭션 히스토리 분석 실패: ${(error as Error).message}`
-      );
+      throw new Error(`트랜잭션 히스토리 분석 실패: ${(error as Error).message}`);
     }
   },
 };
@@ -316,9 +299,7 @@ export const solanaTxToMermaidFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -329,9 +310,7 @@ export const solanaTxToMermaidFunction: NodeFunction = {
 
       return data.mermaid;
     } catch (error) {
-      throw new Error(
-        `Solana 트랜잭션 Mermaid 변환 실패: ${(error as Error).message}`
-      );
+      throw new Error(`Solana 트랜잭션 Mermaid 변환 실패: ${(error as Error).message}`);
     }
   },
 };
@@ -396,9 +375,7 @@ export const solanaTxClassifyExpertFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -477,15 +454,11 @@ export const solanaTxExpertAnalyzeFunction: NodeFunction = {
       // 유효한 모델인지 확인
       if (!supportedModels.includes(expertModel)) {
         throw new Error(
-          `지원되지 않는 전문가 모델: ${expertModel}. 지원되는 모델: ${supportedModels.join(
-            ", "
-          )}`
+          `지원되지 않는 전문가 모델: ${expertModel}. 지원되는 모델: ${supportedModels.join(", ")}`
         );
       }
 
-      console.log(
-        `전문가 모델 ${expertModel}을(를) 사용하여 트랜잭션 분석 중...`
-      );
+      console.log(`전문가 모델 ${expertModel}을(를) 사용하여 트랜잭션 분석 중...`);
 
       // API 호출 - 선택된 전문가 모델을 사용하여 트랜잭션 분석 요청
       const response = await fetch("/api/tx-expert-analyze", {
@@ -501,9 +474,7 @@ export const solanaTxExpertAnalyzeFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -523,8 +494,7 @@ export const solanaTxExpertAnalyzeFunction: NodeFunction = {
 export const modelProviderSelectorFunction: NodeFunction = {
   id: "model-provider-selector",
   name: "AI Model Selector",
-  description:
-    "AI 모델 프로바이더와 모델을 선택하여 사용할 모델 이름을 반환합니다",
+  description: "AI 모델 프로바이더와 모델을 선택하여 사용할 모델 이름을 반환합니다",
   category: "Solana",
   groups: ["solana", "utils"],
   inputs: [
@@ -606,6 +576,101 @@ export const modelProviderSelectorFunction: NodeFunction = {
       return model;
     } catch (error) {
       throw new Error(`모델 선택 실패: ${(error as Error).message}`);
+    }
+  },
+};
+
+// Solana 지갑 연결 노드
+export const solanaWalletConnectFunction: NodeFunction = {
+  id: "solana-wallet-connect",
+  name: "Connect Wallet",
+  description: "Solana 지갑을 연결하고 네트워크, 주소, SOL 잔액 정보를 표시합니다",
+  category: "Solana",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "rpcUrl",
+      type: "string",
+      required: false,
+      description: "Solana RPC URL (입력하지 않으면 내부 API 사용)",
+    },
+  ],
+  output: {
+    name: "walletInfo",
+    type: "object" as FunctionInputType,
+    description: "지갑 연결 정보 (네트워크, 주소, SOL 잔액)",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { rpcUrl } = inputs;
+
+      // 사용할 RPC URL 결정
+      const finalRpcUrl =
+        rpcUrl || process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
+
+      // 현재 연결된 지갑 정보 가져오기
+      const response = await fetch("/api/solana-wallet-info", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`지갑 정보 요청 실패: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(`API 에러: ${data.error}`);
+      }
+
+      // 지갑이 연결되어 있지 않은 경우
+      if (!data.address) {
+        return {
+          connected: false,
+          message: "지갑이 연결되어 있지 않습니다. 지갑을 연결해주세요.",
+        };
+      }
+
+      // SOL 잔액 가져오기
+      const balanceResponse = await fetch(finalRpcUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getBalance",
+          params: [data.address],
+        }),
+      });
+
+      if (!balanceResponse.ok) {
+        throw new Error(`잔액 조회 실패: ${balanceResponse.status} ${balanceResponse.statusText}`);
+      }
+
+      const balanceData = await balanceResponse.json();
+
+      if (balanceData.error) {
+        throw new Error(`RPC 에러: ${JSON.stringify(balanceData.error)}`);
+      }
+
+      // lamports를 SOL로 변환 (1 SOL = 1,000,000,000 lamports)
+      const solBalance = balanceData.result.value / 1_000_000_000;
+
+      // 지갑 정보 반환
+      return {
+        connected: true,
+        network: data.network || "mainnet-beta",
+        address: data.address,
+        balance: solBalance,
+        message: "지갑이 성공적으로 연결되었습니다.",
+      };
+    } catch (error) {
+      throw new Error(`지갑 연결 실패: ${(error as Error).message}`);
     }
   },
 };

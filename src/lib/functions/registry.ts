@@ -16,6 +16,7 @@ import {
   solanaTxClassifyExpertFunction,
   solanaTxExpertAnalyzeFunction,
   modelProviderSelectorFunction,
+  solanaWalletConnectFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -36,6 +37,7 @@ const functionRegistry: FunctionRegistry = {
   [solanaTxClassifyExpertFunction.id]: solanaTxClassifyExpertFunction,
   [solanaTxExpertAnalyzeFunction.id]: solanaTxExpertAnalyzeFunction,
   [modelProviderSelectorFunction.id]: modelProviderSelectorFunction,
+  [solanaWalletConnectFunction.id]: solanaWalletConnectFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
@@ -67,9 +69,7 @@ export const getFunctionsByGroup = (groupId: string): NodeFunction[] => {
   });
 };
 
-export const getFunctionsByGroupAndCategory = (
-  groupId: string
-): Record<string, NodeFunction[]> => {
+export const getFunctionsByGroupAndCategory = (groupId: string): Record<string, NodeFunction[]> => {
   const functions = getFunctionsByGroup(groupId);
   const categories: Record<string, NodeFunction[]> = {};
 
@@ -84,14 +84,10 @@ export const getFunctionsByGroupAndCategory = (
 };
 
 export const getFunctionsByInputType = (inputType: string): NodeFunction[] => {
-  return getAllFunctions().filter((func) =>
-    func.inputs.some((input) => input.type === inputType)
-  );
+  return getAllFunctions().filter((func) => func.inputs.some((input) => input.type === inputType));
 };
 
-export const getFunctionsByOutputType = (
-  outputType: string
-): NodeFunction[] => {
+export const getFunctionsByOutputType = (outputType: string): NodeFunction[] => {
   return getAllFunctions().filter((func) => func.output.type === outputType);
 };
 

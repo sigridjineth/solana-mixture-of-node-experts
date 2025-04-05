@@ -6,6 +6,7 @@ import {
   solanaTxClassifyExpertFunction,
   solanaTxExpertAnalyzeFunction,
   modelProviderSelectorFunction,
+  solanaWalletConnectFunction,
 } from "./solana-functions";
 
 export const nodeFunctions = [
@@ -16,4 +17,5 @@ export const nodeFunctions = [
   solanaTxClassifyExpertFunction,
   solanaTxExpertAnalyzeFunction,
   modelProviderSelectorFunction,
+  solanaWalletConnectFunction,
 ];

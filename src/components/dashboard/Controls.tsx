@@ -4,10 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useFlow } from "@/components/providers/FlowProvider";
-import {
-  getFunctionsByCategory,
-  getFunctionsByGroupAndCategory,
-} from "@/lib/functions/registry";
+import { getFunctionsByCategory, getFunctionsByGroupAndCategory } from "@/lib/functions/registry";
 import { getAllGroups } from "@/lib/functions/groups";
 import {
   Loader2,
@@ -32,15 +29,11 @@ import {
   Cpu,
   Sparkles,
   Bot,
+  Wallet,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
   DropdownMenu,
@@ -50,17 +43,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Controls = () => {
-  const {
-    addFunctionNode,
-    addOutputNode,
-    runFlow,
-    isProcessing,
-    activeGroup,
-    setActiveGroup,
-  } = useFlow();
-  const [functionsByCategory, setFunctionsByCategory] = useState<
-    Record<string, any>
-  >({});
+  const { addFunctionNode, addOutputNode, runFlow, isProcessing, activeGroup, setActiveGroup } =
+    useFlow();
+  const [functionsByCategory, setFunctionsByCategory] = useState<Record<string, any>>({});
 
   // 초기화 시 기본 그룹 설정
   useEffect(() => {
@@ -79,9 +64,7 @@ const Controls = () => {
   };
 
   const handleAddNode = (category: string, functionId: string) => {
-    const func = functionsByCategory[category]?.find(
-      (f: any) => f.id === functionId
-    );
+    const func = functionsByCategory[category]?.find((f: any) => f.id === functionId);
     if (!func) return;
 
     // 임의의 위치에 노드 추가 (좌표 직접 지정)
@@ -111,6 +94,7 @@ const Controls = () => {
 
   // 함수별 아이콘 매핑
   const functionIcons: Record<string, React.ReactNode> = {
+    "solana-wallet-connect": <Wallet className="h-4 w-4" />,
     "solana-tx-fetch": <FileSearch className="h-4 w-4" />,
     "fetch-data": <Globe className="h-4 w-4" />,
     "filter-data": <Filter className="h-4 w-4" />,
@@ -187,12 +171,7 @@ const Controls = () => {
         </Button>
         <div className="flex justify-between items-center mb-2">
           <div className="text-xs font-medium">Add Nodes</div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 text-xs"
-            onClick={handleAddOutputNode}
-          >
+          <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={handleAddOutputNode}>
             <BoxSelect className="h-3 w-3 mr-1" />
             Output
           </Button>
@@ -201,9 +180,7 @@ const Controls = () => {
           {sortedCategories.map(([category, functions]) => (
             <div key={category}>
               <div className="text-xs font-semibold text-muted-foreground mb-1 flex items-center">
-                {categoryIcons[category] && (
-                  <span className="mr-1">{categoryIcons[category]}</span>
-                )}
+                {categoryIcons[category] && <span className="mr-1">{categoryIcons[category]}</span>}
                 {category}
               </div>
               <div className="grid grid-cols-3 gap-1">
@@ -217,16 +194,12 @@ const Controls = () => {
                           className="h-7 w-full p-0 flex justify-center items-center"
                           onClick={() => handleAddNode(category, func.id)}
                         >
-                          {functionIcons[func.id] || (
-                            <Database className="h-4 w-4" />
-                          )}
+                          {functionIcons[func.id] || <Database className="h-4 w-4" />}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>{func.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {func.description}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{func.description}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
