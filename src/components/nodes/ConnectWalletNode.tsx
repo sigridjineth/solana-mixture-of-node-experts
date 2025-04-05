@@ -134,10 +134,6 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
       {!isConnected ? (
         <div className="text-sm text-gray-500">
           <p>Connect your wallet to see information</p>
-          <p className="mt-2 text-xs text-blue-500 flex items-center">
-            <Link className="h-3 w-3 mr-1" />
-            Connect this node to Send Transaction node's sender input
-          </p>
         </div>
       ) : (
         <div className="space-y-2 text-sm">

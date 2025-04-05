@@ -10,8 +10,11 @@ import {
 } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Wallet, Link } from "lucide-react";
+import { Send, Wallet, Link, Play, Loader2 } from "lucide-react";
 import { Handle, Position } from "reactflow";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { formatNodeData } from "@/lib/utils";
 
 interface SendTransactionNodeProps {
   data: {
@@ -24,10 +27,15 @@ interface SendTransactionNodeProps {
     connectedInputs?: {
       sender?: any;
     };
+    isProcessing?: boolean;
+    hasError?: boolean;
+    label?: string;
   };
+  id?: string;
+  selected?: boolean;
 }
 
-const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data }) => {
+const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, selected }) => {
   const { address } = useAppKitAccount();
   const { connection } = useAppKitConnection();
   const { walletProvider } = useAppKitProvider<Provider>("solana");
@@ -40,13 +48,15 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data }) => {
   const [error, setError] = useState<string | null>(null);
   const [transactionResult, setTransactionResult] = useState<any>(null);
   const [senderAddress, setSenderAddress] = useState<string | null>(null);
+  const [walletInfo, setWalletInfo] = useState<any>(null);
 
   useEffect(() => {
     // Check if we have a connected sender from the ConnectWalletNode
     if (data.connectedInputs?.sender) {
-      const walletInfo = data.connectedInputs.sender;
-      if (walletInfo && walletInfo.address) {
-        setSenderAddress(walletInfo.address);
+      const connectedWalletInfo = data.connectedInputs.sender;
+      setWalletInfo(connectedWalletInfo);
+      if (connectedWalletInfo && connectedWalletInfo.address) {
+        setSenderAddress(connectedWalletInfo.address);
         setIsConnected(true);
       }
     } else if (address && walletProvider?.publicKey) {
@@ -56,6 +66,7 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data }) => {
     } else {
       setIsConnected(false);
       setSenderAddress(null);
+      setWalletInfo(null);
     }
   }, [address, walletProvider?.publicKey, data.connectedInputs?.sender]);
 
@@ -185,51 +196,89 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data }) => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-2">
-          <Send className="h-5 w-5" />
-          <h3 className="font-medium text-sm">Send Transaction</h3>
+    <Card
+      className={`shadow-md relative ${selected ? "ring-2 ring-primary" : ""} ${
+        data.hasError ? "border-red-500" : ""
+      }`}
+      style={{ width: "280px" }}
+      data-node-id={id}
+    >
+      <CardHeader className="p-3 pb-2 flex flex-row justify-between items-center">
+        <div>
+          <CardTitle className="text-sm font-medium">{data.label || "Send Transaction"}</CardTitle>
+          <Badge variant="outline" className="mt-1 text-xs">
+            Solana
+          </Badge>
         </div>
-        {!isConnected && (
-          <Button variant="outline" size="sm" onClick={handleConnect}>
-            Connect Wallet
-          </Button>
-        )}
-      </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={handleSendTransaction}
+          disabled={isLoading || !isConnected || !recipient || !amount || parseFloat(amount) <= 0}
+        >
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+        </Button>
+      </CardHeader>
 
-      {!isConnected ? (
-        <div className="text-sm text-gray-500">
-          <p>Connect your wallet to send transactions</p>
-          <p className="mt-2 text-xs text-blue-500 flex items-center">
-            <Wallet className="h-3 w-3 mr-1" />
-            Connect this node to other nodes that need transaction data
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="space-y-2">
-            <div className="text-xs font-medium">Sender Address</div>
+      <CardContent className="p-3 pt-0">
+        <div className="mb-4">
+          <div className="text-xs font-semibold mb-2">Inputs</div>
+
+          {/* Sender Input */}
+          <div className="mb-3 relative">
+            <div className="text-xs text-muted-foreground mb-1 flex items-center relative">
+              <Handle
+                type="target"
+                position={Position.Left}
+                id="input-sender"
+                className="rounded-full bg-primary border-2 border-background handle-visible"
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  minWidth: "12px",
+                  minHeight: "12px",
+                  left: "-6px",
+                  zIndex: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  position: "absolute",
+                }}
+              />
+              <span className="bg-primary/10 rounded-sm px-1 py-0.5 ml-3 mr-1">sender</span>
+              <span className="text-red-500">*</span>
+            </div>
             <div className="text-sm bg-gray-50 p-2 rounded">
               {senderAddress
                 ? `${senderAddress.slice(0, 4)}...${senderAddress.slice(-4)}`
                 : "Not connected"}
             </div>
-            <p className="text-xs text-blue-500 flex items-center">
-              <Link className="h-3 w-3 mr-1" />
-              Connect a wallet node to the sender input
-            </p>
+            {!isConnected && (
+              <Button variant="outline" size="sm" className="mt-2 w-full" onClick={handleConnect}>
+                Connect Wallet
+              </Button>
+            )}
           </div>
-          <div className="space-y-2">
-            <div className="text-xs font-medium">Recipient Address</div>
+
+          {/* Recipient Input */}
+          <div className="mb-3 relative">
+            <div className="text-xs text-muted-foreground mb-1 flex items-center relative">
+              <span className="bg-primary/10 rounded-sm px-1 py-0.5 ml-3 mr-1">recipient</span>
+              <span className="text-red-500">*</span>
+            </div>
             <Input
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
               placeholder="Enter recipient address"
             />
           </div>
-          <div className="space-y-2">
-            <div className="text-xs font-medium">Amount (SOL)</div>
+
+          {/* Amount Input */}
+          <div className="mb-3 relative">
+            <div className="text-xs text-muted-foreground mb-1 flex items-center relative">
+              <span className="bg-primary/10 rounded-sm px-1 py-0.5 ml-3 mr-1">amount</span>
+              <span className="text-red-500">*</span>
+            </div>
             <Input
               type="number"
               value={amount}
@@ -239,63 +288,75 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data }) => {
               step="0.000000001"
             />
           </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button
-            onClick={handleSendTransaction}
-            disabled={isLoading || !recipient || !amount || parseFloat(amount) <= 0}
-            className="w-full"
-          >
-            {isLoading ? "Sending..." : "Send Transaction"}
-          </Button>
-          {transactionResult && (
-            <div className="mt-2 p-2 bg-green-50 rounded text-sm">
-              <p className="text-green-700">Transaction sent successfully!</p>
-              <p className="text-xs text-gray-500 truncate">
-                Signature: {transactionResult.signature}
-              </p>
-            </div>
-          )}
         </div>
-      )}
 
-      {/* Add input handle for sender */}
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="input-sender"
-        className="rounded-full bg-primary border-2 border-background handle-visible"
-        style={{
-          width: "12px",
-          height: "12px",
-          minWidth: "12px",
-          minHeight: "12px",
-          left: "-6px",
-          zIndex: 10,
-          top: "30%",
-          transform: "translateY(-50%)",
-          position: "absolute",
-        }}
-      />
+        {/* Connected Values */}
+        {walletInfo && (
+          <div className="mt-3 mb-2">
+            <div className="text-xs font-semibold mb-2">Connected Values</div>
+            <div className="mb-2">
+              <div className="text-xs text-muted-foreground mb-1 flex items-center">
+                <span className="bg-primary/10 rounded-sm px-1 py-0.5 ml-3 mr-1">sender</span>
+              </div>
+              <div
+                className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
+                style={{
+                  overflowY: "auto",
+                  maxHeight: "60px",
+                  overflowX: "hidden",
+                }}
+              >
+                {formatNodeData(walletInfo)}
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Add output handle for transaction info */}
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="transactionInfo"
-        className="rounded-full bg-primary border-2 border-background handle-visible"
-        style={{
-          width: "12px",
-          height: "12px",
-          minWidth: "12px",
-          minHeight: "12px",
-          right: "-6px",
-          zIndex: 10,
-          top: "50%",
-          transform: "translateY(-50%)",
-          position: "absolute",
-        }}
-      />
-    </div>
+        {/* Output */}
+        <div className="mt-4">
+          <div className="text-xs font-semibold mb-2">Output</div>
+          <div className="flex items-center justify-end relative h-8">
+            <div className="text-xs text-muted-foreground relative flex items-center">
+              <span className="bg-primary/10 rounded-sm px-1 py-0.5 mr-6">transactionInfo</span>
+              <Handle
+                type="source"
+                position={Position.Right}
+                id="transactionInfo"
+                className="rounded-full bg-primary border-2 border-background handle-visible"
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  minWidth: "12px",
+                  minHeight: "12px",
+                  right: "-6px",
+                  zIndex: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  position: "absolute",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Return Value */}
+        {data.returnValue !== undefined && (
+          <div className="mt-3">
+            <div className="text-xs font-semibold mb-1">Return Value</div>
+            <div
+              className="bg-muted p-2 rounded-md text-xs font-mono custom-scrollbar"
+              style={{
+                overflowY: "auto",
+                maxHeight: "240px",
+                overflowX: "hidden",
+              }}
+            >
+              {formatNodeData(data.returnValue)}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
