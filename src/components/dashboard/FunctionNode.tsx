@@ -117,12 +117,19 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   // 입력이 API 키 입력인지 확인 (비밀번호 타입으로 표시)
   const isApiKeyInput = useCallback(
     (inputName: string) => {
-      if (nodeFunction?.id === "model-provider-selector") {
-        return inputName === "apiKey";
+      // Model Provider Selector 노드의 API 키
+      if (nodeFunction?.id === "model-provider-selector" && inputName === "apiKey") {
+        return true;
       }
+
+      // Models 카테고리의 모든 노드의 API 키
+      if (nodeFunction?.category === "Models" && inputName === "apiKey") {
+        return true;
+      }
+
       return false;
     },
-    [nodeFunction?.id]
+    [nodeFunction?.id, nodeFunction?.category]
   );
 
   // Custom node rendering for specific function types
