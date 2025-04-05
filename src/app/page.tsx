@@ -1,10 +1,12 @@
-"use client";
+'use client';
 
-import React from "react";
-import { FlowProvider } from "@/components/providers/FlowProvider";
-import NodeDashboard from "@/components/dashboard/NodeDashboard";
-import Controls from "@/components/dashboard/Controls";
-import CustomContextMenu from "@/components/CustomContextMenu";
+import React from 'react';
+import { FlowProvider } from '@/components/providers/FlowProvider';
+import NodeDashboard from '@/components/dashboard/NodeDashboard';
+import Controls from '@/components/dashboard/Controls';
+import CustomContextMenu from '@/components/CustomContextMenu';
+import { useAppKit } from '@reown/appkit/react';
+
 import {
   Dialog,
   DialogContent,
@@ -12,9 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
+import SolanaProvider from '@/components/providers/SolanaProvider';
 
 export default function Home() {
+  const { open } = useAppKit();
   return (
     <main className="flex min-h-screen flex-col">
       <header className="relative overflow-hidden bg-gradient-to-r from-teal-300 via-sky-300 to-purple-300 text-gray-800 py-3 px-5 shadow-md">
@@ -26,21 +30,19 @@ export default function Home() {
 
         <div className="relative flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold tracking-tight">
-              Solana Dashboard
-            </h1>
-            <p className="text-xs text-gray-600">
-              Visual async function workflow builder
-            </p>
+            <h1 className="text-lg font-bold tracking-tight">Solana Dashboard</h1>
+            <p className="text-xs text-gray-600">Visual async function workflow builder</p>
           </div>
 
           <div className="flex items-center space-x-3">
-            <button
-              className="px-2 py-1 text-xs rounded-md bg-white/40 transition-colors shadow-sm opacity-50 cursor-not-allowed"
-              disabled
-            >
-              Connect Wallet
-            </button>
+            <SolanaProvider>
+              <button
+                className="px-2 py-1 text-xs rounded-md bg-white/40 transition-colors shadow-sm"
+                onClick={() => open()}
+              >
+                Connect Wallet
+              </button>
+            </SolanaProvider>
 
             <Dialog>
               <DialogTrigger asChild>
@@ -53,16 +55,15 @@ export default function Home() {
                   <DialogTitle>Solana Node Dashboard</DialogTitle>
                   <DialogDescription className="py-4">
                     <p className="mb-4">
-                      A visual node-based dashboard for building, analyzing, and
-                      visualizing Solana blockchain transactions. This dashboard
-                      allows you to create workflows by connecting various nodes
-                      to fetch, analyze, and visualize transaction data from the
-                      Solana blockchain.
+                      A visual node-based dashboard for building, analyzing, and visualizing Solana
+                      blockchain transactions. This dashboard allows you to create workflows by
+                      connecting various nodes to fetch, analyze, and visualize transaction data
+                      from the Solana blockchain.
                     </p>
                     <p className="mb-4">
-                      With this tool, you can easily analyze transactions,
-                      generate visualizations, track account history, and gain
-                      insights into on-chain activities without writing code.
+                      With this tool, you can easily analyze transactions, generate visualizations,
+                      track account history, and gain insights into on-chain activities without
+                      writing code.
                     </p>
                     <p className="text-sm text-muted-foreground mt-8">
                       Created by <span className="font-semibold">zombcat</span>
