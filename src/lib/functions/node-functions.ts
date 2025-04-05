@@ -1,37 +1,37 @@
-import { NodeFunction } from "@/types/function";
+import { NodeFunction, FunctionInputType } from "@/types/function";
 
 // Solana 트랜잭션 데이터 가져오기 노드
 export const solanaTxFetchFunction: NodeFunction = {
   id: "solana-tx-fetch",
-  name: "Get SolTx",
-  description: "트랜잭션 해시(서명)로 Solana 트랜잭션 데이터를 가져옵니다",
+  name: "SolTx Fetch",
+  description: "Fetches Solana transaction data using transaction hash (signature)",
   category: "Solana",
   groups: ["solana"],
   inputs: [
     {
-      name: "txHash",
+      name: "signature",
       type: "string",
       required: true,
-      description: "트랜잭션 해시 (서명)",
+      description: "Transaction hash (signature)",
     },
     {
       name: "rpcUrl",
       type: "string",
       required: false,
-      description: "Solana RPC URL (입력하지 않으면 내부 API 사용)",
+      description: "Solana RPC URL (uses internal API if not provided)",
     },
   ],
   output: {
     name: "transaction",
-    type: "object",
-    description: "가져온 Solana 트랜잭션 데이터",
+    type: "object" as FunctionInputType,
+    description: "Fetched Solana transaction data",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
-      const { txHash, rpcUrl } = inputs;
+      const { signature, rpcUrl } = inputs;
 
-      if (!txHash) {
-        throw new Error("트랜잭션 해시는 필수 입력값입니다");
+      if (!signature) {
+        throw new Error("Transaction hash is a required input");
       }
 
       // RPC 요청 데이터 준비
@@ -40,7 +40,7 @@ export const solanaTxFetchFunction: NodeFunction = {
         id: 1,
         method: "getTransaction",
         params: [
-          txHash,
+          signature,
           {
             encoding: "json",
             maxSupportedTransactionVersion: 0,
@@ -71,24 +71,18 @@ export const solanaTxFetchFunction: NodeFunction = {
       }
 
       if (!response.ok) {
-        throw new Error(
-          `RPC 요청 실패: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`RPC request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(
-          `RPC 에러: ${data.error.message || JSON.stringify(data.error)}`
-        );
+        throw new Error(`RPC error: ${data.error.message || JSON.stringify(data.error)}`);
       }
 
       return data.result;
     } catch (error) {
-      throw new Error(
-        `Solana 트랜잭션 가져오기 실패: ${(error as Error).message}`
-      );
+      throw new Error(`Failed to fetch Solana transaction data: ${(error as Error).message}`);
     }
   },
 };
@@ -114,9 +108,9 @@ export const fetchDataFunction: NodeFunction = {
     },
   ],
   output: {
-    name: "response",
-    type: "object",
-    description: "API 응답 데이터",
+    name: "data",
+    type: "object" as FunctionInputType,
+    description: "API response data",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -154,9 +148,9 @@ export const filterDataFunction: NodeFunction = {
     },
   ],
   output: {
-    name: "filtered",
-    type: "array",
-    description: "필터링된 데이터 배열",
+    name: "data",
+    type: "array" as FunctionInputType,
+    description: "Filtered data array",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -165,9 +159,7 @@ export const filterDataFunction: NodeFunction = {
         throw new Error("Input data must be an array");
       }
 
-      const filtered = data.filter(
-        (item) => item[key] && item[key].toString().includes(value)
-      );
+      const filtered = data.filter((item) => item[key] && item[key].toString().includes(value));
 
       return filtered;
     } catch (error) {
@@ -201,9 +193,9 @@ export const sortDataFunction: NodeFunction = {
     },
   ],
   output: {
-    name: "sorted",
-    type: "array",
-    description: "정렬된 데이터 배열",
+    name: "data",
+    type: "array" as FunctionInputType,
+    description: "Sorted data array",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -247,8 +239,7 @@ export const mapDataFunction: NodeFunction = {
       name: "targetKey",
       type: "string",
       required: false,
-      description:
-        "Target key to store result (default: replaces original key)",
+      description: "Target key to store result (default: replaces original key)",
     },
     {
       name: "transform",
@@ -260,9 +251,9 @@ export const mapDataFunction: NodeFunction = {
     },
   ],
   output: {
-    name: "mapped",
-    type: "array",
-    description: "변환된 데이터 배열",
+    name: "data",
+    type: "array" as FunctionInputType,
+    description: "Transformed data array",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -340,8 +331,8 @@ export const delayFunction: NodeFunction = {
   ],
   output: {
     name: "data",
-    type: "object",
-    description: "지연 후 전달된 데이터",
+    type: "any" as FunctionInputType,
+    description: "Data passed after delay",
   },
   execute: async (inputs: Record<string, any>) => {
     const { data, ms = 1000 } = inputs;
@@ -358,60 +349,59 @@ export const delayFunction: NodeFunction = {
 export const discordWebhookFunction: NodeFunction = {
   id: "discord-webhook",
   name: "Discord Webhook",
-  description: "Discord 웹훅으로 메시지를 전송합니다",
+  description: "Sends a message to a Discord webhook",
   category: "Utils",
-  groups: ["default", "solana"],
+  groups: ["utils"],
   inputs: [
     {
       name: "webhookUrl",
       type: "string",
       required: true,
-      description: "Discord 웹훅 URL",
-      default: "",
+      description: "Discord webhook URL",
     },
     {
-      name: "content",
+      name: "message",
       type: "string",
       required: true,
-      description: "전송할 메시지 내용",
+      description: "Message content to send",
     },
   ],
   output: {
     name: "response",
-    type: "object",
-    description: "Discord 웹훅 응답",
+    type: "object" as FunctionInputType,
+    description: "Discord webhook response",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       // 실제 요청에 사용할 URL과 내용
       let webhookUrl = inputs.webhookUrl || "";
-      let content = inputs.content || "";
+      let message = inputs.message || "";
 
       console.log("inputs", inputs);
 
       // URL 또는 내용이 없으면 오류 발생
       if (!webhookUrl) {
-        throw new Error("웹훅 URL이 제공되지 않았습니다");
+        throw new Error("Discord webhook URL is not provided");
       }
 
-      if (!content) {
-        throw new Error("전송할 메시지 내용이 비어있습니다");
+      if (!message) {
+        throw new Error("Message content is empty");
       }
 
       // 실제 웹훅 전송 (지금은 테스트용으로 전송은 생략)
-      const response = await sendToDiscord(webhookUrl, content);
+      const response = await sendToDiscord(webhookUrl, message);
 
       console.log("response", response);
 
       // 테스트용 응답 - 실제 구현 시 위의 주석 해제하고 실제 응답 반환
       return {
         result: true,
-        content: content.substring(0, 50) + (content.length > 50 ? "..." : ""),
+        content: message.substring(0, 50) + (message.length > 50 ? "..." : ""),
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
       // 에러 발생시 throw하여 노드가 에러 상태로 표시되도록 함
-      throw new Error(`Discord 웹훅 처리 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to send Discord message: ${(error as Error).message}`);
     }
   },
 };
@@ -432,12 +422,12 @@ async function sendToDiscord(webhookUrl: string, messageContent: string) {
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`웹훅 요청 실패 (${response.status}): ${errorText}`);
+    throw new Error(`Discord webhook request failed (${response.status}): ${errorText}`);
   }
 
   return {
     success: true,
     statusCode: response.status,
-    message: "Discord 메시지가 성공적으로 전송되었습니다",
+    message: "Discord message sent successfully",
   };
 }

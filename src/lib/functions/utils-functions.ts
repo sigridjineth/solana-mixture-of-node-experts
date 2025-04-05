@@ -1,31 +1,31 @@
 import { NodeFunction, FunctionInputType } from "@/types/function";
 
+// Mermaid 다이어그램 변환 노드
 export const mermaidFunction: NodeFunction = {
   id: "mermaid",
   name: "Mermaid Viewer",
-  description:
-    "Mermaid 다이어그램을 이미지로 변환하고 클릭 시 확대하여 볼 수 있는 뷰어를 제공합니다",
+  description: "Converts Mermaid diagrams to images and provides a viewer with zoom functionality",
   category: "Utils",
-  groups: ["default", "solana"],
+  groups: ["utils"],
   inputs: [
     {
       name: "mermaid",
-      type: "string" as FunctionInputType,
+      type: "string",
       required: true,
-      description: "변환할 Mermaid 다이어그램 코드",
+      description: "Mermaid diagram code to convert",
     },
   ],
   output: {
     name: "viewer",
     type: "object" as FunctionInputType,
-    description: "다이어그램 뷰어 컴포넌트 데이터",
+    description: "Diagram viewer component data",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { mermaid } = inputs;
 
       if (!mermaid) {
-        throw new Error("Mermaid 코드는 필수 입력값입니다");
+        throw new Error("Mermaid code is a required input");
       }
 
       // API 호출 없이 직접 결과 반환
@@ -34,7 +34,7 @@ export const mermaidFunction: NodeFunction = {
         type: "mermaid", // 타입 정보 추가
       };
     } catch (error) {
-      throw new Error(`Mermaid 이미지 변환 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to convert Mermaid diagram: ${(error as Error).message}`);
     }
   },
 };

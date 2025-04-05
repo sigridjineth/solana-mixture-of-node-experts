@@ -1,33 +1,31 @@
 import { NodeFunctionGroup } from "@/types/function";
 
-// 노드 함수 그룹 정의
-export const functionGroups: NodeFunctionGroup[] = [
-  {
+// Node function group definitions
+export const FUNCTION_GROUPS = {
+  solana: {
     id: "solana",
-    name: "Solana Tool",
-    description: "Solana 블록체인 데이터 가져오기 및 기본 작업을 위한 노드들",
-    isDefault: true, // 기본 활성화 그룹
+    name: "Solana",
+    description: "Nodes for fetching Solana blockchain data and basic operations.",
+    isDefault: true, // Default active group
   },
-  {
-    id: "default",
-    name: "Default Tool",
-    description: "데이터 처리, 변환, 그리고 일반적인 작업을 위한 노드들",
+  utilities: {
+    id: "utilities",
+    name: "Utilities",
+    description: "Nodes for data processing, transformation, and general operations.",
   },
-];
-
-// 그룹 ID로 그룹 정보 가져오기
-export const getGroupById = (
-  groupId: string
-): NodeFunctionGroup | undefined => {
-  return functionGroups.find((group) => group.id === groupId);
 };
 
-// 기본 활성화 그룹 가져오기
-export const getDefaultGroup = (): NodeFunctionGroup | undefined => {
-  return functionGroups.find((group) => group.isDefault);
+// Get group information by group ID
+export const getGroupById = (groupId: string) => {
+  return FUNCTION_GROUPS[groupId as keyof typeof FUNCTION_GROUPS];
 };
 
-// 모든 그룹 가져오기
-export const getAllGroups = (): NodeFunctionGroup[] => {
-  return functionGroups;
+// Get default active group
+export const getDefaultGroup = () => {
+  return FUNCTION_GROUPS.solana;
+};
+
+// Get all groups
+export const getAllGroups = () => {
+  return Object.values(FUNCTION_GROUPS);
 };
