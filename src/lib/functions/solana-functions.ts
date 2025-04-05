@@ -2,11 +2,11 @@ import { NodeFunction, FunctionInputType } from "@/types/function";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Connection, PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 
-// Solana 트랜잭션 분석 함수
+// Solana transaction analysis function
 export const analyzeSolanaTransactionFunction: NodeFunction = {
   id: "analyze-solana-transaction",
   name: "SolTx Expert",
-  description: "Solana 트랜잭션을 전문적으로 분석하고 핵심 정보를 제공합니다",
+  description: "Professionally analyzes Solana transactions and provides key information",
   category: "Tx Tools",
   groups: ["solana"],
   inputs: [
@@ -14,23 +14,23 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
       name: "transaction",
       type: "object",
       required: true,
-      description: "분석할 Solana 트랜잭션 데이터",
+      description: "Solana transaction data to analyze",
     },
   ],
   output: {
     name: "analysis",
     type: "string" as FunctionInputType,
-    description: "트랜잭션 분석 결과",
+    description: "Transaction analysis result",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { transaction } = inputs;
 
       if (!transaction) {
-        throw new Error("트랜잭션 데이터는 필수 입력값입니다");
+        throw new Error("Transaction data is a required input");
       }
 
-      // API 호출 - 기본 프롬프트를 사용하여 LLM으로 분석 요청
+      // API call - Request analysis using LLM with default prompt
       const response = await fetch("/api/tx-analyze", {
         method: "POST",
         headers: {
@@ -38,32 +38,32 @@ export const analyzeSolanaTransactionFunction: NodeFunction = {
         },
         body: JSON.stringify({
           transactionData: transaction,
-          // 기본 프롬프트 사용 (API에서 처리)
+          // Default prompt used (handled by API)
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
       return data.analysis;
     } catch (error) {
-      throw new Error(`트랜잭션 분석 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to analyze transaction: ${(error as Error).message}`);
     }
   },
 };
 
-// Solana 트랜잭션 히스토리 조회 함수
+// Solana transaction history retrieval function
 export const solanaAccountHistoryFunction: NodeFunction = {
   id: "solana-account-history",
   name: "SolTx History",
-  description: "계정 또는 프로그램의 최근 트랜잭션 내역과 상세 데이터를 가져옵니다",
+  description: "Retrieves recent transaction history and detailed data for an account or program",
   category: "Solana",
   groups: ["solana"],
   inputs: [
@@ -71,29 +71,29 @@ export const solanaAccountHistoryFunction: NodeFunction = {
       name: "address",
       type: "string",
       required: true,
-      description: "조회할 계정 주소 또는 프로그램 ID",
+      description: "Account address or program ID to query",
     },
     {
       name: "rpcUrl",
       type: "string",
       required: false,
-      description: "Solana RPC URL (입력하지 않으면 내부 API 사용)",
+      description: "Solana RPC URL (uses internal API if not provided)",
     },
   ],
   output: {
     name: "result",
     type: "object" as FunctionInputType,
-    description: "트랜잭션 상세 데이터 목록 및 주소",
+    description: "Transaction detail list and address",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { address, rpcUrl } = inputs;
 
       if (!address) {
-        throw new Error("계정 주소 또는 프로그램 ID는 필수 입력값입니다");
+        throw new Error("Address or program ID is required");
       }
 
-      // API 호출 - 서버 측에서 트랜잭션 데이터 가져오기
+      // API call - Get transaction data from server
       const response = await fetch("/api/solana-tx-history", {
         method: "POST",
         headers: {
@@ -102,21 +102,21 @@ export const solanaAccountHistoryFunction: NodeFunction = {
         body: JSON.stringify({
           address,
           rpcUrl: rpcUrl || undefined,
-          limit: 10, // 고정된 값
+          limit: 10, // Fixed value
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
-      // 트랜잭션 데이터와 주소를 함께 반환
+      // Return transaction data along with address
       const returnValue = {
         transactions: data.transactions,
         address: address,
@@ -124,16 +124,16 @@ export const solanaAccountHistoryFunction: NodeFunction = {
 
       return returnValue;
     } catch (error) {
-      throw new Error(`트랜잭션 히스토리 조회 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to fetch Solana transaction history: ${(error as Error).message}`);
     }
   },
 };
 
-// Solana 계정 트랜잭션 히스토리 인사이트 분석 함수
+// Solana account transaction history insights analysis function
 export const solanaHistoryInsightsFunction: NodeFunction = {
   id: "solana-history-insights",
   name: "SolTx Intelligence",
-  description: "계정 또는 프로그램의 트랜잭션 히스토리를 분석하여 패턴과 인사이트를 도출합니다",
+  description: "Analyzes transaction history to identify patterns and insights",
   category: "Tx Tools",
   groups: ["solana"],
   inputs: [
@@ -141,25 +141,25 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
       name: "result",
       type: "object",
       required: false,
-      description: "SolTx History 노드로부터 가져온 트랜잭션 데이터 및 주소",
+      description: "Transaction data and address from SolTx History node",
     },
     {
       name: "address",
       type: "string",
       required: false,
-      description: "분석할 계정 주소 또는 프로그램 ID (result가 없을 경우 필수)",
+      description: "Account address or program ID to analyze (required if result is not provided)",
     },
     {
       name: "transactions",
       type: "array",
       required: false,
-      description: "분석할 트랜잭션 데이터 배열 (result가 없을 경우 필수)",
+      description: "Transaction data array to analyze (required if result is not provided)",
     },
   ],
   output: {
     name: "insights",
     type: "string" as FunctionInputType,
-    description: "트랜잭션 히스토리 분석 결과",
+    description: "Transaction history analysis result",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
@@ -168,71 +168,71 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
       let finalTransactions;
       let finalAddress;
 
-      // 자세한 디버깅 로그 추가
-      console.log("SolTx Intelligence 노드 입력:", {
+      // Add detailed debugging logs
+      console.log("SolTx Intelligence node input:", {
         result: result
           ? {
               type: typeof result,
-              hasTransactions: result.transactions ? `${result.transactions.length}개` : "없음",
-              hasAddress: result.address ? `${result.address}` : "없음",
+              hasTransactions: result.transactions ? `${result.transactions.length} items` : "none",
+              hasAddress: result.address ? `${result.address}` : "none",
               structure: JSON.stringify(result).substring(0, 100) + "...",
             }
           : undefined,
         address,
-        transactions: transactions ? `${transactions.length}개` : undefined,
+        transactions: transactions ? `${transactions.length} items` : undefined,
       });
 
-      // result가 제공된 경우 (SolTx History 노드에서 연결된 경우)
+      // If result is provided (connected from SolTx History node)
       if (result) {
-        // 더 자세한 유효성 검증
+        // More detailed validation
         if (!result.transactions) {
-          console.error("result 객체 문제:", result);
+          console.error("Result object issue:", result);
           throw new Error(
-            "result에 트랜잭션 데이터 배열이 없습니다. 연결된 노드의 출력 형식을 확인하세요."
+            "Result does not contain a transaction data array. Please check the output format of the connected node."
           );
         }
 
         if (!Array.isArray(result.transactions)) {
-          console.error("transactions 형식 문제:", result.transactions);
+          console.error("Transactions format issue:", result.transactions);
           throw new Error(
-            "transactions는 배열 형식이어야 합니다. 연결된 노드의 출력 형식을 확인하세요."
+            "Transactions must be in array format. Please check the output format of the connected node."
           );
         }
 
         if (!result.address) {
-          console.error("address 누락:", result);
+          console.error("Address missing:", result);
           throw new Error(
-            "result에 분석 대상 주소가 없습니다. 연결된 노드의 출력 형식을 확인하세요."
+            "Result does not contain an analysis target address. Please check the output format of the connected node."
           );
         }
 
-        console.log("유효한 result 객체 확인. 분석 계속 진행");
+        console.log("Valid result object confirmed. Continuing analysis");
         finalTransactions = result.transactions;
         finalAddress = result.address;
       }
-      // 직접 입력이 제공된 경우
+      // If direct input is provided
       else if (address && transactions) {
         if (!Array.isArray(transactions)) {
-          throw new Error("트랜잭션 데이터는 배열 형식이어야 합니다");
+          throw new Error("Transaction data must be in array format");
         }
 
         finalTransactions = transactions;
         finalAddress = address;
       }
-      // 입력 데이터가 충분하지 않은 경우
+      // If input data is insufficient
       else {
         throw new Error(
-          "트랜잭션 데이터와 주소는 필수 입력값입니다 (result 또는 address와 transactions를 제공해야 합니다)"
+          "Transaction data and address are required inputs (provide either result or address and transactions)"
         );
       }
 
-      // API 호출 전 최종 입력값 로깅
-      console.log("API 호출 입력값:", {
-        transactions: finalTransactions ? `${finalTransactions.length}개 트랜잭션` : "없음",
+      // Log final input values before API call
+      console.log("API call input values:", {
+        transactions: finalTransactions ? `${finalTransactions.length} transactions` : "none",
         address: finalAddress,
       });
 
-      // API 호출 - LLM으로 트랜잭션 히스토리 분석 요청
+      // API call - Request transaction history analysis using LLM
       const response = await fetch("/api/history-analyze", {
         method: "POST",
         headers: {
@@ -245,27 +245,27 @@ export const solanaHistoryInsightsFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
       return data.insights;
     } catch (error) {
-      throw new Error(`트랜잭션 히스토리 분석 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to analyze transaction history: ${(error as Error).message}`);
     }
   },
 };
 
-// Solana 트랜잭션을 Mermaid 다이어그램으로 변환하는 함수
+// Function to convert Solana transactions to Mermaid diagrams
 export const solanaTxToMermaidFunction: NodeFunction = {
   id: "solana-tx-to-mermaid",
   name: "Solana Tx to Mermaid",
-  description: "Solana 트랜잭션을 Mermaid 시퀀스 다이어그램으로 변환합니다",
+  description: "Converts Solana transactions to Mermaid sequence diagrams",
   category: "Solana",
   groups: ["solana"],
   inputs: [
@@ -273,23 +273,23 @@ export const solanaTxToMermaidFunction: NodeFunction = {
       name: "transaction",
       type: "object",
       required: true,
-      description: "변환할 Solana 트랜잭션 데이터",
+      description: "Solana transaction data to convert",
     },
   ],
   output: {
     name: "mermaid",
     type: "string" as FunctionInputType,
-    description: "Mermaid 시퀀스 다이어그램 코드",
+    description: "Mermaid sequence diagram code",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { transaction } = inputs;
 
       if (!transaction) {
-        throw new Error("트랜잭션 데이터는 필수 입력값입니다");
+        throw new Error("Transaction data is a required input");
       }
 
-      // API 호출
+      // API call
       const response = await fetch("/api/tx-mermaid", {
         method: "POST",
         headers: {
@@ -301,27 +301,29 @@ export const solanaTxToMermaidFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
       return data.mermaid;
     } catch (error) {
-      throw new Error(`Solana 트랜잭션 Mermaid 변환 실패: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to convert Solana transaction to Mermaid: ${(error as Error).message}`
+      );
     }
   },
 };
 
-// Solana 트랜잭션 전문가 모델 분류 함수
+// Solana transaction expert model classification function
 export const solanaTxClassifyExpertFunction: NodeFunction = {
   id: "solana-tx-classify-expert",
   name: "SolTx Classifier",
-  description: "Solana 트랜잭션을 분석하여 적합한 전문가 모델로 분류합니다",
+  description: "Analyzes Solana transactions and classifies them into appropriate expert models",
   category: "Solana",
   groups: ["solana"],
   inputs: [
@@ -329,33 +331,33 @@ export const solanaTxClassifyExpertFunction: NodeFunction = {
       name: "transaction",
       type: "object",
       required: true,
-      description: "분석할 Solana 트랜잭션 데이터",
+      description: "Solana transaction data to analyze",
     },
     {
       name: "aiModel",
       type: "string",
       required: false,
-      description: "사용할 AI 모델 이름",
+      description: "AI model name to use",
     },
   ],
   output: {
     name: "expertModel",
     type: "string" as FunctionInputType,
-    description: "분류된 전문가 모델 식별자",
+    description: "Classified expert model identifier",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { transaction, llmModel } = inputs;
 
       if (!transaction) {
-        throw new Error("트랜잭션 데이터는 필수 입력값입니다");
+        throw new Error("Transaction data is a required input");
       }
 
-      // 사용할 LLM 모델 - 입력이 없으면 기본값 사용
+      // LLM model to use - use default if not provided
       const selectedModel = llmModel || "gemini-2.0-flash";
-      console.log(`LLM 모델 ${selectedModel}로 분류 요청 중...`);
+      console.log(`Requesting classification with LLM model ${selectedModel}...`);
 
-      // 지원되는 전문가 모델 목록
+      // List of supported expert models
       const expertModels = {
         DEX_EXPERT: "dex-expert",
         NFT_EXPERT: "nft-expert",
@@ -364,7 +366,7 @@ export const solanaTxClassifyExpertFunction: NodeFunction = {
         GENERIC_EXPERT: "generic-expert",
       };
 
-      // API 호출 - LLM으로 트랜잭션 분석 및 전문가 모델 분류 요청
+      // API call - Request transaction analysis and expert model classification using LLM
       const response = await fetch("/api/tx-classify", {
         method: "POST",
         headers: {
@@ -377,29 +379,29 @@ export const solanaTxClassifyExpertFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
-      console.log(`트랜잭션 분류 결과: ${data.expertModel}`);
+      console.log(`Transaction classification result: ${data.expertModel}`);
 
       return data.expertModel;
     } catch (error) {
-      throw new Error(`트랜잭션 분류 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to classify transaction: ${(error as Error).message}`);
     }
   },
 };
 
-// Solana 트랜잭션 전문가 분석 함수
+// Solana transaction expert analysis function
 export const solanaTxExpertAnalyzeFunction: NodeFunction = {
   id: "solana-tx-expert-analyze",
   name: "SolTx Expert Analyzer",
-  description: "특정 전문가 모델을 사용하여 Solana 트랜잭션을 심층 분석합니다",
+  description: "Performs in-depth analysis of Solana transactions using specific expert models",
   category: "Solana",
   groups: ["solana"],
   inputs: [
@@ -407,44 +409,44 @@ export const solanaTxExpertAnalyzeFunction: NodeFunction = {
       name: "transaction",
       type: "object",
       required: true,
-      description: "분석할 Solana 트랜잭션 데이터",
+      description: "Solana transaction data to analyze",
     },
     {
       name: "expertModel",
       type: "string",
       required: true,
-      description: "사용할 전문가 모델 식별자 (SolTx Classifier의 출력과 호환)",
+      description: "Expert model identifier to use (compatible with SolTx Classifier output)",
     },
     {
       name: "aiModel",
       type: "string",
       required: false,
-      description: "사용할 AI 모델 이름",
+      description: "AI model name to use",
       default: "gemini-2.0-flash",
     },
   ],
   output: {
     name: "expertAnalysis",
     type: "string" as FunctionInputType,
-    description: "선택된 전문가 모델에 의한 트랜잭션 분석 결과",
+    description: "Transaction analysis result from the selected expert model",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { transaction, expertModel, llmModel } = inputs;
 
       if (!transaction) {
-        throw new Error("트랜잭션 데이터는 필수 입력값입니다");
+        throw new Error("Transaction data is a required input");
       }
 
       if (!expertModel) {
-        throw new Error("전문가 모델 식별자는 필수 입력값입니다");
+        throw new Error("Expert model identifier is a required input");
       }
 
-      // 사용할 LLM 모델 - 입력이 없으면 기본값 사용
+      // LLM model to use - use default if not provided
       const selectedModel = llmModel || "gemini-2.0-flash";
-      console.log(`LLM 모델 ${selectedModel}로 분석 요청 중...`);
+      console.log(`Requesting analysis with LLM model ${selectedModel}...`);
 
-      // 지원되는 전문가 모델 목록 (solanaTxClassifyExpertFunction과 동일)
+      // List of supported expert models (same as solanaTxClassifyExpertFunction)
       const supportedModels = [
         "dex-expert",
         "nft-expert",
@@ -453,16 +455,18 @@ export const solanaTxExpertAnalyzeFunction: NodeFunction = {
         "generic-expert",
       ];
 
-      // 유효한 모델인지 확인
+      // Check if model is valid
       if (!supportedModels.includes(expertModel)) {
         throw new Error(
-          `지원되지 않는 전문가 모델: ${expertModel}. 지원되는 모델: ${supportedModels.join(", ")}`
+          `Unsupported expert model: ${expertModel}. Supported models: ${supportedModels.join(
+            ", "
+          )}`
         );
       }
 
-      console.log(`전문가 모델 ${expertModel}을(를) 사용하여 트랜잭션 분석 중...`);
+      console.log(`Analyzing transaction using expert model ${expertModel}...`);
 
-      // API 호출 - 선택된 전문가 모델을 사용하여 트랜잭션 분석 요청
+      // API call - Request transaction analysis using selected expert model
       const response = await fetch("/api/tx-expert-analyze", {
         method: "POST",
         headers: {
@@ -476,27 +480,27 @@ export const solanaTxExpertAnalyzeFunction: NodeFunction = {
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
-      return data.expertAnalysis || "분석 결과가 없습니다.";
+      return data.expertAnalysis || "No analysis results available.";
     } catch (error) {
-      throw new Error(`전문가 분석 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to perform expert analysis: ${(error as Error).message}`);
     }
   },
 };
 
-// LLM 모델 선택 노드
+// LLM model selection node
 export const modelProviderSelectorFunction: NodeFunction = {
   id: "model-provider-selector",
   name: "AI Model Selector",
-  description: "AI 모델 프로바이더와 모델을 선택하여 사용할 모델 이름을 반환합니다",
+  description: "Selects AI model provider and model to return the model name to use",
   category: "Solana",
   groups: ["solana", "utils"],
   inputs: [
@@ -504,44 +508,44 @@ export const modelProviderSelectorFunction: NodeFunction = {
       name: "provider",
       type: "string",
       required: true,
-      description: "LLM 모델 프로바이더 (huggingface 또는 openrouter)",
+      description: "LLM model provider (huggingface or openrouter)",
       default: "huggingface",
     },
     {
       name: "model",
       type: "string",
       required: true,
-      description: "선택한 프로바이더에서 사용할 모델 이름",
+      description: "Model name to use from the selected provider",
     },
     {
       name: "apiKey",
       type: "string",
       required: true,
-      description: "프로바이더에서 사용할 API 키 (안전하게 저장됩니다)",
+      description: "API key for the provider (stored securely)",
     },
   ],
   output: {
     name: "model",
     type: "string" as FunctionInputType,
-    description: "선택된 모델 이름",
+    description: "Selected model name",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
       const { provider, model, apiKey } = inputs;
 
       if (!provider) {
-        throw new Error("모델 프로바이더는 필수 입력값입니다");
+        throw new Error("Model provider is a required input");
       }
 
       if (!model) {
-        throw new Error("모델 이름은 필수 입력값입니다");
+        throw new Error("Model name is a required input");
       }
 
       if (!apiKey) {
-        throw new Error("API 키는 필수 입력값입니다");
+        throw new Error("API key is a required input");
       }
 
-      // 지원되는 모델 목록
+      // List of supported models
       const supportedModels = {
         huggingface: ["mome-1.0", "mome-1.0-pro-exp"],
         openrouter: [
@@ -555,34 +559,34 @@ export const modelProviderSelectorFunction: NodeFunction = {
         ],
       };
 
-      // 지원되는 프로바이더인지 확인
+      // Check if provider is supported
       if (!supportedModels[provider.toLowerCase()]) {
         throw new Error(
-          `지원되지 않는 프로바이더: ${provider}. 지원되는 프로바이더: huggingface, openrouter`
+          `Unsupported provider: ${provider}. Supported providers: huggingface, openrouter`
         );
       }
 
-      // 선택한 프로바이더에서 지원하는 모델인지 확인
+      // Check if model is supported by the selected provider
       const providerModels = supportedModels[provider.toLowerCase()];
       if (!providerModels.includes(model)) {
         throw new Error(
-          `${provider} 프로바이더에서 지원하지 않는 모델: ${model}. 지원되는 모델: ${providerModels.join(
+          `Model ${model} is not supported by ${provider} provider. Supported models: ${providerModels.join(
             ", "
           )}`
         );
       }
 
-      console.log(`선택된 프로바이더: ${provider}, 모델: ${model}`);
+      console.log(`Selected provider: ${provider}, model: ${model}`);
 
-      // 모델 이름만 반환
+      // Return only the model name
       return model;
     } catch (error) {
-      throw new Error(`모델 선택 실패: ${(error as Error).message}`);
+      throw new Error(`Failed to select model: ${(error as Error).message}`);
     }
   },
 };
 
-// Solana 지갑 연결 노드
+// Solana wallet connection node
 export const solanaWalletConnectFunction: NodeFunction = {
   id: "solana-wallet-connect",
   name: "Connect Wallet",
@@ -640,7 +644,7 @@ export const solanaWalletConnectFunction: NodeFunction = {
   },
 };
 
-// Solana 트랜잭션 전송 노드
+// Solana transaction send node
 export const solanaSendTransactionFunction: NodeFunction = {
   id: "solana-send-transaction",
   name: "Send Transaction",
