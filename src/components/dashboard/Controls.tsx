@@ -42,6 +42,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import WalletInfo from "./WalletInfo";
+
 const Controls = () => {
   const { addFunctionNode, addOutputNode, runFlow, isProcessing, activeGroup, setActiveGroup } =
     useFlow();
@@ -110,6 +112,7 @@ const Controls = () => {
     "solana-tx-classify-expert": <Sparkles className="h-4 w-4" />,
     "solana-tx-expert-analyze": <Bot className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
+    "solana-send-transaction": <Coins className="h-4 w-4" />,
   };
 
   // 카테고리 정렬 순서 지정
@@ -208,6 +211,9 @@ const Controls = () => {
             </div>
           ))}
         </div>
+
+        {/* Wallet Info Component */}
+        <WalletInfo className="mt-4" />
       </CardContent>
     </Card>
   );

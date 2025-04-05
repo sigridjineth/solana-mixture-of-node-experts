@@ -17,6 +17,7 @@ import {
   solanaTxExpertAnalyzeFunction,
   modelProviderSelectorFunction,
   solanaWalletConnectFunction,
+  solanaSendTransactionFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -38,6 +39,7 @@ const functionRegistry: FunctionRegistry = {
   [solanaTxExpertAnalyzeFunction.id]: solanaTxExpertAnalyzeFunction,
   [modelProviderSelectorFunction.id]: modelProviderSelectorFunction,
   [solanaWalletConnectFunction.id]: solanaWalletConnectFunction,
+  [solanaSendTransactionFunction.id]: solanaSendTransactionFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
