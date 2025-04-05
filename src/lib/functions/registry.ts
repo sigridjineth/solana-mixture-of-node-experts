@@ -18,18 +18,13 @@ import {
   modelProviderSelectorFunction,
   solanaWalletConnectFunction,
   solanaSendTransactionFunction,
-  gpt4oMiniFunction,
-  gptO1MiniFunction,
-  claude35SonnetFunction,
-  claude37SonnetFunction,
-  gemini20FlashFunction,
-  gemini15ProFunction,
-  mixtureMultiChainExpert1Function,
-  mixtureMultiChainExpert1ProFunction,
+  solanaOrcaFunction,
+  solanaJupyterFunction,
+  solanaRaydiumFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
-// 모든 함수들을 레지스트리에 등록
+// Register all functions in the registry
 const functionRegistry: FunctionRegistry = {
   [fetchDataFunction.id]: fetchDataFunction,
   [filterDataFunction.id]: filterDataFunction,
@@ -48,14 +43,9 @@ const functionRegistry: FunctionRegistry = {
   [modelProviderSelectorFunction.id]: modelProviderSelectorFunction,
   [solanaWalletConnectFunction.id]: solanaWalletConnectFunction,
   [solanaSendTransactionFunction.id]: solanaSendTransactionFunction,
-  [gpt4oMiniFunction.id]: gpt4oMiniFunction,
-  [gptO1MiniFunction.id]: gptO1MiniFunction,
-  [claude35SonnetFunction.id]: claude35SonnetFunction,
-  [claude37SonnetFunction.id]: claude37SonnetFunction,
-  [gemini20FlashFunction.id]: gemini20FlashFunction,
-  [gemini15ProFunction.id]: gemini15ProFunction,
-  [mixtureMultiChainExpert1Function.id]: mixtureMultiChainExpert1Function,
-  [mixtureMultiChainExpert1ProFunction.id]: mixtureMultiChainExpert1ProFunction,
+  [solanaOrcaFunction.id]: solanaOrcaFunction,
+  [solanaJupyterFunction.id]: solanaJupyterFunction,
+  [solanaRaydiumFunction.id]: solanaRaydiumFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
@@ -64,6 +54,11 @@ export const getFunctionById = (id: string): NodeFunction | undefined => {
 
 export const getAllFunctions = (): NodeFunction[] => {
   return Object.values(functionRegistry);
+};
+
+export const getFunctionsByGroup = (groupId: string): NodeFunction[] => {
+  // Assume all nodes have a groups array
+  return getAllFunctions().filter((func) => func.groups?.includes(groupId));
 };
 
 export const getFunctionsByCategory = (): Record<string, NodeFunction[]> => {
@@ -77,14 +72,6 @@ export const getFunctionsByCategory = (): Record<string, NodeFunction[]> => {
   });
 
   return categories;
-};
-
-export const getFunctionsByGroup = (groupId: string): NodeFunction[] => {
-  return getAllFunctions().filter((func) => {
-    // 모든 노드가 groups 배열을 가지고 있다고 가정
-    const groups = func.groups || [];
-    return groups.includes(groupId);
-  });
 };
 
 export const getFunctionsByGroupAndCategory = (groupId: string): Record<string, NodeFunction[]> => {

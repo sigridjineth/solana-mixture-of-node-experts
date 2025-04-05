@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { NodeProps, Handle, Position } from "reactflow";
+import { ToBeContinuedModal } from "./ToBeContinuedModal";
+import { SolanaOrcaIcon, SolanaJupyterIcon, SolanaRaydiumIcon } from "@/components/icons/WebpIcons";
 
 // 드롭다운 옵션을 가져오는 함수
-const getInputOptions = (
-  functionId: string,
-  inputName: string,
-  providerValue?: string
-) => {
+const getInputOptions = (functionId: string, inputName: string, providerValue?: string) => {
   if (functionId === "model-provider-selector") {
     if (inputName === "provider") {
       return [
@@ -65,17 +63,19 @@ const InfoIcon = () => (
   </svg>
 );
 
-const FunctionNodeComponent = ({
-  id,
-  data,
-  isConnectable,
-  selected,
-}: NodeProps<NodeData>) => {
+// Function icons mapping
+const functionIcons: Record<string, React.ReactNode> = {
+  "solana-orca": <SolanaOrcaIcon className="h-4 w-4" />,
+  "solana-jupyter": <SolanaJupyterIcon className="h-4 w-4" />,
+  "solana-raydium": <SolanaRaydiumIcon className="h-4 w-4" />,
+};
+
+const FunctionNodeComponent = ({ id, data, isConnectable, selected }: NodeProps<NodeData>) => {
   const [inputs, setInputs] = useState<Record<string, any>>({});
+  const [showModal, setShowModal] = useState(false);
 
   // 모델 프로바이더 선택 상태 관리
-  const [selectedProvider, setSelectedProvider] =
-    useState<string>("huggingface");
+  const [selectedProvider, setSelectedProvider] = useState<string>("huggingface");
 
   // 임시 edges 변수 - 타입 정의 추가
   const edges: Array<{ target: string; targetHandle: string }> = [];
@@ -86,133 +86,176 @@ const FunctionNodeComponent = ({
     }
   }, [data.function?.id, inputs.provider]);
 
+  // Check if this is a "To be Continued" node
+  const isToBeContinuedNode =
+    data.function?.id === "solana-orca" ||
+    data.function?.id === "solana-jupyter" ||
+    data.function?.id === "solana-raydium";
+
+  // Handle node click for "To be Continued" nodes
+  const handleNodeClick = () => {
+    if (isToBeContinuedNode) {
+      setShowModal(true);
+    }
+  };
+
+  // Get the icon for the node
+  const getNodeIcon = () => {
+    if (data.function?.id && functionIcons[data.function.id]) {
+      return functionIcons[data.function.id];
+    }
+
+    // Fallback to icon from function data if available
+    if (data.function?.icon) {
+      return (
+        <img
+          src={data.function.icon}
+          alt={data.function.name || "Node icon"}
+          className="w-4 h-4 object-contain"
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const nodeIcon = getNodeIcon();
+
   return (
-    <div
-      className={`px-4 py-2 shadow-md rounded-md bg-white border-2 ${
-        selected ? "border-blue-500" : "border-slate-300"
-      }`}
-      style={{ width: 400 }}
-    >
-      <div className="flex flex-col gap-2 my-2">
-        {data.function?.inputs?.map((input) => {
-          const isInputConnected = edges.some(
-            (edge) => edge.target === id && edge.targetHandle === input.name
-          );
+    <>
+      <div
+        className={`px-4 py-2 shadow-md rounded-md bg-white border-2 ${
+          selected ? "border-blue-500" : "border-slate-300"
+        }`}
+        style={{ width: 400 }}
+        onClick={handleNodeClick}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          {nodeIcon}
+          <h3 className="font-bold text-sm">{data.function?.name}</h3>
+        </div>
+        <div className="flex flex-col gap-2 my-2">
+          {data.function?.inputs?.map((input) => {
+            const isInputConnected = edges.some(
+              (edge) => edge.target === id && edge.targetHandle === input.name
+            );
 
-          // 입력 필드 타입 확인
-          const isSelectInput =
-            data.function?.id === "model-provider-selector" &&
-            (input.name === "provider" || input.name === "model");
+            // 입력 필드 타입 확인
+            const isSelectInput =
+              data.function?.id === "model-provider-selector" &&
+              (input.name === "provider" || input.name === "model");
 
-          // API 키 입력인지 확인
-          const isApiKeyInput =
-            data.function?.id === "model-provider-selector" &&
-            input.name === "apiKey";
+            // API 키 입력인지 확인
+            const isApiKeyInput =
+              data.function?.id === "model-provider-selector" && input.name === "apiKey";
 
-          return (
-            <div
-              key={input.name}
-              className="flex items-center gap-2 w-full relative"
-            >
-              <div
-                className="absolute top-1/2 -translate-y-1/2 -left-4 w-2 h-2 bg-blue-500 rounded-full cursor-crosshair z-10"
-                style={{ zIndex: 100 }}
-              />
-              <Handle
-                type="target"
-                position={Position.Left}
-                id={input.name}
-                className={`w-4 h-4 border-2 ${
-                  isInputConnected
-                    ? "border-green-500 bg-green-300"
-                    : "border-slate-400 bg-slate-200"
-                }`}
-                isConnectable={isConnectable}
-              />
+            return (
+              <div key={input.name} className="flex items-center gap-2 w-full relative">
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 -left-4 w-2 h-2 bg-blue-500 rounded-full cursor-crosshair z-10"
+                  style={{ zIndex: 100 }}
+                />
+                <Handle
+                  type="target"
+                  position={Position.Left}
+                  id={input.name}
+                  className={`w-4 h-4 border-2 ${
+                    isInputConnected
+                      ? "border-green-500 bg-green-300"
+                      : "border-slate-400 bg-slate-200"
+                  }`}
+                  isConnectable={isConnectable}
+                />
 
-              <div className="flex flex-col w-full">
-                <div className="flex items-center gap-2">
-                  <label className="font-mono text-xs text-slate-500">
-                    {input.name}
-                    {input.required && <span className="text-red-500">*</span>}
-                  </label>
-                  {input.description && (
-                    <div
-                      className="text-slate-400 cursor-help"
-                      title={input.description}
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center gap-2">
+                    <label className="font-mono text-xs text-slate-500">
+                      {input.name}
+                      {input.required && <span className="text-red-500">*</span>}
+                    </label>
+                    {input.description && (
+                      <div className="text-slate-400 cursor-help" title={input.description}>
+                        <InfoIcon />
+                      </div>
+                    )}
+                  </div>
+
+                  {isSelectInput ? (
+                    <select
+                      className="w-full border rounded-md p-1 text-sm"
+                      value={inputs[input.name] || input.default || ""}
+                      onChange={(e) => {
+                        const newInputs = {
+                          ...inputs,
+                          [input.name]: e.target.value,
+                        };
+                        setInputs(newInputs);
+                        data.setInputs?.(newInputs);
+                        if (input.name === "provider") {
+                          setSelectedProvider(e.target.value);
+                        }
+                      }}
+                      disabled={isInputConnected}
                     >
-                      <InfoIcon />
-                    </div>
+                      <option value="">Select...</option>
+                      {getInputOptions(data.function?.id || "", input.name, selectedProvider).map(
+                        (option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  ) : isApiKeyInput ? (
+                    <input
+                      type="password"
+                      className="w-full border rounded-md p-1 text-sm"
+                      placeholder="Enter API key (stored securely)"
+                      value={inputs[input.name] || ""}
+                      onChange={(e) => {
+                        const newInputs = {
+                          ...inputs,
+                          [input.name]: e.target.value,
+                        };
+                        setInputs(newInputs);
+                        data.setInputs?.(newInputs);
+                      }}
+                      disabled={isInputConnected}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      className="w-full border rounded-md p-1 text-sm"
+                      placeholder={`${input.default || ""}`}
+                      value={inputs[input.name] || ""}
+                      onChange={(e) => {
+                        const newInputs = {
+                          ...inputs,
+                          [input.name]: e.target.value,
+                        };
+                        setInputs(newInputs);
+                        data.setInputs?.(newInputs);
+                      }}
+                      disabled={isInputConnected}
+                    />
                   )}
                 </div>
-
-                {isSelectInput ? (
-                  <select
-                    className="w-full border rounded-md p-1 text-sm"
-                    value={inputs[input.name] || input.default || ""}
-                    onChange={(e) => {
-                      const newInputs = {
-                        ...inputs,
-                        [input.name]: e.target.value,
-                      };
-                      setInputs(newInputs);
-                      data.setInputs?.(newInputs);
-                      if (input.name === "provider") {
-                        setSelectedProvider(e.target.value);
-                      }
-                    }}
-                    disabled={isInputConnected}
-                  >
-                    <option value="">선택하세요...</option>
-                    {getInputOptions(
-                      data.function?.id || "",
-                      input.name,
-                      selectedProvider
-                    ).map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : isApiKeyInput ? (
-                  <input
-                    type="password"
-                    className="w-full border rounded-md p-1 text-sm"
-                    placeholder="API 키를 입력하세요 (안전하게 저장됩니다)"
-                    value={inputs[input.name] || ""}
-                    onChange={(e) => {
-                      const newInputs = {
-                        ...inputs,
-                        [input.name]: e.target.value,
-                      };
-                      setInputs(newInputs);
-                      data.setInputs?.(newInputs);
-                    }}
-                    disabled={isInputConnected}
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    className="w-full border rounded-md p-1 text-sm"
-                    placeholder={`${input.default || ""}`}
-                    value={inputs[input.name] || ""}
-                    onChange={(e) => {
-                      const newInputs = {
-                        ...inputs,
-                        [input.name]: e.target.value,
-                      };
-                      setInputs(newInputs);
-                      data.setInputs?.(newInputs);
-                    }}
-                    disabled={isInputConnected}
-                  />
-                )}
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+
+      {/* To be Continued Modal */}
+      <ToBeContinuedModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={`${data.function?.name || "Feature"} Coming Soon`}
+        description={`The ${
+          data.function?.name || "this feature"
+        } integration will be available in a future update.`}
+      />
+    </>
   );
 };
 

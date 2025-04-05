@@ -40,6 +40,7 @@ import {
   Puzzle,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
+import { SolanaOrcaIcon, SolanaJupyterIcon, SolanaRaydiumIcon } from "@/components/icons/WebpIcons";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -96,9 +97,9 @@ const Controls = () => {
   const categoryIcons: Record<string, React.ReactNode> = {
     Solana: <Coins className="h-4 w-4" />,
     Data: <Database className="h-4 w-4" />,
-    "Tx Tools": <Brain className="h-4 w-4" />,
+    "Tx Tools": <Database className="h-4 w-4" />,
     Utils: <Settings className="h-4 w-4" />,
-    Models: <Brain className="h-4 w-4" />,
+    "Expert Models": <Brain className="h-4 w-4" />,
   };
 
   // 함수별 아이콘 매핑
@@ -120,6 +121,9 @@ const Controls = () => {
     "solana-tx-expert-analyze": <Bot className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
     "solana-send-transaction": <Coins className="h-4 w-4" />,
+    "solana-orca": <SolanaOrcaIcon className="h-4 w-4" />,
+    "solana-jupyter": <SolanaJupyterIcon className="h-4 w-4" />,
+    "solana-raydium": <SolanaRaydiumIcon className="h-4 w-4" />,
     "gpt-4o-mini": <Zap className="h-4 w-4" />,
     "gpt-o1-mini": <Sparkles className="h-4 w-4" />,
     "claude-3-5-sonnet": <Lightbulb className="h-4 w-4" />,

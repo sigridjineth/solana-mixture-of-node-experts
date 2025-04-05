@@ -241,7 +241,7 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                     onChange={(e) => handleInputChange(input.name, e.target.value)}
                     disabled={isInputDisabled(input.name)}
                   >
-                    <option value="">선택하세요...</option>
+                    <option value="">Choose {input.name}</option>
                     {getInputOptions(input.name).map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}

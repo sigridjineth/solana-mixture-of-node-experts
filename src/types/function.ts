@@ -22,6 +22,7 @@ export type NodeFunction = {
   description: string;
   category: string;
   groups?: string[];
+  icon?: string;
   inputs: FunctionInput[];
   output: FunctionOutput;
   execute: (inputs: Record<string, any>) => Promise<any>;
