@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,13 @@ import SendTransactionNode from "../nodes/SendTransactionNode";
 const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   const { runNode, updateNodeInputs } = useFlow();
   const nodeFunction = data.functionId ? getFunctionById(data.functionId) : undefined;
+
+  // Add a debug log to see when connectedInputs changes
+  useEffect(() => {
+    if (nodeFunction?.id === "solana-send-transaction") {
+      console.log("SendTransactionNode connectedInputs in FunctionNode:", data.connectedInputs);
+    }
+  }, [data.connectedInputs, nodeFunction?.id]);
 
   const handleInputChange = useCallback(
     (name: string, value: string) => {

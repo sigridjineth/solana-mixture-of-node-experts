@@ -650,9 +650,9 @@ export const solanaSendTransactionFunction: NodeFunction = {
   inputs: [
     {
       name: "sender",
-      type: "string",
-      required: false,
-      description: "Connect a wallet to get sender address",
+      type: "object",
+      required: true,
+      description: "Connect a wallet node to get sender address",
     },
     {
       name: "recipient",

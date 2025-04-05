@@ -67,6 +67,11 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
     }
   }, [data.connectedInputs?.sender]);
 
+  // Add a debug log to see when connectedInputs changes
+  useEffect(() => {
+    console.log("SendTransactionNode connectedInputs updated:", data.connectedInputs);
+  }, [data.connectedInputs]);
+
   const handleConnect = async () => {
     try {
       open();
@@ -104,10 +109,16 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
         process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com"
       );
 
+      // Get the wallet provider from the connected wallet info
+      const walletProvider = (window as any).solana;
+      if (!walletProvider) {
+        throw new Error("Wallet not connected. Please connect your wallet first.");
+      }
+
       // Create the transaction
       const transaction = new Transaction().add(
         SystemProgram.transfer({
-          fromPubkey: walletProvider!.publicKey!,
+          fromPubkey: new PublicKey(senderAddress!),
           toPubkey: new PublicKey(recipient),
           lamports: parseFloat(amount) * LAMPORTS_PER_SOL,
         })
@@ -116,10 +127,10 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
       // Get the latest blockhash
       const { blockhash } = await solanaConnection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
-      transaction.feePayer = walletProvider!.publicKey!;
+      transaction.feePayer = new PublicKey(senderAddress!);
 
       // Sign the transaction with the wallet
-      const signedTransaction = await walletProvider!.signTransaction(transaction);
+      const signedTransaction = await walletProvider.signTransaction(transaction);
 
       // Send the transaction
       const signature = await solanaConnection.sendRawTransaction(signedTransaction.serialize());
@@ -143,11 +154,11 @@ const SendTransactionNode: React.FC<SendTransactionNodeProps> = ({ data, id, sel
         err: null,
         transaction: {
           message: {
-            accountKeys: [walletProvider!.publicKey!.toString(), recipient],
+            accountKeys: [senderAddress, recipient],
             instructions: [
               {
                 programId: "11111111111111111111111111111111", // System program ID
-                accounts: [walletProvider!.publicKey!.toString(), recipient],
+                accounts: [senderAddress, recipient],
                 data: `Transfer ${amount} SOL`,
               },
             ],

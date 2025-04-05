@@ -69,6 +69,7 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
         // Update data.returnValue to make it available for connections
         if (data && typeof data === "object") {
           data.returnValue = newWalletInfo;
+          console.log("ConnectWalletNode updated returnValue:", newWalletInfo);
         }
       } catch (error) {
         console.error("Error fetching wallet info:", error);
