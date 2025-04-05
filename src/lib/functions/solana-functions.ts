@@ -787,3 +787,196 @@ export const solanaSendTransactionFunction: NodeFunction = {
     }
   },
 };
+
+// Model Type Functions
+export const gpt4oMiniFunction: NodeFunction = {
+  id: "gpt-4o-mini",
+  name: "GPT-4o-mini",
+  description: "GPT-4o-mini model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "OpenAI API key for GPT-4o-mini",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for GPT-4o-mini",
+  },
+  execute: async (inputs) => {
+    return "gpt-4o-mini";
+  },
+};
+
+export const gptO1MiniFunction: NodeFunction = {
+  id: "gpt-o1-mini",
+  name: "GPT-o1-mini",
+  description: "GPT-o1-mini model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "OpenAI API key for GPT-o1-mini",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for GPT-o1-mini",
+  },
+  execute: async (inputs) => {
+    return "gpt-o1-mini";
+  },
+};
+
+export const claude35SonnetFunction: NodeFunction = {
+  id: "claude-3-5-sonnet",
+  name: "Claude 3.5 Sonnet",
+  description: "Claude 3.5 Sonnet model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "Anthropic API key for Claude 3.5 Sonnet",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for Claude 3.5 Sonnet",
+  },
+  execute: async (inputs) => {
+    return "claude-3-5-sonnet";
+  },
+};
+
+export const claude37SonnetFunction: NodeFunction = {
+  id: "claude-3-7-sonnet",
+  name: "Claude 3.7 Sonnet",
+  description: "Claude 3.7 Sonnet model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "Anthropic API key for Claude 3.7 Sonnet",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for Claude 3.7 Sonnet",
+  },
+  execute: async (inputs) => {
+    return "claude-3-7-sonnet";
+  },
+};
+
+export const gemini20FlashFunction: NodeFunction = {
+  id: "gemini-2-0-flash",
+  name: "Gemini 2.0 Flash",
+  description: "Gemini 2.0 Flash model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "Google API key for Gemini 2.0 Flash",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for Gemini 2.0 Flash",
+  },
+  execute: async (inputs) => {
+    return "gemini-2-0-flash";
+  },
+};
+
+export const gemini15ProFunction: NodeFunction = {
+  id: "gemini-1-5-pro",
+  name: "Gemini 1.5 Pro",
+  description: "Gemini 1.5 Pro model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "Google API key for Gemini 1.5 Pro",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for Gemini 1.5 Pro",
+  },
+  execute: async (inputs) => {
+    return "gemini-1-5-pro";
+  },
+};
+
+export const mixtureMultiChainExpert1Function: NodeFunction = {
+  id: "mixture-multi-chain-expert-1",
+  name: "Mixture of Multi-chain Expert 1",
+  description: "Mixture of Multi-chain Expert 1 model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "API key for Mixture of Multi-chain Expert 1",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for Mixture of Multi-chain Expert 1",
+  },
+  execute: async (inputs) => {
+    return "mixture-multi-chain-expert-1";
+  },
+};
+
+export const mixtureMultiChainExpert1ProFunction: NodeFunction = {
+  id: "mixture-multi-chain-expert-1-pro",
+  name: "Mixture of Multi-chain Expert 1 Pro",
+  description: "Mixture of Multi-chain Expert 1 Pro model for Solana transaction analysis",
+  category: "Models",
+  groups: ["solana"],
+  inputs: [
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "API key for Mixture of Multi-chain Expert 1 Pro",
+    },
+  ],
+  output: {
+    name: "model",
+    type: "string",
+    description: "Model identifier for Mixture of Multi-chain Expert 1 Pro",
+  },
+  execute: async (inputs) => {
+    return "mixture-multi-chain-expert-1-pro";
+  },
+};

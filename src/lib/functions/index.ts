@@ -8,6 +8,14 @@ import {
   modelProviderSelectorFunction,
   solanaWalletConnectFunction,
   solanaSendTransactionFunction,
+  gpt4oMiniFunction,
+  gptO1MiniFunction,
+  claude35SonnetFunction,
+  claude37SonnetFunction,
+  gemini20FlashFunction,
+  gemini15ProFunction,
+  mixtureMultiChainExpert1Function,
+  mixtureMultiChainExpert1ProFunction,
 } from "./solana-functions";
 
 export const nodeFunctions = [
@@ -20,6 +28,14 @@ export const nodeFunctions = [
   modelProviderSelectorFunction,
   solanaWalletConnectFunction,
   solanaSendTransactionFunction,
+  gpt4oMiniFunction,
+  gptO1MiniFunction,
+  claude35SonnetFunction,
+  claude37SonnetFunction,
+  gemini20FlashFunction,
+  gemini15ProFunction,
+  mixtureMultiChainExpert1Function,
+  mixtureMultiChainExpert1ProFunction,
 ];
 
 export { solanaWalletConnectFunction, solanaSendTransactionFunction } from "./solana-functions";

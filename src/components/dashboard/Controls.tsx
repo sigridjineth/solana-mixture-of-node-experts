@@ -30,6 +30,14 @@ import {
   Sparkles,
   Bot,
   Wallet,
+  Zap,
+  Lightbulb,
+  Rocket,
+  Atom,
+  Network,
+  Workflow,
+  Blocks,
+  Puzzle,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
 
@@ -90,6 +98,7 @@ const Controls = () => {
     Data: <Database className="h-4 w-4" />,
     "Tx Tools": <Brain className="h-4 w-4" />,
     Utils: <Settings className="h-4 w-4" />,
+    Models: <Brain className="h-4 w-4" />,
   };
 
   // 함수별 아이콘 매핑
@@ -111,10 +120,18 @@ const Controls = () => {
     "solana-tx-expert-analyze": <Bot className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
     "solana-send-transaction": <Coins className="h-4 w-4" />,
+    "gpt-4o-mini": <Zap className="h-4 w-4" />,
+    "gpt-o1-mini": <Sparkles className="h-4 w-4" />,
+    "claude-3-5-sonnet": <Lightbulb className="h-4 w-4" />,
+    "claude-3-7-sonnet": <Bot className="h-4 w-4" />,
+    "gemini-2-0-flash": <Rocket className="h-4 w-4" />,
+    "gemini-1-5-pro": <Cpu className="h-4 w-4" />,
+    "mixture-multi-chain-expert-1": <Network className="h-4 w-4" />,
+    "mixture-multi-chain-expert-1-pro": <Atom className="h-4 w-4" />,
   };
 
   // 카테고리 정렬 순서 지정
-  const categoryOrder = ["Solana", "Data", "Tx Tools", "Utils"];
+  const categoryOrder = ["Solana", "Data", "Tx Tools", "Models", "Utils"];
   const sortedCategories = Object.entries(functionsByCategory).sort(
     ([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
   );

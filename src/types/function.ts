@@ -1,9 +1,4 @@
-export type FunctionInputType =
-  | "string"
-  | "number"
-  | "boolean"
-  | "object"
-  | "array";
+export type FunctionInputType = "string" | "number" | "boolean" | "object" | "array" | "password";
 
 export type FunctionInput = {
   name: string;
@@ -12,6 +7,7 @@ export type FunctionInput = {
   default?: any;
   description?: string;
   hiddenUI?: boolean;
+  isApiKeyInput?: boolean;
 };
 
 export type FunctionOutput = {

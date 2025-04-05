@@ -18,6 +18,14 @@ import {
   modelProviderSelectorFunction,
   solanaWalletConnectFunction,
   solanaSendTransactionFunction,
+  gpt4oMiniFunction,
+  gptO1MiniFunction,
+  claude35SonnetFunction,
+  claude37SonnetFunction,
+  gemini20FlashFunction,
+  gemini15ProFunction,
+  mixtureMultiChainExpert1Function,
+  mixtureMultiChainExpert1ProFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -40,6 +48,14 @@ const functionRegistry: FunctionRegistry = {
   [modelProviderSelectorFunction.id]: modelProviderSelectorFunction,
   [solanaWalletConnectFunction.id]: solanaWalletConnectFunction,
   [solanaSendTransactionFunction.id]: solanaSendTransactionFunction,
+  [gpt4oMiniFunction.id]: gpt4oMiniFunction,
+  [gptO1MiniFunction.id]: gptO1MiniFunction,
+  [claude35SonnetFunction.id]: claude35SonnetFunction,
+  [claude37SonnetFunction.id]: claude37SonnetFunction,
+  [gemini20FlashFunction.id]: gemini20FlashFunction,
+  [gemini15ProFunction.id]: gemini15ProFunction,
+  [mixtureMultiChainExpert1Function.id]: mixtureMultiChainExpert1Function,
+  [mixtureMultiChainExpert1ProFunction.id]: mixtureMultiChainExpert1ProFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
