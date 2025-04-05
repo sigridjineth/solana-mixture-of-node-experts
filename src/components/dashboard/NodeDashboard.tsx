@@ -13,12 +13,19 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { Play, Save, Upload, RefreshCw } from "lucide-react";
+import { Play, Save, Upload, RefreshCw, Server, Copy, Check } from "lucide-react";
 import { useFlow } from "@/components/providers/FlowProvider";
 import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
 import { MermaidViewer } from "./nodes/MermaidViewer";
 import CustomEdge from "../flow/CustomEdge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 // 노드 타입 정의
 const nodeTypes = {
@@ -38,6 +45,8 @@ const NodeDashboard = () => {
     nodeId: string;
     handleId: string;
   } | null>(null);
+  const [isMcpDialogOpen, setIsMcpDialogOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const {
     nodes,
     edges,
@@ -134,9 +143,7 @@ const NodeDashboard = () => {
     const nodeId = nodeElement?.getAttribute("data-id");
 
     // 마우스 좌표를 ReactFlow 좌표로 변환
-    const rect = (event.target as HTMLElement)
-      .closest(".react-flow")
-      ?.getBoundingClientRect();
+    const rect = (event.target as HTMLElement).closest(".react-flow")?.getBoundingClientRect();
 
     if (rect) {
       const position = flowInstance.current.project({
@@ -183,6 +190,31 @@ const NodeDashboard = () => {
     },
     [onConnect]
   );
+
+  // MCP 서버 설정 가져오기
+  const handleGetMcpServer = useCallback(() => {
+    setIsMcpDialogOpen(true);
+  }, []);
+
+  const handleCopyConfig = useCallback(() => {
+    const config = {
+      "solana-analyzer": {
+        command: "npx",
+        args: ["solana-node-workflow-mcp"],
+      },
+    };
+
+    const configText = JSON.stringify(config, null, 2);
+    navigator.clipboard
+      .writeText(configText)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      })
+      .catch((err) => {
+        console.error("Failed to copy configuration:", err);
+      });
+  }, []);
 
   return (
     <div className="w-full h-full">
@@ -251,12 +283,54 @@ const NodeDashboard = () => {
             variant="outline"
             size="sm"
             className="flex items-center gap-1"
+            onClick={handleGetMcpServer}
+          >
+            <Server className="h-4 w-4" />
+            Get MCP Server
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
             onClick={handleLoadFlow}
           >
             <Upload className="h-4 w-4" />
             Load
           </Button>
         </Panel>
+
+        <Dialog open={isMcpDialogOpen} onOpenChange={setIsMcpDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>MCP Server Configuration</DialogTitle>
+              <DialogDescription>
+                Add this configuration to your claude_desktop_config.json file
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center space-x-2">
+              <div className="grid flex-1 gap-2">
+                <div className="bg-muted p-4 rounded-md font-mono text-sm whitespace-pre overflow-x-auto">
+                  {`{
+  "solana-analyzer": {
+    "command": "npx",
+    "args": ["solana-node-workflow-mcp"]
+  }
+}`}
+                </div>
+              </div>
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-8 w-8 shrink-0"
+                onClick={handleCopyConfig}
+              >
+                {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                <span className="sr-only">Copy configuration</span>
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </ReactFlow>
     </div>
   );
