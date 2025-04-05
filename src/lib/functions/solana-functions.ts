@@ -858,3 +858,25 @@ export const solanaRaydiumFunction: NodeFunction = {
     };
   },
 };
+
+export const solanaHuggingFaceFunction: NodeFunction = {
+  id: "solana-huggingface",
+  name: "HuggingFace",
+  description: "HuggingFace integration for Solana",
+  category: "Expert Models",
+  groups: ["solana"],
+  icon: "/huggingface-color.svg",
+  inputs: [],
+  output: {
+    name: "result",
+    type: "object",
+    description: "HuggingFace operation result",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    // This function will show a "To be Continued" modal when clicked
+    return {
+      message: "To be Continued",
+      description: "This feature will be supported in a future update.",
+    };
+  },
+};

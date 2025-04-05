@@ -21,6 +21,7 @@ import {
   solanaOrcaFunction,
   solanaJupyterFunction,
   solanaRaydiumFunction,
+  solanaHuggingFaceFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -46,6 +47,7 @@ const functionRegistry: FunctionRegistry = {
   [solanaOrcaFunction.id]: solanaOrcaFunction,
   [solanaJupyterFunction.id]: solanaJupyterFunction,
   [solanaRaydiumFunction.id]: solanaRaydiumFunction,
+  [solanaHuggingFaceFunction.id]: solanaHuggingFaceFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {

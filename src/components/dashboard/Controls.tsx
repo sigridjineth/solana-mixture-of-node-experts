@@ -40,7 +40,12 @@ import {
   Puzzle,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
-import { SolanaOrcaIcon, SolanaJupyterIcon, SolanaRaydiumIcon } from "@/components/icons/WebpIcons";
+import {
+  SolanaOrcaIcon,
+  SolanaJupyterIcon,
+  SolanaRaydiumIcon,
+  SolanaHuggingFaceIcon,
+} from "@/components/icons/WebpIcons";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -124,6 +129,7 @@ const Controls = () => {
     "solana-orca": <SolanaOrcaIcon className="h-4 w-4" />,
     "solana-jupyter": <SolanaJupyterIcon className="h-4 w-4" />,
     "solana-raydium": <SolanaRaydiumIcon className="h-4 w-4" />,
+    "solana-huggingface": <SolanaHuggingFaceIcon className="h-4 w-4" />,
     "gpt-4o-mini": <Zap className="h-4 w-4" />,
     "gpt-o1-mini": <Sparkles className="h-4 w-4" />,
     "claude-3-5-sonnet": <Lightbulb className="h-4 w-4" />,

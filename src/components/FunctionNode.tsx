@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NodeProps, Handle, Position } from "reactflow";
 import { ToBeContinuedModal } from "./ToBeContinuedModal";
-import { SolanaOrcaIcon, SolanaJupyterIcon, SolanaRaydiumIcon } from "@/components/icons/WebpIcons";
+import {
+  SolanaOrcaIcon,
+  SolanaJupyterIcon,
+  SolanaRaydiumIcon,
+  SolanaHuggingFaceIcon,
+} from "@/components/icons/WebpIcons";
 
 // 드롭다운 옵션을 가져오는 함수
 const getInputOptions = (functionId: string, inputName: string, providerValue?: string) => {
@@ -68,6 +73,7 @@ const functionIcons: Record<string, React.ReactNode> = {
   "solana-orca": <SolanaOrcaIcon className="h-4 w-4" />,
   "solana-jupyter": <SolanaJupyterIcon className="h-4 w-4" />,
   "solana-raydium": <SolanaRaydiumIcon className="h-4 w-4" />,
+  "solana-huggingface": <SolanaHuggingFaceIcon className="h-4 w-4" />,
 };
 
 const FunctionNodeComponent = ({ id, data, isConnectable, selected }: NodeProps<NodeData>) => {
@@ -90,7 +96,8 @@ const FunctionNodeComponent = ({ id, data, isConnectable, selected }: NodeProps<
   const isToBeContinuedNode =
     data.function?.id === "solana-orca" ||
     data.function?.id === "solana-jupyter" ||
-    data.function?.id === "solana-raydium";
+    data.function?.id === "solana-raydium" ||
+    data.function?.id === "solana-huggingface";
 
   // Handle node click for "To be Continued" nodes
   const handleNodeClick = () => {
@@ -244,6 +251,19 @@ const FunctionNodeComponent = ({ id, data, isConnectable, selected }: NodeProps<
             );
           })}
         </div>
+
+        {/* Output Handle */}
+        {data.function?.output && (
+          <div className="flex items-center justify-end mt-2 relative">
+            <Handle
+              type="source"
+              position={Position.Right}
+              id="output"
+              className="w-4 h-4 border-2 border-green-500 bg-green-300"
+            />
+            <div className="absolute top-1/2 -translate-y-1/2 -right-4 w-2 h-2 bg-green-500 rounded-full cursor-crosshair z-10" />
+          </div>
+        )}
       </div>
 
       {/* To be Continued Modal */}

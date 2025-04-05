@@ -11,6 +11,7 @@ import {
   solanaOrcaFunction,
   solanaJupyterFunction,
   solanaRaydiumFunction,
+  solanaHuggingFaceFunction,
 } from "./solana-functions";
 
 export const nodeFunctions = [
@@ -26,6 +27,7 @@ export const nodeFunctions = [
   solanaOrcaFunction,
   solanaJupyterFunction,
   solanaRaydiumFunction,
+  solanaHuggingFaceFunction,
 ];
 
 export { solanaWalletConnectFunction, solanaSendTransactionFunction } from "./solana-functions";

@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  getFunctionsByCategory,
-  getFunctionsByGroupAndCategory,
-} from "@/lib/functions/registry";
+import { getFunctionsByCategory, getFunctionsByGroupAndCategory } from "@/lib/functions/registry";
 import { useFlow } from "@/components/providers/FlowProvider";
 import { XYPosition } from "reactflow";
 import {
@@ -32,6 +29,12 @@ import {
   Bot,
 } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
+import {
+  SolanaOrcaIcon,
+  SolanaJupyterIcon,
+  SolanaRaydiumIcon,
+  SolanaHuggingFaceIcon,
+} from "@/components/icons/WebpIcons";
 
 const CustomContextMenu = () => {
   const [visible, setVisible] = useState(false);
@@ -50,9 +53,7 @@ const CustomContextMenu = () => {
     activeGroup,
     resetNode,
   } = useFlow();
-  const [functionsByCategory, setFunctionsByCategory] = useState<
-    Record<string, any>
-  >({});
+  const [functionsByCategory, setFunctionsByCategory] = useState<Record<string, any>>({});
 
   // 초기화 시 기본 그룹 설정
   useEffect(() => {
@@ -81,6 +82,10 @@ const CustomContextMenu = () => {
     "solana-tx-classify-expert": <Sparkles className="h-4 w-4" />,
     "solana-tx-expert-analyze": <Bot className="h-4 w-4" />,
     mermaid: <CircuitBoard className="h-4 w-4" />,
+    "solana-orca": <SolanaOrcaIcon className="h-4 w-4" />,
+    "solana-jupyter": <SolanaJupyterIcon className="h-4 w-4" />,
+    "solana-raydium": <SolanaRaydiumIcon className="h-4 w-4" />,
+    "solana-huggingface": <SolanaHuggingFaceIcon className="h-4 w-4" />,
   };
 
   // 카테고리 아이콘 매핑
@@ -131,9 +136,7 @@ const CustomContextMenu = () => {
     (category: string, functionId: string) => {
       if (!flowPosition) return;
 
-      const func = functionsByCategory[category]?.find(
-        (f: any) => f.id === functionId
-      );
+      const func = functionsByCategory[category]?.find((f: any) => f.id === functionId);
       if (func) {
         addFunctionNode(func, flowPosition);
         setVisible(false);
@@ -196,9 +199,7 @@ const CustomContextMenu = () => {
     return (
       <Card style={menuStyle} className="p-2 shadow-lg">
         <div className="space-y-2">
-          <div className="text-sm font-semibold px-2 py-1 border-b truncate">
-            {nodeName}
-          </div>
+          <div className="text-sm font-semibold px-2 py-1 border-b truncate">{nodeName}</div>
 
           <Button
             variant="ghost"
