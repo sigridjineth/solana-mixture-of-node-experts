@@ -3,7 +3,8 @@ import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { useAppKitConnection, type Provider } from "@reown/appkit-adapter-solana/react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Button } from "@/components/ui/button";
-import { Wallet } from "lucide-react";
+import { Wallet, Link } from "lucide-react";
+import { Handle, Position } from "reactflow";
 
 import { useAppKit } from "@reown/appkit/react";
 
@@ -11,9 +12,9 @@ interface ConnectWalletNodeProps {
   data: {
     returnValue?: {
       connected: boolean;
-      network?: string;
-      address?: string;
-      balance?: number;
+      network?: string | null;
+      address?: string | null;
+      balance?: number | null;
       message: string;
     };
   };
@@ -28,11 +29,13 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
   const [balance, setBalance] = useState<number | null>(null);
   const [network, setNetwork] = useState<string>("");
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [walletInfo, setWalletInfo] = useState<any>(null);
 
   useEffect(() => {
     const fetchWalletInfo = async () => {
       if (!address || !connection || !walletProvider?.publicKey) {
         setIsConnected(false);
+        setWalletInfo(null);
         return;
       }
 
@@ -51,13 +54,29 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
           ? "testnet"
           : "mainnet-beta";
         setNetwork(networkType);
+
+        // Set wallet info for output
+        const newWalletInfo = {
+          connected: true,
+          network: networkType,
+          address: walletProvider.publicKey.toString(),
+          balance: balanceInSOL,
+          message: "Wallet connected successfully",
+        };
+        setWalletInfo(newWalletInfo);
+
+        // Update data.returnValue to make it available for connections
+        if (data && typeof data === "object") {
+          data.returnValue = newWalletInfo;
+        }
       } catch (error) {
         console.error("Error fetching wallet info:", error);
+        setWalletInfo(null);
       }
     };
 
     fetchWalletInfo();
-  }, [address, connection, walletProvider?.publicKey]);
+  }, [address, connection, walletProvider?.publicKey, data]);
 
   const handleConnect = async () => {
     try {
@@ -76,6 +95,18 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
       // Use the wallet provider's disconnect method
       if (walletProvider) {
         await walletProvider.disconnect();
+      }
+      setWalletInfo(null);
+
+      // Clear data.returnValue when disconnected
+      if (data && typeof data === "object") {
+        data.returnValue = {
+          connected: false,
+          network: null,
+          address: null,
+          balance: null,
+          message: "Wallet disconnected",
+        };
       }
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
@@ -103,6 +134,10 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
       {!isConnected ? (
         <div className="text-sm text-gray-500">
           <p>Connect your wallet to see information</p>
+          <p className="mt-2 text-xs text-blue-500 flex items-center">
+            <Link className="h-3 w-3 mr-1" />
+            Connect this node to Send Transaction node's sender input
+          </p>
         </div>
       ) : (
         <div className="space-y-2 text-sm">
@@ -122,6 +157,25 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
           </div>
         </div>
       )}
+
+      {/* Add output handle for wallet info */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="walletInfo"
+        className="rounded-full bg-primary border-2 border-background handle-visible"
+        style={{
+          width: "12px",
+          height: "12px",
+          minWidth: "12px",
+          minHeight: "12px",
+          right: "-6px",
+          zIndex: 10,
+          top: "50%",
+          transform: "translateY(-50%)",
+          position: "absolute",
+        }}
+      />
     </div>
   );
 };

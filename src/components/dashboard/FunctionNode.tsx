@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Play, AlertCircle } from "lucide-react";
+import { Loader2, Play, AlertCircle, Link } from "lucide-react";
 import { cn, formatNodeData } from "@/lib/utils";
 import { CustomNodeProps } from "@/types/node";
 import { useFlow } from "@/components/providers/FlowProvider";
@@ -204,44 +204,41 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
                   </span>
                   {input.required && <span className="text-red-500">*</span>}
                 </div>
-                <div className="flex items-center">
-                  {isSelectInput(input.name) ? (
-                    // 드롭다운 선택 필드
-                    <select
-                      value={data.inputs[input.name] || input.default || ""}
-                      onChange={(e) => handleInputChange(input.name, e.target.value)}
-                      className="h-7 text-xs ml-1 w-full rounded-md border border-input bg-background px-3 py-1"
-                      disabled={isInputDisabled(input.name)}
-                    >
-                      {getInputOptions(input.name).map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  ) : isApiKeyInput(input.name) ? (
-                    // API 키 입력 필드 (비밀번호 타입)
-                    <Input
-                      type="password"
-                      value={data.inputs[input.name] || ""}
-                      onChange={(e) => handleInputChange(input.name, e.target.value)}
-                      className="h-7 text-xs ml-1"
-                      placeholder={input.description}
-                      disabled={isInputDisabled(input.name)}
-                    />
-                  ) : (
-                    // 일반 텍스트 입력 필드
-                    <Input
-                      type="text"
-                      value={data.inputs[input.name] || ""}
-                      onChange={(e) => handleInputChange(input.name, e.target.value)}
-                      className="h-7 text-xs ml-1"
-                      placeholder={input.description}
-                      disabled={isInputDisabled(input.name)}
-                    />
-                  )}
-                </div>
-                {/* 각 입력이 연결되었는지 상태 표시 */}
+
+                {isSelectInput(input.name) ? (
+                  <select
+                    className="w-full border rounded-md p-1 text-sm"
+                    value={data.inputs[input.name] || input.default || ""}
+                    onChange={(e) => handleInputChange(input.name, e.target.value)}
+                    disabled={isInputDisabled(input.name)}
+                  >
+                    <option value="">선택하세요...</option>
+                    {getInputOptions(input.name).map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : isApiKeyInput(input.name) ? (
+                  <Input
+                    type="password"
+                    className="w-full"
+                    value={data.inputs[input.name] || input.default || ""}
+                    onChange={(e) => handleInputChange(input.name, e.target.value)}
+                    disabled={isInputDisabled(input.name)}
+                    placeholder={input.description || input.name}
+                  />
+                ) : (
+                  <Input
+                    type="text"
+                    className="w-full"
+                    value={data.inputs[input.name] || input.default || ""}
+                    onChange={(e) => handleInputChange(input.name, e.target.value)}
+                    disabled={isInputDisabled(input.name)}
+                    placeholder={input.description || input.name}
+                  />
+                )}
+
                 {data.connectedInputs[input.name] !== undefined && (
                   <div
                     className="absolute rounded-full border-1 border-background"

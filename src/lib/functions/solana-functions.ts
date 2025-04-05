@@ -648,6 +648,13 @@ export const solanaSendTransactionFunction: NodeFunction = {
   groups: ["solana"],
   inputs: [
     {
+      name: "sender",
+      type: "string",
+      required: false,
+      // description: "Sender Wallet Information",
+      description: "Connect a wallet to get sender address",
+    },
+    {
       name: "recipient",
       type: "string",
       required: true,
@@ -663,7 +670,7 @@ export const solanaSendTransactionFunction: NodeFunction = {
       name: "walletInfo",
       type: "object",
       required: false,
-      description: "Wallet information from Connect Wallet node",
+      description: "Wallet information from Connect Wallet node's walletInfo output",
     },
   ],
   output: {
@@ -683,7 +690,12 @@ export const solanaSendTransactionFunction: NodeFunction = {
         throw new Error("Amount must be greater than 0");
       }
 
+      // Use sender address from direct input or from walletInfo
       const senderAddress = walletInfo?.address;
+
+      if (!senderAddress) {
+        throw new Error("Sender address is required. Please connect a wallet");
+      }
 
       const response = await fetch("/api/solana-send-transaction", {
         method: "POST",
