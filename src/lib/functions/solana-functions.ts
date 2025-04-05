@@ -1,5 +1,6 @@
 import { NodeFunction, FunctionInputType } from "@/types/function";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction, SystemProgram } from "@solana/web3.js";
 
 // Solana 트랜잭션 분석 함수
 export const analyzeSolanaTransactionFunction: NodeFunction = {
@@ -651,7 +652,6 @@ export const solanaSendTransactionFunction: NodeFunction = {
       name: "sender",
       type: "string",
       required: false,
-      // description: "Sender Wallet Information",
       description: "Connect a wallet to get sender address",
     },
     {
@@ -674,7 +674,7 @@ export const solanaSendTransactionFunction: NodeFunction = {
   },
   execute: async (inputs: Record<string, any>) => {
     try {
-      const { recipient, amount, walletInfo } = inputs;
+      const { recipient, amount, walletInfo, sender } = inputs;
 
       if (!recipient) {
         throw new Error("Recipient address is required");
@@ -685,38 +685,96 @@ export const solanaSendTransactionFunction: NodeFunction = {
       }
 
       // Use sender address from direct input or from walletInfo
-      const senderAddress = walletInfo?.address;
+      let senderAddress = null;
+
+      // Check if walletInfo is provided (from Connect Wallet node)
+      if (walletInfo && walletInfo.address) {
+        senderAddress = walletInfo.address;
+      }
+      // Check if sender is provided directly
+      else if (sender) {
+        senderAddress = sender;
+      }
 
       if (!senderAddress) {
-        throw new Error("Sender address is required. Please connect a wallet");
+        throw new Error(
+          "Sender address is required. Please connect a wallet or provide a sender address"
+        );
       }
 
-      const response = await fetch("/api/solana-send-transaction", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Get the wallet provider from the window object
+      const walletProvider = (window as any).solana;
+      if (!walletProvider) {
+        throw new Error("Wallet not connected. Please connect your wallet first.");
+      }
+
+      // Create connection to Solana network
+      const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com"
+      );
+
+      // Create the transaction
+      const solanaTransaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: new PublicKey(senderAddress),
+          toPubkey: new PublicKey(recipient),
+          lamports: amount * LAMPORTS_PER_SOL,
+        })
+      );
+
+      // Get the latest blockhash
+      const { blockhash } = await connection.getLatestBlockhash();
+      solanaTransaction.recentBlockhash = blockhash;
+      solanaTransaction.feePayer = new PublicKey(senderAddress);
+
+      // Sign the transaction with the wallet
+      const signedTransaction = await walletProvider.signTransaction(solanaTransaction);
+
+      // Send the transaction
+      const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+      // Wait for confirmation
+      const confirmation = await connection.confirmTransaction(signature);
+
+      if (confirmation.value.err) {
+        throw new Error(`Transaction failed: ${confirmation.value.err}`);
+      }
+
+      // Get transaction details
+      const txDetails = await connection.getTransaction(signature);
+
+      // Create a transaction object that can be used by other nodes
+      const transactionInfo = {
+        signature,
+        blockTime: Math.floor(Date.now() / 1000),
+        slot: txDetails?.slot || 0,
+        type: "SOL Transfer",
+        err: null,
+        transaction: {
+          message: {
+            accountKeys: [senderAddress, recipient],
+            instructions: [
+              {
+                programId: "11111111111111111111111111111111", // System program ID
+                accounts: [senderAddress, recipient],
+                data: `Transfer ${amount} SOL`,
+              },
+            ],
+          },
+          signatures: [signature],
         },
-        body: JSON.stringify({
-          recipient,
-          amount,
-          senderAddress,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to send transaction: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(`API error: ${data.error}`);
-      }
+        meta: {
+          fee: txDetails?.meta?.fee || 5000,
+          postBalances: txDetails?.meta?.postBalances || [0, 0],
+          preBalances: txDetails?.meta?.preBalances || [0, 0],
+        },
+      };
 
       return {
         success: true,
-        signature: data.signature,
-        message: "Transaction sent successfully",
+        signature,
+        message: "Transaction sent and confirmed successfully",
+        transaction: transactionInfo,
       };
     } catch (error: any) {
       console.error("Error in solanaSendTransactionFunction:", error);
@@ -724,6 +782,7 @@ export const solanaSendTransactionFunction: NodeFunction = {
         success: false,
         signature: null,
         message: `Error sending transaction: ${error.message}`,
+        transaction: null,
       };
     }
   },

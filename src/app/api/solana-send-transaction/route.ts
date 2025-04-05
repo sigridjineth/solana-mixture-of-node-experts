@@ -12,15 +12,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Amount must be greater than 0" }, { status: 400 });
     }
 
-    // For now, return a dummy transaction signature
-    // In a real implementation, you would create and send the transaction here
+    // Transaction signing is now handled on the client side
     return NextResponse.json({
-      signature: "dummy_signature_for_testing",
-      message: "Transaction should be handled on the client side",
-      senderAddress: senderAddress || "unknown",
+      message: "Transaction signing is handled on the client side",
+      senderAddress,
       recipient,
       amount,
-      network: "mainnet-beta", // This should be determined based on the actual network
     });
   } catch (error: any) {
     console.error("Error in solana-send-transaction:", error);

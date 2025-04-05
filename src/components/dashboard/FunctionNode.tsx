@@ -12,6 +12,7 @@ import { CustomNodeProps } from "@/types/node";
 import { useFlow } from "@/components/providers/FlowProvider";
 import { getFunctionById } from "@/lib/functions/registry";
 import ConnectWalletNode from "../nodes/ConnectWalletNode";
+import SendTransactionNode from "../nodes/SendTransactionNode";
 
 const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
   const { runNode, updateNodeInputs } = useFlow();
@@ -128,6 +129,20 @@ const FunctionNode = memo(({ id, data, selected }: CustomNodeProps) => {
         style={{ width: "250px" }}
       >
         <ConnectWalletNode data={data} />
+      </div>
+    );
+  }
+
+  if (nodeFunction?.id === "solana-send-transaction") {
+    return (
+      <div
+        className={cn(
+          "relative rounded-lg border bg-card text-card-foreground shadow-sm",
+          selected && "ring-2 ring-primary"
+        )}
+        style={{ width: "250px" }}
+      >
+        <SendTransactionNode data={data} />
       </div>
     );
   }
