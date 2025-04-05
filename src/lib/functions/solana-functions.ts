@@ -1,4 +1,5 @@
 import { NodeFunction, FunctionInputType } from "@/types/function";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 // Solana 트랜잭션 분석 함수
 export const analyzeSolanaTransactionFunction: NodeFunction = {
@@ -584,93 +585,56 @@ export const modelProviderSelectorFunction: NodeFunction = {
 export const solanaWalletConnectFunction: NodeFunction = {
   id: "solana-wallet-connect",
   name: "Connect Wallet",
-  description: "Solana 지갑을 연결하고 네트워크, 주소, SOL 잔액 정보를 표시합니다",
+  description: "Connect to a Solana wallet",
   category: "Solana",
   groups: ["solana"],
-  inputs: [
-    {
-      name: "rpcUrl",
-      type: "string",
-      required: false,
-      description: "Solana RPC URL (입력하지 않으면 내부 API 사용)",
-    },
-  ],
+  inputs: [],
   output: {
     name: "walletInfo",
-    type: "object" as FunctionInputType,
-    description: "지갑 연결 정보 (네트워크, 주소, SOL 잔액)",
+    type: "object",
+    description: "Wallet connection information",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
-      const { rpcUrl } = inputs;
+      const { connection, walletProvider } = inputs;
 
-      // 사용할 RPC URL 결정
-      const finalRpcUrl =
-        rpcUrl || process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
-
-      // 현재 연결된 지갑 정보 가져오기
-      const response = await fetch("/api/solana-wallet-info", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`지갑 정보 요청 실패: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
-      }
-
-      // 지갑이 연결되어 있지 않은 경우
-      if (!data.address) {
+      if (!walletProvider?.publicKey) {
         return {
           connected: false,
-          message: "지갑이 연결되어 있지 않습니다. 지갑을 연결해주세요.",
+          network: null,
+          address: null,
+          balance: null,
+          message: "Wallet not connected",
         };
       }
 
-      // SOL 잔액 가져오기
-      const balanceResponse = await fetch(finalRpcUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "getBalance",
-          params: [data.address],
-        }),
-      });
+      // Get SOL balance
+      const balanceInLamports = await connection.getBalance(walletProvider.publicKey);
+      const balanceInSOL = balanceInLamports / LAMPORTS_PER_SOL;
 
-      if (!balanceResponse.ok) {
-        throw new Error(`잔액 조회 실패: ${balanceResponse.status} ${balanceResponse.statusText}`);
-      }
+      // Get network
+      const networkType = connection.rpcEndpoint.includes("devnet")
+        ? "devnet"
+        : connection.rpcEndpoint.includes("testnet")
+        ? "testnet"
+        : "mainnet-beta";
 
-      const balanceData = await balanceResponse.json();
-
-      if (balanceData.error) {
-        throw new Error(`RPC 에러: ${JSON.stringify(balanceData.error)}`);
-      }
-
-      // lamports를 SOL로 변환 (1 SOL = 1,000,000,000 lamports)
-      const solBalance = balanceData.result.value / 1_000_000_000;
-
-      // 지갑 정보 반환
       return {
         connected: true,
-        network: data.network || "mainnet-beta",
-        address: data.address,
-        balance: solBalance,
-        message: "지갑이 성공적으로 연결되었습니다.",
+        network: networkType,
+        address: walletProvider.publicKey.toString(),
+        balance: balanceInSOL,
+        message: "Wallet connected successfully",
       };
-    } catch (error) {
-      throw new Error(`지갑 연결 실패: ${(error as Error).message}`);
+    } catch (error: any) {
+      console.error("Error in solanaWalletConnectFunction:", error);
+      return {
+        connected: false,
+        network: null,
+        address: null,
+        balance: null,
+        message: `Error connecting wallet: ${error.message}`,
+      };
     }
   },
 };
@@ -679,7 +643,7 @@ export const solanaWalletConnectFunction: NodeFunction = {
 export const solanaSendTransactionFunction: NodeFunction = {
   id: "solana-send-transaction",
   name: "Send Transaction",
-  description: "Solana 트랜잭션을 생성하고 전송합니다",
+  description: "Send a Solana transaction",
   category: "Solana",
   groups: ["solana"],
   inputs: [
@@ -687,39 +651,40 @@ export const solanaSendTransactionFunction: NodeFunction = {
       name: "recipient",
       type: "string",
       required: true,
-      description: "수신자 주소",
+      description: "Recipient address",
     },
     {
       name: "amount",
       type: "number",
       required: true,
-      description: "전송할 SOL 양",
+      description: "Amount of SOL to send",
     },
     {
-      name: "rpcUrl",
-      type: "string",
+      name: "walletInfo",
+      type: "object",
       required: false,
-      description: "Solana RPC URL (입력하지 않으면 내부 API 사용)",
+      description: "Wallet information from Connect Wallet node",
     },
   ],
   output: {
-    name: "transaction",
-    type: "object" as FunctionInputType,
-    description: "전송된 트랜잭션 정보",
+    name: "transactionInfo",
+    type: "object",
+    description: "Transaction information",
   },
   execute: async (inputs: Record<string, any>) => {
     try {
-      const { recipient, amount, rpcUrl } = inputs;
+      const { recipient, amount, walletInfo } = inputs;
 
       if (!recipient) {
-        throw new Error("수신자 주소는 필수 입력값입니다");
+        throw new Error("Recipient address is required");
       }
 
       if (!amount || amount <= 0) {
-        throw new Error("전송할 SOL 양은 0보다 커야 합니다");
+        throw new Error("Amount must be greater than 0");
       }
 
-      // API 호출 - 서버 측에서 트랜잭션 생성 및 전송
+      const senderAddress = walletInfo?.address;
+
       const response = await fetch("/api/solana-send-transaction", {
         method: "POST",
         headers: {
@@ -728,27 +693,32 @@ export const solanaSendTransactionFunction: NodeFunction = {
         body: JSON.stringify({
           recipient,
           amount,
-          rpcUrl: rpcUrl || undefined,
+          senderAddress,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to send transaction: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(`API 에러: ${data.error}`);
+        throw new Error(`API error: ${data.error}`);
       }
 
       return {
         success: true,
         signature: data.signature,
-        message: "트랜잭션이 성공적으로 전송되었습니다.",
+        message: "Transaction sent successfully",
       };
-    } catch (error) {
-      throw new Error(`트랜잭션 전송 실패: ${(error as Error).message}`);
+    } catch (error: any) {
+      console.error("Error in solanaSendTransactionFunction:", error);
+      return {
+        success: false,
+        signature: null,
+        message: `Error sending transaction: ${error.message}`,
+      };
     }
   },
 };

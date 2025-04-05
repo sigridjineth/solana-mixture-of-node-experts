@@ -42,8 +42,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import WalletInfo from "./WalletInfo";
-
 const Controls = () => {
   const { addFunctionNode, addOutputNode, runFlow, isProcessing, activeGroup, setActiveGroup } =
     useFlow();
@@ -211,9 +209,6 @@ const Controls = () => {
             </div>
           ))}
         </div>
-
-        {/* Wallet Info Component */}
-        <WalletInfo className="mt-4" />
       </CardContent>
     </Card>
   );

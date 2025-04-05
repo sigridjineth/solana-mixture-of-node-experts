@@ -2,26 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { useAppKitConnection, type Provider } from "@reown/appkit-adapter-solana/react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 
-import { useAppKit } from "@reown/appkit/react";
-
-interface ConnectWalletNodeProps {
-  data: {
-    returnValue?: {
-      connected: boolean;
-      network?: string;
-      address?: string;
-      balance?: number;
-      message: string;
-    };
-  };
+interface WalletConnectNodeProps {
+  data: any;
+  isConnectable: boolean;
 }
 
-const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
-  const { open } = useAppKit();
-
+const WalletConnectNode: React.FC<WalletConnectNodeProps> = ({ data, isConnectable }) => {
   const { address } = useAppKitAccount();
   const { connection } = useAppKitConnection();
   const { walletProvider } = useAppKitProvider<Provider>("solana");
@@ -45,6 +35,7 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
         setBalance(balanceInSOL);
 
         // Get network
+        const networkInfo = await connection.getVersion();
         const networkType = connection.rpcEndpoint.includes("devnet")
           ? "devnet"
           : connection.rpcEndpoint.includes("testnet")
@@ -61,7 +52,6 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
 
   const handleConnect = async () => {
     try {
-      open();
       // Use the wallet provider's connect method
       if (walletProvider) {
         await walletProvider.connect();
@@ -83,47 +73,53 @@ const ConnectWalletNode: React.FC<ConnectWalletNodeProps> = ({ data }) => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-2">
-          <Wallet className="h-5 w-5" />
-          <h3 className="font-medium text-sm">Solana Wallet</h3>
-        </div>
-        {isConnected ? (
-          <Button variant="outline" size="sm" onClick={handleDisconnect}>
-            Disconnect
-          </Button>
-        ) : (
-          <Button variant="default" size="sm" onClick={handleConnect}>
-            Connect
-          </Button>
-        )}
-      </div>
+    <Card className="w-full">
+      <CardContent className="p-4">
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Wallet className="h-5 w-5" />
+              <h3 className="text-sm font-medium">Solana Wallet</h3>
+            </div>
+            {isConnected ? (
+              <Button variant="outline" size="sm" onClick={handleDisconnect}>
+                Disconnect
+              </Button>
+            ) : (
+              <Button variant="default" size="sm" onClick={handleConnect}>
+                Connect
+              </Button>
+            )}
+          </div>
 
-      {!isConnected ? (
-        <div className="text-sm text-gray-500">
-          <p>Connect your wallet to see information</p>
+          {isConnected && address ? (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Address:</span>
+                <span className="font-mono truncate max-w-[200px]">{address}</span>
+              </div>
+              {balance !== null && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Balance:</span>
+                  <span>{balance.toFixed(4)} SOL</span>
+                </div>
+              )}
+              {network && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Network:</span>
+                  <span>{network}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground text-center py-2">
+              Connect your wallet to view information
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-500">Network:</span>
-            <span className="font-medium">{network || "mainnet-beta"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Address:</span>
-            <span className="font-medium truncate max-w-[150px]">
-              {address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "N/A"}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Balance:</span>
-            <span className="font-medium">{balance?.toFixed(4) || "0"} SOL</span>
-          </div>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default ConnectWalletNode;
+export default WalletConnectNode;
