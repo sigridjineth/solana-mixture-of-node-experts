@@ -22,6 +22,13 @@ import {
   solanaJupyterFunction,
   solanaRaydiumFunction,
   solanaHuggingFaceFunction,
+  solanaLiquidityAggregatorFunction,
+  solanaStakingMechanismFunction,
+  solanaValidatorOptimizationFunction,
+  solanaAssetCreationFunction,
+  solanaDerivativeTradingFunction,
+  solanaPaymentSolutionFunction,
+  solanaComplianceSolutionFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -48,6 +55,13 @@ const functionRegistry: FunctionRegistry = {
   [solanaJupyterFunction.id]: solanaJupyterFunction,
   [solanaRaydiumFunction.id]: solanaRaydiumFunction,
   [solanaHuggingFaceFunction.id]: solanaHuggingFaceFunction,
+  [solanaLiquidityAggregatorFunction.id]: solanaLiquidityAggregatorFunction,
+  [solanaStakingMechanismFunction.id]: solanaStakingMechanismFunction,
+  [solanaValidatorOptimizationFunction.id]: solanaValidatorOptimizationFunction,
+  [solanaAssetCreationFunction.id]: solanaAssetCreationFunction,
+  [solanaDerivativeTradingFunction.id]: solanaDerivativeTradingFunction,
+  [solanaPaymentSolutionFunction.id]: solanaPaymentSolutionFunction,
+  [solanaComplianceSolutionFunction.id]: solanaComplianceSolutionFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {
