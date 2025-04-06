@@ -1,5 +1,6 @@
 # Solana MoNE: Mixture of Node-based Experts
 
+![Solana Dashboard](public/logo.png)
 ![Solana Dashboard](public/dashboard-preview.png)
 ![MCP Dashboard](public/mcp.png)
 
