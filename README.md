@@ -8,9 +8,10 @@
 A **Comfy UI style no-code builder** for AI Agent workflows on Solana. Connect specialized modules (DeFi, bridging, staking) with fine-tuned LLMs, leverage zero-knowledge proofs for transparent execution, and harness JitoSOL or Wormhole for cross-chain automation—all via drag-and-drop.
 
 ### Links
-[Main Link](https://solana-node-dashboard-v2.vercel.app/)
-[Pitch Deck](https://drive.google.com/file/d/17Lbo5V3lurJbA2LKJ2LA7xpS8zDPmkyJ/view?usp=sharing)
-[Youtube Link](https://www.youtube.com/watch?v=nL9PSw-ZmHY)
+* [Main Link](https://solana-node-dashboard-v2.vercel.app/)
+* [Pitch Deck](https://drive.google.com/file/d/17Lbo5V3lurJbA2LKJ2LA7xpS8zDPmkyJ/view?usp=sharing)
+* [Youtube Link](https://www.youtube.com/watch?v=nL9PSw-ZmHY)
+* [YouTube MCP Link](https://youtu.be/VXDYptBp9zI)
 
 ---
 
