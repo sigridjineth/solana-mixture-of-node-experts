@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from '@radix-ui/react-tooltip';
 import { Label } from '@radix-ui/react-label';
-import ToBeContinuedModal from '@/components/ToBeContinuedModal';
 
 type NodeProps = {
   id: string;
@@ -192,15 +191,6 @@ export default function WormholeBridgeNode({ id, data, isConnectable }: NodeProp
         style={{ background: '#555', width: 10, height: 10 }}
         isConnectable={isConnectable}
       />
-      
-      {/* Feature coming soon modal */}
-      {isModalOpen && (
-        <ToBeContinuedModal 
-          title="Wormhole Bridge"
-          description="The Wormhole cross-chain bridge functionality will be supported in a future update."
-          onClose={closeModal}
-        />
-      )}
     </Card>
   );
 }

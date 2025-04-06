@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from '@radix-ui/react-label';
-import ToBeContinuedModal from '@/components/ToBeContinuedModal';
 
 type NodeProps = {
   id: string;
@@ -212,15 +211,6 @@ export default function WormholeQueryNode({ id, data, isConnectable }: NodeProps
         style={{ background: '#555', width: 10, height: 10 }}
         isConnectable={isConnectable}
       />
-      
-      {/* Feature coming soon modal */}
-      {isModalOpen && (
-        <ToBeContinuedModal 
-          title="Wormhole Query API"
-          description="The Wormhole cross-chain query functionality will be supported in a future update."
-          onClose={closeModal}
-        />
-      )}
     </Card>
   );
 }

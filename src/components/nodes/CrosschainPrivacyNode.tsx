@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoIcon } from 'lucide-react';
-import ToBeContinuedModal from '@/components/ToBeContinuedModal';
 
 type NodeProps = {
   id: string;
@@ -208,15 +207,6 @@ export default function CrosschainPrivacyNode({ id, data, isConnectable }: NodeP
         style={{ background: '#9333ea', width: 10, height: 10 }}
         isConnectable={isConnectable}
       />
-      
-      {/* Feature coming soon modal */}
-      {isModalOpen && (
-        <ToBeContinuedModal 
-          title="Privacy Shield"
-          description="The cross-chain privacy features will be supported in a future update. This module will enable privacy-preserving transactions across multiple blockchains."
-          onClose={closeModal}
-        />
-      )}
     </Card>
   );
 }

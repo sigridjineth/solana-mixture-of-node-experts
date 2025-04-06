@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@radix-ui/react-textarea";
 import { Label } from '@radix-ui/react-label';
-import ToBeContinuedModal from '@/components/ToBeContinuedModal';
 
 type NodeProps = {
   id: string;

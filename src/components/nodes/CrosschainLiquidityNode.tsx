@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import ToBeContinuedModal from "@/components/ToBeContinuedModal";
 
 const liquiditySources = [
   { name: "Orca", chain: "Solana Mainnet", icon: "/solana-orca.webp" },
@@ -140,21 +139,6 @@ const CrosschainLiquidityNode = ({ data, id }: any) => {
       <Handle type="target" position={Position.Top} id="input" />
       <Handle type="source" position={Position.Bottom} id="output" />
 
-      {showModal && (
-        <ToBeContinuedModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title="Cross-Chain Liquidity Aggregator"
-          description="This cross-chain liquidity aggregator feature will be fully implemented in a future update. Stay tuned for comprehensive multi-chain routing capabilities!"
-          details={{
-            selectedSources,
-            aggregationStrategy,
-            slippageTolerance,
-            estimatedSavings: "0.3-1.2%",
-            chainSupport: "Solana, Solana SVM, and connected chains via Wormhole",
-          }}
-        />
-      )}
     </div>
   );
 };

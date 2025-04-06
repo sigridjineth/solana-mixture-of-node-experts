@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { NodeProps, Handle, Position } from "reactflow";
-import { ToBeContinuedModal } from "./ToBeContinuedModal";
 import {
   SolanaOrcaIcon,
   SolanaJupyterIcon,
@@ -265,16 +264,6 @@ const FunctionNodeComponent = ({ id, data, isConnectable, selected }: NodeProps<
           </div>
         )}
       </div>
-
-      {/* To be Continued Modal */}
-      <ToBeContinuedModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title={`${data.function?.name || "Feature"} Coming Soon`}
-        description={`The ${
-          data.function?.name || "this feature"
-        } integration will be available in a future update.`}
-      />
     </>
   );
 };
