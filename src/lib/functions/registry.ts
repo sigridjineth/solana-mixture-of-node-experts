@@ -29,6 +29,10 @@ import {
   solanaDerivativeTradingFunction,
   solanaPaymentSolutionFunction,
   solanaComplianceSolutionFunction,
+  solanaWormholeBridgeFunction,
+  solanaWormholeMessageFunction,
+  solanaWormholeQueryFunction,
+  wormholeConnectMayanFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -62,6 +66,10 @@ const functionRegistry: FunctionRegistry = {
   [solanaDerivativeTradingFunction.id]: solanaDerivativeTradingFunction,
   [solanaPaymentSolutionFunction.id]: solanaPaymentSolutionFunction,
   [solanaComplianceSolutionFunction.id]: solanaComplianceSolutionFunction,
+  [solanaWormholeBridgeFunction.id]: solanaWormholeBridgeFunction,
+  [solanaWormholeMessageFunction.id]: solanaWormholeMessageFunction,
+  [solanaWormholeQueryFunction.id]: solanaWormholeQueryFunction,
+  [wormholeConnectMayanFunction.id]: wormholeConnectMayanFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {

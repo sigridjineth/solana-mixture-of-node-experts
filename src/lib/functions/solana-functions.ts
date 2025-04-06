@@ -1446,3 +1446,437 @@ export const solanaComplianceSolutionFunction: NodeFunction = {
     };
   },
 };
+
+// Wormhole cross-chain bridging function
+export const solanaWormholeBridgeFunction: NodeFunction = {
+  id: "solana-wormhole-bridge",
+  name: "Wormhole Bridge",
+  description: "Bridge tokens between Solana and other chains via Wormhole",
+  category: "Cross-Chain",
+  groups: ["solana"],
+  icon: "/mcp.png",
+  inputs: [
+    {
+      name: "sourceChain",
+      type: "string",
+      required: true,
+      description: "Source chain (Solana, Ethereum, Avalanche, Sui, etc.)",
+      default: "Solana",
+    },
+    {
+      name: "destinationChain",
+      type: "string",
+      required: true,
+      description: "Destination chain (Solana, Ethereum, Avalanche, Sui, etc.)",
+    },
+    {
+      name: "token",
+      type: "string",
+      required: true,
+      description: "Token to bridge (SOL, USDC, ETH, etc.)",
+    },
+    {
+      name: "amount",
+      type: "number",
+      required: true,
+      description: "Amount to bridge",
+    },
+    {
+      name: "recipientAddress",
+      type: "string",
+      required: true,
+      description: "Recipient address on destination chain",
+    },
+    {
+      name: "walletInfo",
+      type: "object",
+      required: true,
+      description: "Connect a wallet node to get wallet information",
+    },
+  ],
+  output: {
+    name: "bridgeResult",
+    type: "object",
+    description: "Bridge transaction details",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    // This function will show a "To be Continued" modal when clicked
+    return {
+      message: "To be Continued",
+      description: "This cross-chain bridging feature will be supported in a future update.",
+      bridgeDetails: {
+        sourceChain: inputs.sourceChain,
+        destinationChain: inputs.destinationChain,
+        token: inputs.token,
+        amount: inputs.amount,
+        sender: inputs.walletInfo?.address || "Connected wallet",
+        recipient: inputs.recipientAddress,
+        estimatedFee: `${(inputs.amount * 0.003).toFixed(6)} ${inputs.token}`,
+        estimatedTime: inputs.sourceChain === "Solana" ? "2-5 minutes" : "10-15 minutes",
+        status: "Simulated - Not Processed",
+        guardian: "Pyth Oracle Network", 
+        targetAddress: inputs.recipientAddress,
+        transferId: "Simulated: " + Math.random().toString(36).substring(2, 15),
+        attestationProgress: "0/18",
+      }
+    };
+  },
+};
+
+// Wormhole message passing function
+export const solanaWormholeMessageFunction: NodeFunction = {
+  id: "solana-wormhole-message",
+  name: "Wormhole Messenger",
+  description: "Send cross-chain messages via Wormhole protocol",
+  category: "Cross-Chain",
+  groups: ["solana"],
+  icon: "/mcp.png",
+  inputs: [
+    {
+      name: "sourceChain",
+      type: "string",
+      required: true,
+      description: "Source chain (Solana, Ethereum, Avalanche, Sui, etc.)",
+      default: "Solana",
+    },
+    {
+      name: "destinationChain",
+      type: "string",
+      required: true,
+      description: "Destination chain (Solana, Ethereum, Avalanche, Sui, etc.)",
+    },
+    {
+      name: "targetContract",
+      type: "string",
+      required: true,
+      description: "Target contract address on destination chain",
+    },
+    {
+      name: "payload",
+      type: "object",
+      required: true,
+      description: "Message payload to send across chains",
+    },
+    {
+      name: "gasLimit",
+      type: "number",
+      required: false,
+      description: "Gas limit for execution on destination chain",
+      default: 500000,
+    },
+    {
+      name: "walletInfo",
+      type: "object",
+      required: true,
+      description: "Connect a wallet node to get wallet information",
+    },
+  ],
+  output: {
+    name: "messageResult",
+    type: "object",
+    description: "Cross-chain message details",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    // This function will show a "To be Continued" modal when clicked
+    return {
+      message: "To be Continued",
+      description: "This cross-chain messaging feature will be supported in a future update.",
+      messageDetails: {
+        sourceChain: inputs.sourceChain,
+        destinationChain: inputs.destinationChain,
+        targetContract: inputs.targetContract,
+        payloadSize: JSON.stringify(inputs.payload).length,
+        payloadHash: "0x" + Math.random().toString(16).substring(2, 34),
+        sender: inputs.walletInfo?.address || "Connected wallet",
+        gasLimit: inputs.gasLimit,
+        estimatedFee: "0.01 SOL",
+        estimatedTime: "3-10 minutes",
+        status: "Simulated - Not Processed",
+        sequence: Math.floor(Math.random() * 1000000),
+        vaaStatus: "Pending",
+        nonce: Math.floor(Math.random() * 100000),
+      }
+    };
+  },
+};
+
+// Wormhole Query function
+export const solanaWormholeQueryFunction: NodeFunction = {
+  id: "solana-wormhole-query",
+  name: "Wormhole Query",
+  description: "Query cross-chain contract data using Wormhole Query API",
+  category: "Cross-Chain",
+  groups: ["solana", "crosschain"],
+  icon: "/mcp.png",
+  inputs: [
+    {
+      name: "chainId",
+      type: "number",
+      required: true,
+      description: "Target chain ID (e.g., 10002 for Sepolia)",
+    },
+    {
+      name: "contractAddress",
+      type: "string",
+      required: true,
+      description: "Contract address to query",
+    },
+    {
+      name: "functionSignature",
+      type: "string",
+      required: true,
+      description: "Function signature to call (e.g., 'name()')",
+    },
+    {
+      name: "blockNumber",
+      type: "string",
+      required: false,
+      description: "Block number to query at (default: latest)",
+      default: "latest",
+    },
+    {
+      name: "apiKey",
+      type: "password",
+      required: true,
+      description: "Wormhole Query API key",
+    },
+  ],
+  output: {
+    name: "queryResult",
+    type: "object",
+    description: "Query result data",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const { 
+        chainId, 
+        contractAddress, 
+        functionSignature, 
+        blockNumber, 
+        apiKey 
+      } = inputs;
+
+      if (!chainId) {
+        throw new Error("Chain ID is required");
+      }
+
+      if (!contractAddress) {
+        throw new Error("Contract address is required");
+      }
+
+      if (!functionSignature) {
+        throw new Error("Function signature is required");
+      }
+
+      if (!apiKey) {
+        throw new Error("API key is required");
+      }
+
+      // API call to query service
+      const response = await fetch("/api/wormhole-query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chainId,
+          contractAddress,
+          functionSignature,
+          blockNumber: blockNumber || "latest",
+          apiKey,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(`API error: ${data.error}`);
+      }
+
+      return data.queryResponse;
+    } catch (error: any) {
+      console.error("Error in solanaWormholeQueryFunction:", error);
+      return {
+        success: false,
+        error: error.message,
+        message: "To be Continued",
+        description: "This cross-chain query feature will be supported in a future update."
+      };
+    }
+  },
+};
+
+// Wormhole Connect Mayan Transfer function
+export const wormholeConnectMayanFunction: NodeFunction = {
+  id: "wormhole-connect-mayan",
+  name: "Wormhole + Mayan",
+  description: "Cross-chain transfer using Wormhole SDK with Mayan Finance SWIFT route",
+  category: "Cross-Chain",
+  groups: ["solana", "crosschain"],
+  icon: "/mcp.png",
+  inputs: [
+    {
+      name: "sourceChain",
+      type: "string",
+      required: true,
+      description: "Source blockchain (Base, Ethereum, Avalanche, etc.)",
+      default: "Base",
+    },
+    {
+      name: "destinationChain",
+      type: "string",
+      required: true,
+      description: "Destination blockchain (Solana, Ethereum, etc.)",
+      default: "Solana",
+    },
+    {
+      name: "sourceToken",
+      type: "string",
+      required: true,
+      description: "Source token type (native, USDC, etc.)",
+      default: "native",
+    },
+    {
+      name: "destinationToken",
+      type: "string",
+      required: true,
+      description: "Destination token type (native, USDC, etc.)",
+      default: "native",
+    },
+    {
+      name: "amount",
+      type: "string",
+      required: true,
+      description: "Amount to transfer as decimal string (e.g., '0.01')",
+    },
+    {
+      name: "senderPrivateKey",
+      type: "password",
+      required: true,
+      description: "Sender's private key (stored securely)",
+    },
+    {
+      name: "receiverAddress",
+      type: "string",
+      required: true,
+      description: "Recipient address on destination chain",
+    },
+  ],
+  output: {
+    name: "transferResult",
+    type: "object",
+    description: "Transfer operation result",
+  },
+  execute: async (inputs: Record<string, any>) => {
+    try {
+      const {
+        sourceChain,
+        destinationChain,
+        sourceToken,
+        destinationToken,
+        amount,
+        senderPrivateKey,
+        receiverAddress,
+      } = inputs;
+
+      // Validation checks
+      const requiredParams = [
+        'sourceChain', 'destinationChain', 'sourceToken', 
+        'destinationToken', 'amount', 'senderPrivateKey', 'receiverAddress'
+      ];
+      
+      for (const param of requiredParams) {
+        if (!inputs[param]) {
+          throw new Error(`Parameter ${param} is required`);
+        }
+      }
+
+      // For demonstration purposes - this would actually initialize the Wormhole SDK
+      // with the Mayan route in a real implementation
+      const simulatedResponse = {
+        success: true,
+        message: "To be Continued",
+        description: "This Wormhole Connect with Mayan integration will be supported in a future update.",
+        transferDetails: {
+          source: `${sourceToken} on ${sourceChain}`,
+          destination: `${destinationToken} on ${destinationChain}`,
+          amount: amount,
+          sender: "0x" + Math.random().toString(16).substring(2, 42),
+          receiver: receiverAddress,
+          status: "Simulated - Not Processed",
+          routeDetails: {
+            provider: "Mayan Finance SWIFT",
+            expectedTime: "2-5 minutes",
+            networkFee: `${(parseFloat(amount) * 0.0015).toFixed(6)}`,
+            gasEstimate: sourceChain === "Solana" ? "0.000005 SOL" : "0.0003 ETH",
+          },
+          transferId: "WH-MAYAN-" + Math.random().toString(16).substring(2, 10),
+        },
+        simulatedCode: `
+// This is how you would implement the transaction
+import {
+  Wormhole,
+  routes,
+} from "@wormhole-foundation/sdk-connect";
+import { EvmPlatform } from "@wormhole-foundation/sdk-evm";
+import { SolanaPlatform } from "@wormhole-foundation/sdk-solana";
+import {
+  MayanRouteSWIFT,
+} from '@mayanfinance/wormhole-sdk-route';
+
+// Setup Wormhole client
+const wh = new Wormhole("Mainnet", [EvmPlatform, SolanaPlatform]);
+
+// Set up chains
+const sendChain = wh.getChain("${sourceChain}");
+const destChain = wh.getChain("${destinationChain}");
+
+// Set up token IDs
+const source = Wormhole.tokenId(sendChain.chain, "${sourceToken}");
+const destination = Wormhole.tokenId(destChain.chain, "${destinationToken}");
+
+// Create resolver with Mayan route
+const resolver = wh.resolver([MayanRouteSWIFT]);
+
+// Create and validate transfer request
+const tr = await routes.RouteTransferRequest.create(wh, {
+  source,
+  destination,
+});
+
+// Find optimal route
+const foundRoutes = await resolver.findRoutes(tr);
+const bestRoute = foundRoutes[0];
+
+// Specify transfer parameters
+const transferParams = {
+  amount: "${amount}",
+  options: bestRoute.getDefaultOptions(),
+};
+
+// Execute transfer
+const receipt = await bestRoute.initiate(
+  tr,
+  sender.signer,
+  quote,
+  "${receiverAddress}"
+);
+        `
+      };
+
+      return simulatedResponse;
+    } catch (error: any) {
+      console.error("Error in wormholeConnectMayanFunction:", error);
+      return {
+        success: false,
+        error: error.message,
+        message: "To be Continued",
+        description: "This cross-chain transfer feature will be supported in a future update."
+      };
+    }
+  },
+};

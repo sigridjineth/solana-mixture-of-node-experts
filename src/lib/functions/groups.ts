@@ -13,6 +13,11 @@ export const FUNCTION_GROUPS = {
     name: "Utilities",
     description: "Nodes for data processing, transformation, and general operations.",
   },
+  crosschain: {
+    id: "crosschain",
+    name: "Cross-Chain",
+    description: "Nodes for cross-chain interoperability and bridging operations.",
+  },
 };
 
 // Get group information by group ID
