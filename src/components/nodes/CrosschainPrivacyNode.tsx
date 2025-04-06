@@ -23,10 +23,8 @@ export default function CrosschainPrivacyNode({ id, data, isConnectable }: NodeP
   const [privacyDetails, setPrivacyDetails] = useState<any>(null);
 
   const handleProcess = () => {
-    // Open the modal instead of actually performing the operation
     setIsModalOpen(true);
     
-    // For demonstration, we'll set some fake privacy details
     setPrivacyDetails({
       originalTransactionId: Math.random().toString(36).substring(2, 15),
       shieldedTransactionId: "privacy-" + Math.random().toString(36).substring(2, 10),

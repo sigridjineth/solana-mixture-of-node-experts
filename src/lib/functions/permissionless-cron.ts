@@ -57,27 +57,16 @@ export const permissionlessCronFunction: NodeFunction = {
       
       const taskId = `task_${Math.random().toString(36).substring(2, 10)}`;
       
-      // In production, this would connect to the Clockwork network and create a thread
-      // using code similar to the following:
-      
-      /*
-      // Import Clockwork SDK dependencies
       import { ClockworkProvider } from "@clockwork-xyz/sdk";
       import { Connection, PublicKey, LAMPORTS_PER_SOL, clusterApiUrl } from "@solana/web3.js";
       import { Wallet } from "@project-serum/anchor";
-      
-      // Set up connection to Solana
+
       const connection = new Connection(clusterApiUrl("devnet"));
-      
-      // Initialize wallet from keypair (in production, this would be the user's wallet)
       const wallet = new Wallet(keypair);
-      
-      // Initialize Clockwork provider
       const clockworkProvider = ClockworkProvider.fromAnchorProvider(
         new AnchorProvider(connection, wallet, {})
       );
-      
-      // Create serializable instruction from the input instructions
+
       const serializedInstruction = {
         programId: new PublicKey(instructions.programId),
         accounts: instructions.accounts.map(acc => ({
@@ -87,14 +76,14 @@ export const permissionlessCronFunction: NodeFunction = {
         })),
         data: Buffer.from(instructions.data, 'base64')
       };
-      
+
       // Create a cron trigger
       const cronTrigger = { cron: cronExpression };
-      
+
       // Create the thread
       const threadId = taskName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
       const rewardLamports = rewardAmount * LAMPORTS_PER_SOL;
-      
+
       const signature = await clockworkProvider.threadCreate(
         wallet.payer,
         threadId,
@@ -102,14 +91,9 @@ export const permissionlessCronFunction: NodeFunction = {
         cronTrigger,
         rewardLamports
       );
-      
+
       console.log("Thread created with signature:", signature);
-      */
       
-      // For this proof-of-concept, we're simulating network latency
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Log what would be sent to the Clockwork API
       console.log("Would create Clockwork thread with:", {
         name: taskName,
         id: taskId,

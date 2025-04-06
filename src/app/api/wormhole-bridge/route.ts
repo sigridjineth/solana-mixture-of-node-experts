@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    // Extract parameters from request body
     const body = await request.json();
     const { 
       sourceChain, 
@@ -13,7 +12,6 @@ export async function POST(request: Request) {
       walletAddress 
     } = body;
 
-    // Validate required parameters
     if (!sourceChain || !destinationChain || !token || !amount || !recipientAddress) {
       return NextResponse.json(
         { error: "Missing required parameters" },
@@ -21,7 +19,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Simulate bridging operation
     const bridgeDetails = {
       sourceChain,
       destinationChain,
@@ -39,7 +36,6 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
     };
 
-    // Return simulated bridge details
     return NextResponse.json({
       success: true,
       bridgeDetails
