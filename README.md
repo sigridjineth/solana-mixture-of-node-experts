@@ -1,10 +1,12 @@
-# MoNE: Mixture of Node-based Experts
+# Solana MoNE: Mixture of Node-based Experts
+
+![Solana Dashboard](docs/dashboard-preview.png)
 
 A **no-code builder** for AI Agent workflows on Solana. Connect specialized modules (DeFi, bridging, staking) with fine-tuned LLMs, leverage zero-knowledge proofs for transparent execution, and harness JitoSOL or Wormhole for cross-chain automation—all via drag-and-drop.
 
-![Main Link](https://solana-node-dashboard-v2.vercel.app/)  
-![Solana Dashboard](docs/dashboard-preview.png)  
-![Pitch Deck](https://drive.google.com/file/d/17Lbo5V3lurJbA2LKJ2LA7xpS8zDPmkyJ/view?usp=sharing)
+### Links
+[Main Link](https://solana-node-dashboard-v2.vercel.app/)
+[Pitch Deck](https://drive.google.com/file/d/17Lbo5V3lurJbA2LKJ2LA7xpS8zDPmkyJ/view?usp=sharing)
 
 ---
 
