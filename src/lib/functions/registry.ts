@@ -36,6 +36,7 @@ import {
   solanaCrosschainPrivacyFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
+import { permissionlessCronFunction } from "./permissionless-cron";
 
 // Register all functions in the registry
 const functionRegistry: FunctionRegistry = {
@@ -72,6 +73,7 @@ const functionRegistry: FunctionRegistry = {
   [solanaWormholeQueryFunction.id]: solanaWormholeQueryFunction,
   [wormholeConnectMayanFunction.id]: wormholeConnectMayanFunction,
   [solanaCrosschainPrivacyFunction.id]: solanaCrosschainPrivacyFunction,
+  [permissionlessCronFunction.id]: permissionlessCronFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {

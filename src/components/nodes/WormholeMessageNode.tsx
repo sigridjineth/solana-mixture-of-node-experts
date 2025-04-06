@@ -182,15 +182,6 @@ export default function WormholeMessageNode({ id, data, isConnectable }: NodePro
         style={{ background: '#555', width: 10, height: 10 }}
         isConnectable={isConnectable}
       />
-      
-      {/* Feature coming soon modal */}
-      {isModalOpen && (
-        <ToBeContinuedModal 
-          title="Wormhole Messenger"
-          description="The Wormhole cross-chain messaging functionality will be supported in a future update."
-          onClose={closeModal}
-        />
-      )}
     </Card>
   );
 }
