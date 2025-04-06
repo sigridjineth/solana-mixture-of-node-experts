@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from '@radix-ui/react-label';
-import ToBeContinuedModal from '@/components/ToBeContinuedModal';
+import {
+  Wormhole,
+  routes,
+} from "@wormhole-foundation/sdk-connect";
+import { EvmPlatform } from "@wormhole-foundation/sdk-evm";
+import { SolanaPlatform } from "@wormhole-foundation/sdk-solana";
+import {
+  MayanRouteSWIFT,
+} from '@mayanfinance/wormhole-sdk-route';
 
 type NodeProps = {
   id: string;
@@ -215,16 +223,6 @@ export default function WormholeMayanNode({ id, data, isConnectable }: NodeProps
           {codeView && (
             <div className="p-3 bg-gray-800 text-gray-200 rounded overflow-x-auto text-xs">
               <pre>{`
-import {
-  Wormhole,
-  routes,
-} from "@wormhole-foundation/sdk-connect";
-import { EvmPlatform } from "@wormhole-foundation/sdk-evm";
-import { SolanaPlatform } from "@wormhole-foundation/sdk-solana";
-import {
-  MayanRouteSWIFT,
-} from '@mayanfinance/wormhole-sdk-route';
-
 // Setup Wormhole client
 const wh = new Wormhole("Mainnet", [EvmPlatform, SolanaPlatform]);
 
@@ -297,15 +295,6 @@ const receipt = await bestRoute.initiate(
         style={{ background: '#555', width: 10, height: 10 }}
         isConnectable={isConnectable}
       />
-      
-      {/* Feature coming soon modal */}
-      {isModalOpen && (
-        <ToBeContinuedModal 
-          title="Wormhole + Mayan SWIFT"
-          description="The Wormhole + Mayan Finance SWIFT cross-chain transfer functionality will be supported in a future update."
-          onClose={closeModal}
-        />
-      )}
     </Card>
   );
 }
