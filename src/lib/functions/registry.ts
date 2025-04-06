@@ -33,6 +33,7 @@ import {
   solanaWormholeMessageFunction,
   solanaWormholeQueryFunction,
   wormholeConnectMayanFunction,
+  solanaCrosschainPrivacyFunction,
 } from "./solana-functions";
 import { mermaidFunction } from "./utils-functions";
 
@@ -70,6 +71,7 @@ const functionRegistry: FunctionRegistry = {
   [solanaWormholeMessageFunction.id]: solanaWormholeMessageFunction,
   [solanaWormholeQueryFunction.id]: solanaWormholeQueryFunction,
   [wormholeConnectMayanFunction.id]: wormholeConnectMayanFunction,
+  [solanaCrosschainPrivacyFunction.id]: solanaCrosschainPrivacyFunction,
 };
 
 export const getFunctionById = (id: string): NodeFunction | undefined => {

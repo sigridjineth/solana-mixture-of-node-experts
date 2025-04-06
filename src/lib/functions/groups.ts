@@ -16,7 +16,7 @@ export const FUNCTION_GROUPS = {
   crosschain: {
     id: "crosschain",
     name: "Cross-Chain",
-    description: "Nodes for cross-chain interoperability and bridging operations.",
+    description: "Nodes for cross-chain interoperability, privacy, and bridging operations.",
   },
 };
 
