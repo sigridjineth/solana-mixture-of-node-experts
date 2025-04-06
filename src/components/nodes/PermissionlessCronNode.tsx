@@ -45,15 +45,21 @@ export default function PermissionlessCronNode() {
     setIsSubmitting(true);
     
     try {
-      // This would actually connect to a Clockwork-style API in production
-      // For the proof-of-concept, we're just simulating the creation of a cron job
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log({
-        taskName,
+      // Prepare the task data
+      const taskData = {
+        name: taskName,
         cronExpression: cronExpressions[frequency],
-        estimatedReward
-      });
+        rewardAmount: estimatedReward,
+        instructions: {
+          programId: "clockwork program ID",
+          accounts: [],
+          data: Buffer.from("task data").toString('base64')
+        }
+      };
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      console.log("Creating Clockwork thread with data:", taskData);
       
       setNodeStatus("success");
       setTimeout(() => setNodeStatus("idle"), 3000);
