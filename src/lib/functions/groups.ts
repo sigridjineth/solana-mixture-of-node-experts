@@ -18,6 +18,21 @@ export const FUNCTION_GROUPS = {
     name: "Cross-Chain",
     description: "Nodes for cross-chain interoperability, privacy, and bridging operations.",
   },
+  finfra: {
+    id: "finfra",
+    name: "Financial Infrastructure",
+    description: "Advanced financial infrastructure nodes for Solana mainnet, SVM, and side-chains.",
+  },
+  defi: {
+    id: "defi",
+    name: "DeFi",
+    description: "Decentralized finance operations including swaps, liquidity, and yield strategies.",
+  },
+  infra: {
+    id: "infra",
+    name: "Infrastructure",
+    description: "Nodes for blockchain infrastructure optimization and management.",
+  },
 };
 
 // Get group information by group ID

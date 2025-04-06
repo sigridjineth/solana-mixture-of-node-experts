@@ -20,6 +20,7 @@ import FunctionNode from "./FunctionNode";
 import OutputNode from "./OutputNode";
 import { MermaidViewer } from "./nodes/MermaidViewer";
 import CustomEdge from "../flow/CustomEdge";
+import CrosschainLiquidityNode from "../nodes/CrosschainLiquidityNode";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,7 @@ const nodeTypes = {
   function: FunctionNode,
   output: OutputNode,
   mermaid: MermaidViewer,
+  crosschainLiquidity: CrosschainLiquidityNode,
 };
 
 // 엣지 타입 정의
